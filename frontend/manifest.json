@@ -1,0 +1,24 @@
+{
+    "name": "myEntertainment",
+    "version": "1.0",
+    "description": "keeps track of what you read or watch online, all without lifting a finger",
+    "author": "Lex Pan",
+    "manifest_version": 3,
+    "icons": {
+        "128": "extension.png"
+    },
+    "permissions": [
+        "tabs"
+    ],
+    "action": {
+        "default_popup": "index.html"
+    },
+    "content_scripts":[
+        {
+            "matches": [
+                "https://*.lightnovelcave.com/novel/*/*"
+            ],
+            "js": ["contentScript.js"]
+        }
+    ]
+}
