@@ -16,7 +16,8 @@
     "content_scripts":[
         {
             "matches": [
-                "https://*.lightnovelcave.com/novel/*/*"
+                "https://*.lightnovelcave.com/novel/*/*",
+                "https://chapmanganato.to/*/*"
             ],
             "js": ["contentScript.js"]
         }
