@@ -157,7 +157,7 @@
 .user-section-title{
     font-weight: 300;
     grid-row: 1;
-    grid-column: 1/6;
+    grid-column: 1/7;
     border-bottom: 1px solid rgb(172, 172, 172);
 }
 
@@ -172,7 +172,7 @@
 
 .chronicle-status-list {
     grid-row: 3;
-    grid-column: 1/6;
+    grid-column: 1/7;
 }
 
 .chronicle-status-list li {
@@ -193,3 +193,30 @@
 .chronicle-title {
     width: 40%;
 }
+
+/* user-history */
+.user-history-section {
+    display: grid;
+    grid-template-rows: auto auto auto;
+    grid-template-columns: repeat(6, 1fr);
+    width: 80%;
+    margin: 2em;
+}
+
+.history {
+    margin-top: 0.3em;
+    border-top: 1px solid rgb(216, 216, 216);
+}
+
+.pTwo {
+    grid-column: 1/3;
+}
+
+.pThree {
+    grid-column: 5/7;
+}
+
+.pFour {
+    padding-left: 0.1em;
+}
+

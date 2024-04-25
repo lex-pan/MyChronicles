@@ -11,7 +11,7 @@ To-Do's I can implement right now:
 */
 
 "use client";
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { MouseEvent } from 'react';
 export default function ChronicleCategoryLayout() {
     interface Chronicle {
