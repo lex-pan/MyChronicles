@@ -98,6 +98,7 @@
     justify-content: center;
     align-items: center;
     height: 5em;
+    cursor: pointer;
 }
 
 .chronicle-category-option {
@@ -133,7 +134,7 @@
     align-items: center;
 }
 
-.user-chronicles-container {
+.user-container {
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -145,7 +146,7 @@
     /*background-color: rgb(109, 186, 207);*/
 }
 
-.user-chronicles-container-section {
+.user-container-section {
     display: grid;
     grid-template-rows: auto auto auto;
     grid-template-columns: repeat(5, 1fr);
@@ -153,14 +154,14 @@
     margin: 2em;
 }
 
-.user-chronicles-container-section h1{
+.user-section-title{
     font-weight: 300;
     grid-row: 1;
     grid-column: 1/6;
     border-bottom: 1px solid rgb(172, 172, 172);
 }
 
-.user-chronicles-container-category {
+.user-container-category {
     margin-top: 1em;
     font-size: 18px;
 }
@@ -181,10 +182,12 @@
 
 .chronicle-status-list-info {
     padding: 0.2em;
-    display: flex;
     font-size: 18px;
-    border: 1px solid rgb(172, 172, 172);
+    outline: 1px solid rgb(172, 172, 172);
+    margin-top: 1px;
+    margin-left: 1px;
     width: 20%;
+    overflow-wrap: break-word;
 }
 
 .chronicle-title {

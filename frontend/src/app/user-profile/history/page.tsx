@@ -1,7 +1,7 @@
 export default function UserHistory() {
     return (
-      <div>
-        history
+      <div>            
+        <h1 className="user-section-title">History</h1>
       </div>
     );
   }

@@ -20,7 +20,7 @@ export default function RootLayout({
         <nav className="nav-bar">
           <img src="images/logo.png" className="nav-image"/>
           <Link href="/about" className="nav-link">About</Link> 
-          <Link href="/find" className="nav-link">Find</Link>
+          <Link href="/search" className="nav-link">Search</Link>
           <Link href="/add" className="nav-link">Add</Link> 
           <Link href="/user-profile" className="nav-link">Profile</Link> 
           <Link href="/user-profile"><img className="nav-profile" src="images/default-profile-image.png"/></Link> 
