@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "backend.Contracts", "backend.Contracts\backend.Contracts.csproj", "{9C9333CD-9183-4F5D-A1D0-BDFB030BC5FB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "backend-logic", "backend-logic\backend-logic.csproj", "{F28F8587-9065-4E97-A2AD-61F08A33616A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9C9333CD-9183-4F5D-A1D0-BDFB030BC5FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C9333CD-9183-4F5D-A1D0-BDFB030BC5FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C9333CD-9183-4F5D-A1D0-BDFB030BC5FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C9333CD-9183-4F5D-A1D0-BDFB030BC5FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F28F8587-9065-4E97-A2AD-61F08A33616A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F28F8587-9065-4E97-A2AD-61F08A33616A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F28F8587-9065-4E97-A2AD-61F08A33616A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F28F8587-9065-4E97-A2AD-61F08A33616A}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
