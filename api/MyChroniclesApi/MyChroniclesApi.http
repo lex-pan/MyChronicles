@@ -1,0 +1,6 @@
+@MyChroniclesApi_HostAddress = http://localhost:5172
+
+GET {{MyChroniclesApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

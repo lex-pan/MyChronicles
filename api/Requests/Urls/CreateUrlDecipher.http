@@ -1,0 +1,22 @@
+POST http://localhost:5172/urls 
+Content-Type: application/json
+
+{
+    "Domain": "chapmanganato.to",
+    "Title_start_end": [  
+        ["Chapter", "start", "1"]
+    ],
+    "Chapter_start_end": [  
+        ["Chapter", "1", "end"],
+        [" ", "start", "1"]
+    ],
+    "Entertainment_category": [
+        ["Graphic Novel"]
+    ],
+    "Selection_type": "title",
+    "dom_selector": [
+        "tag",
+        "title",
+        "0"
+    ]
+}
