@@ -14,29 +14,34 @@ public class UrlsController : ControllerBase {
         _MyChroniclesDb = database;
     }
 
-    /*
+    
     [HttpPost()]
     public async Task<IActionResult> CreateUrlDecipher(CreateUrlDecipher request) {
-        List<DecipherSteps> title_instructions = instructionClass(request.Title_start_end);
-        List<DecipherSteps> chapter_instructions = instructionClass(request.Chapter_start_end);
-        List<DecipherSteps> entertainment_category_instructions = instructionClass(request.Entertainment_category);
-       // DOMIdentifier dom_identifier = new DOMIdentifier(request.dom_selector[0], request.dom_selector[1], request.dom_selector[2]);
+        List<DecipherUrlSteps> instructions = new List<DecipherUrlSteps>();
 
+        instructions = instructionDbConversion(instructions, request.Domain, "title" , request.Title_start_end);
+        instructions = instructionDbConversion(instructions, request.Domain, "chapter" , request.Chapter_start_end);
+        instructions = instructionDbConversion(instructions, request.Domain, "entertainment" , request.Entertainment_category);
 
-        var urlDecipher = new DecipherUrls(
+        string dom_string = "";
+        for (int i = 0; i < request.dom_selector.Count; i++) {
+            if (i == 0) {
+                dom_string = dom_string + request.dom_selector[0];
+            } else {
+                dom_string = dom_string + " " + request.dom_selector[i];
+            }
+        }
+
+        var urlDecipher = new Urls(
             request.Domain,
-            title_instructions,
-            chapter_instructions,
-            entertainment_category_instructions,
             request.Selection_type,
-            dom_identifier
+            dom_string
         );
 
-        await _MyChroniclesDb.AddUrlDecipher(urlDecipher);
+        await _MyChroniclesDb.AddUrlDecipher(urlDecipher, instructions);
         
         return Ok(request);
     }
-    */
     
     [HttpGet("{domain}")]
     public async Task<IActionResult> GetUrlDecipher(string domain) {
@@ -55,26 +60,25 @@ public class UrlsController : ControllerBase {
         await _MyChroniclesDb.DeleteUrlDecipher(domain);
         return Ok(domain);
     }
-
-    /*
-    private List<DecipherSteps> instructionClass(List<List<string>> instructions) {
-        List<DecipherSteps> modelledInstructions = new List<DecipherSteps>();
-
+    
+    private List<DecipherUrlSteps> instructionDbConversion(List<DecipherUrlSteps> instructionsList, string domain, string category, List<List<object>> instructions) {
         for (int i = 0; i < instructions.Count; i++) {
-            string selector = instructions[i][0];
-            string start = instructions[i][1];
-            string end = instructions[i][2];
+            string selector = instructions[i][0].ToString();
+            string start = instructions[i][1].ToString();
+            string end = instructions[i][1].ToString();
             
-            var instruction = new DecipherSteps(
+            var instruction = new DecipherUrlSteps(
+                domain,
+                category,
+                i+1,           
                 selector,
-                start,
-                end
+                Convert.ToInt32(start),
+                Convert.ToInt32(end)
             );
 
-            modelledInstructions.Add(instruction);
+            instructionsList.Add(instruction);
         }        
 
-        return modelledInstructions;
+        return instructionsList;
     } 
-    */
 }

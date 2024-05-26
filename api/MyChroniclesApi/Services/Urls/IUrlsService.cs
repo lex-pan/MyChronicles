@@ -3,8 +3,9 @@ using Microsoft.EntityFrameworkCore;
 using MyChroniclesApi.Models;
 
 public interface IUrlsService {
-    DbSet<DecipherUrls> chronicle_extension_decipher { get; set; }
-    Task AddUrlDecipher(DecipherUrls urlModel);
-    Task<DecipherUrls> GetUrlDecipher(string domain);
-    Task<DecipherUrls> DeleteUrlDecipher(string domain);
+    DbSet<Urls> chronicle_extension_decipher { get; set; }
+    DbSet<DecipherUrlSteps> decipher_steps { get; set; }
+    Task AddUrlDecipher(Urls urlModel, List<DecipherUrlSteps> instructions);
+    Task<Urls> GetUrlDecipher(string domain);
+    Task<Urls> DeleteUrlDecipher(string domain);
 }

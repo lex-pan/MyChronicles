@@ -3,6 +3,7 @@ using Npgsql;
 using MyChroniclesApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using System.Transactions;
 
 public class UrlsService : DbContext, IUrlsService {
     protected readonly IConfiguration Configuration;
@@ -16,38 +17,37 @@ public class UrlsService : DbContext, IUrlsService {
     }
 
         // DbSet for the UrlModel
-        public DbSet<DecipherUrls> chronicle_extension_decipher { get; set; }
-        public DbSet<DecipherSteps> decipher_steps { get; set; }
-        public DbSet<DOMIdentifier> identifier_info  { get; set; }
-
+        public DbSet<Urls> chronicle_extension_decipher { get; set; }
+        public DbSet<DecipherUrlSteps> decipher_steps { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)  {
-            modelBuilder.Entity<DecipherUrls>()
-                .HasMany(u => u.Title_start_end)
-                .WithOne(s => s.DecipherUrls)
-                .HasForeignKey(s => s.domain); // Assuming you have a foreign key property for TitleStartEndId in DecipherSteps
-
-            modelBuilder.Entity<DecipherUrls>()
-                .HasMany(u => u.Chapter_start_end)
-                .WithOne(s => s.DecipherUrls)
-                .HasForeignKey(s => s.domain); // Assuming you have a foreign key property for ChapterStartEndId in DecipherSteps
-
-            modelBuilder.Entity<DecipherUrls>()
-                .HasMany(u => u.Entertainment_category)
-                .WithOne(s => s.DecipherUrls)
-                .HasForeignKey(s => s.domain); // Assuming you have a foreign key property for ChapterStartEndId in DecipherSteps
+            modelBuilder.Entity<DecipherUrlSteps>()
+                .HasOne(u => u.urls)  // specifies that DecipherUrlSteps has a navigation property (Urls) that points to a single instance of Urls.
+                .WithMany()  // WithMany() specifies that Urls can have many instances of DecipherUrlSteps associated with it.
+                .HasForeignKey(u => u.domain); // Assuming you have a foreign key property domain in DecipherUrlSteps`    
         }
 
         // Method to handle the POST command
-        public async Task AddUrlDecipher(DecipherUrls urlModel) {
-            await chronicle_extension_decipher.AddAsync(urlModel);
-            await SaveChangesAsync();
+        public async Task AddUrlDecipher(Urls urlModel, List<DecipherUrlSteps> instructions) {
+            using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled)) {
+                // Add the Urls object to the DbSet
+                await this.Set<Urls>().AddAsync(urlModel);
+
+                // Add the list of DecipherUrlSteps to the DbSet
+                await this.Set<DecipherUrlSteps>().AddRangeAsync(instructions);
+
+                // Save all changes to the database
+                await this.SaveChangesAsync();
+
+                // Commit the transaction
+                transaction.Complete();
+            }
         }
 
-        public async Task<DecipherUrls> GetUrlDecipher(string domain) {
+        public async Task<Urls> GetUrlDecipher(string domain) {
             return await chronicle_extension_decipher.FirstOrDefaultAsync(u => u.Domain == domain);
         }
 
-        public async Task<DecipherUrls> DeleteUrlDecipher(string domain) {
+        public async Task<Urls> DeleteUrlDecipher(string domain) {
             var entityToDelete = await chronicle_extension_decipher.FirstOrDefaultAsync(u => u.Domain == domain);
             Console.WriteLine(entityToDelete);
             if (entityToDelete != null)

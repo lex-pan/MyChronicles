@@ -2,7 +2,9 @@ using System.ComponentModel.DataAnnotations;
 using MyChroniclesApi.Models;
 using System.ComponentModel.DataAnnotations.Schema;
 
-public class DecipherSteps {
+public class DecipherUrlSteps {
+    [Key]
+    public Guid id { get; set; }
     [ForeignKey("domain")] // Specify the foreign key property
     public string domain { get; set; }
     public string decipher_category { get; set; }
@@ -10,13 +12,13 @@ public class DecipherSteps {
     public string word_to_find { get; set; }
     public int word_start { get; set; }
     public int word_end { get; set; }
-    public DecipherUrls DecipherUrls { get; set; } // allows you to access an DecipherUrls object from DecipherSteps
-
-    public DecipherSteps() {}
-    public DecipherSteps(string Domain, string DecipherCategory, int StepNumber, string Word, int Start, int End) {
+    public Urls urls {get; set;} 
+    public DecipherUrlSteps() {}
+    public DecipherUrlSteps(string Domain, string DecipherCategory, int StepNumber, string Word, int Start, int End) {
+        id = Guid.NewGuid();
         domain = Domain;
         decipher_category = DecipherCategory;
-        step_number = step_number;
+        step_number = StepNumber;
         word_to_find = Word;
         word_start = Start;
         word_end = End;
