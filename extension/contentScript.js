@@ -1,4 +1,4 @@
-const apiLink = 'http://localhost:3000/url';
+const apiLink = 'http://localhost:5172/urls';
 console.log("script is being run");
 console.log(window.location.href);
 // filler url: https://chapmanganato.to/manga-om991395/chapter-133
@@ -8,13 +8,11 @@ console.log(window.location.href);
     console.log(result);
 })();
 
-
 async function pageInfo(tabURL) {
     const urlOrigin = getOrigin(tabURL);
     const raw_response = await fetch(`${apiLink}/${urlOrigin}`);
 
     let website_parse_info = await raw_response.json();
-    website_parse_info = website_parse_info[0];
     console.log(website_parse_info);
 
     if (website_parse_info.title_start_end == null && website_parse_info.chapter_start_end == null) {
@@ -39,4 +37,3 @@ function getOrigin(tabURL) {
     const origin = tabURL.substring(start, end);
     return origin
 }
-

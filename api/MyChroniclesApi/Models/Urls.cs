@@ -1,19 +1,16 @@
 namespace MyChroniclesApi.Models;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using Microsoft.EntityFrameworkCore;
-using MyChroniclesApi.Models;
 public class Urls {
     [Key]
-    public string Domain { get; set; }
-    public string? Selection_type { get; set; }
-    public string dom_selector { get; set; }
+    public string domain { get; set; }
+    public string? selection_type { get; set; }
+    public string? dom_selector { get; set; }
     public DateTime date_time { get; set; }
     public Urls() {}
-    public Urls(string domain, string selection, string dom) {
-        Domain = domain;
-        Selection_type = selection;
-        dom_selector = dom;
+    public Urls(string Domain, string Selection, string Dom) {
+        domain = Domain;
+        selection_type = Selection;
+        dom_selector = Dom;
         date_time = DateTime.UtcNow;
     }
 }

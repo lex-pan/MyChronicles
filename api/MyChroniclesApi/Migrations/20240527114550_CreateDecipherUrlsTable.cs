@@ -15,14 +15,14 @@ namespace MyChroniclesApi.Migrations
                 name: "chronicle_extension_decipher",
                 columns: table => new
                 {
-                    Domain = table.Column<string>(type: "text", nullable: false),
-                    Selection_type = table.Column<string>(type: "text", nullable: true),
-                    dom_selector = table.Column<string>(type: "text", nullable: false),
+                    domain = table.Column<string>(type: "text", nullable: false),
+                    selection_type = table.Column<string>(type: "text", nullable: true),
+                    dom_selector = table.Column<string>(type: "text", nullable: true),
                     date_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_chronicle_extension_decipher", x => x.Domain);
+                    table.PrimaryKey("PK_chronicle_extension_decipher", x => x.domain);
                 });
 
             migrationBuilder.CreateTable(
@@ -44,7 +44,7 @@ namespace MyChroniclesApi.Migrations
                         name: "FK_decipher_steps_chronicle_extension_decipher_domain",
                         column: x => x.domain,
                         principalTable: "chronicle_extension_decipher",
-                        principalColumn: "Domain",
+                        principalColumn: "domain",
                         onDelete: ReferentialAction.Cascade);
                 });
 

@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MyChroniclesApi.Migrations
 {
     [DbContext(typeof(UrlsService))]
-    [Migration("20240526182451_CreateDecipherUrlsTable")]
+    [Migration("20240527114550_CreateDecipherUrlsTable")]
     partial class CreateDecipherUrlsTable
     {
         /// <inheritdoc />
@@ -61,20 +61,19 @@ namespace MyChroniclesApi.Migrations
 
             modelBuilder.Entity("MyChroniclesApi.Models.Urls", b =>
                 {
-                    b.Property<string>("Domain")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Selection_type")
+                    b.Property<string>("domain")
                         .HasColumnType("text");
 
                     b.Property<DateTime>("date_time")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("dom_selector")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("Domain");
+                    b.Property<string>("selection_type")
+                        .HasColumnType("text");
+
+                    b.HasKey("domain");
 
                     b.ToTable("chronicle_extension_decipher");
                 });

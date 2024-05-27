@@ -4,6 +4,7 @@ using MyChroniclesApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Transactions;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 public class UrlsService : DbContext, IUrlsService {
     protected readonly IConfiguration Configuration;
@@ -43,13 +44,19 @@ public class UrlsService : DbContext, IUrlsService {
             }
         }
 
-        public async Task<Urls> GetUrlDecipher(string domain) {
-            return await chronicle_extension_decipher.FirstOrDefaultAsync(u => u.Domain == domain);
+        public async Task<UrlsResult> GetUrlDecipher(string domain) {
+            string domain_query_string = "SELECT * FROM chronicle_extension_decipher WHERE domain = {0}";
+            string steps_query_string = "SELECT * FROM decipher_steps WHERE domain = {0}";
+            var steps = await this.decipher_steps.FromSqlRaw(steps_query_string, domain)
+            .ToListAsync();
+            var domain_query = await this.chronicle_extension_decipher.FromSqlRaw(domain_query_string, domain).FirstOrDefaultAsync();
+            UrlsResult query_result = new UrlsResult(domain_query, steps);
+            return query_result;
         }
 
         public async Task<Urls> DeleteUrlDecipher(string domain) {
-            var entityToDelete = await chronicle_extension_decipher.FirstOrDefaultAsync(u => u.Domain == domain);
-            Console.WriteLine(entityToDelete);
+            var entityToDelete = await chronicle_extension_decipher.FirstOrDefaultAsync(u => u.domain == domain);
+
             if (entityToDelete != null)
             {
                 // Remove the entity from the context
@@ -61,5 +68,10 @@ public class UrlsService : DbContext, IUrlsService {
             // Return the deleted entity (or null if not found)
             return entityToDelete;
         }
-
+        
+        public async Task UpdateUrlDecipher(Urls urlModel, List<DecipherUrlSteps> instructions) {
+                await DeleteUrlDecipher(urlModel.domain);
+                await AddUrlDecipher(urlModel, instructions);
+        }
+        
 }
