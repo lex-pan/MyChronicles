@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using MyChroniclesApi.Models;
 using System.ComponentModel.DataAnnotations.Schema;
+using MyChroniclesApi.ServiceErrors;
 
 public class DecipherUrlSteps {
     [Key]
@@ -14,7 +15,7 @@ public class DecipherUrlSteps {
     public int word_end { get; set; }
     public Urls urls {get; set;} 
     public DecipherUrlSteps() {}
-    public DecipherUrlSteps(string Domain, string DecipherCategory, int StepNumber, string Word, int Start, int End) {
+    private DecipherUrlSteps(string Domain, string DecipherCategory, int StepNumber, string Word, int Start, int End) {
         id = Guid.NewGuid();
         domain = Domain;
         decipher_category = DecipherCategory;
@@ -22,5 +23,23 @@ public class DecipherUrlSteps {
         word_to_find = Word;
         word_start = Start;
         word_end = End;
+    }
+
+    public static ErrorOr<DecipherUrlSteps> Create(string Domain, string DecipherCategory, int StepNumber, string Word, int Start, int End) {
+        if (Domain == "" || Domain == null) {
+            return ErrorOr<DecipherUrlSteps>.Failure(Error.InvalidInput("", "domain can't be empty or null"));
+        }
+
+        if (DecipherCategory != "title" && DecipherCategory != "chapter" && DecipherCategory != "entertainment") {
+            return ErrorOr<DecipherUrlSteps>.Failure(Error.InvalidInput("", "invalid decipher category"));
+        }
+
+        if (Start < 0) {
+            return ErrorOr<DecipherUrlSteps>.Failure(Error.InvalidInput("", "start must be positive or zero"));
+        }
+
+        DecipherUrlSteps step = new DecipherUrlSteps(Domain, DecipherCategory, StepNumber, Word, Start, End);
+
+        return ErrorOr<DecipherUrlSteps>.Success(step);
     }
 }
