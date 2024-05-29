@@ -8,8 +8,6 @@
         "128": "extension.png"
     },
     "permissions": [
-        "tabs",
-        "https://chapmanganato.to/*/*"
     ],
     "action": {
         "default_popup": "index.html"
