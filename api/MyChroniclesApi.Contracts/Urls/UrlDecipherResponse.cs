@@ -1,9 +1,9 @@
 namespace MyChroniclesApi.Contracts.Urls;
+
 public record UrlDecipherResponse(
-    string Selection_type,
-    List<List<object>> Title_start_end,
-    List<List<object>> Chapter_start_end,
-    List<List<object>> Entertainment_category,
-    List<object> dom_selector
+    List<string> decipher_method,
+    List<List<object>> title_start_end,
+    List<List<object>> chapter_start_end,
+    List<List<object>> entertainment_category
 );
 

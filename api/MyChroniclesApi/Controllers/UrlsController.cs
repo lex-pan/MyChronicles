@@ -19,32 +19,22 @@ public class UrlsController : ControllerBase {
     public async Task<IActionResult> CreateUrlDecipher(CreateUrlDecipher request) {
         ErrorOr<List<DecipherUrlSteps>> instructions = ErrorOr<List<DecipherUrlSteps>>.Success(new List<DecipherUrlSteps>());
 
-        instructions = instructionDbConversion(instructions, request.Domain, "title" , request.Title_start_end);
+        instructions = instructionDbConversion(instructions, request.domain, "title" , request.title_start_end);
         if (instructions.error != null) {
             return BadRequest(instructions.error);
         }
-        instructions = instructionDbConversion(instructions, request.Domain, "chapter" , request.Chapter_start_end);
+        instructions = instructionDbConversion(instructions, request.domain, "chapter" , request.chapter_start_end);
         if (instructions.error != null) {
             return BadRequest(instructions.error);
         }
-        instructions = instructionDbConversion(instructions, request.Domain, "entertainment" , request.Entertainment_category);
+        instructions = instructionDbConversion(instructions, request.domain, "entertainment" , request.entertainment_category);
         if (instructions.error != null) {
             return BadRequest(instructions.error);
-        }
-
-        string dom_string = "";
-        for (int i = 0; i < request.dom_selector.Count; i++) {
-            if (i == 0) {
-                dom_string = dom_string + request.dom_selector[0];
-            } else {
-                dom_string = dom_string + " " + request.dom_selector[i];
-            }
         }
 
         var urlDecipher = Urls.Create(
-            request.Domain,
-            request.Selection_type,
-            dom_string
+            request.domain,
+            request.decipher_method
         );
 
         if (urlDecipher.error == null) {
@@ -59,20 +49,23 @@ public class UrlsController : ControllerBase {
     [HttpGet("{domain}")]
     public async Task<IActionResult> GetUrlDecipher(string domain) {
         ErrorOr<UrlsResult> response = await _MyChroniclesDb.GetUrlDecipher(domain);
+
+        if (response == null) {
+            return Ok();
+        }
+
         UrlsResult toUrls = response.value;
 
         List<List<List<object>>> instruction_categories = cleanInstructions(toUrls.instructions);
 
-        object[] domToObject = toUrls.dom_selector.Split(' ');
-        List<object> domToList = new List<object>(domToObject);
-        domToList[2] = Convert.ToInt32(domToList[2]);
+        string[] domToObject = toUrls.decipher_method.Split(' ');
+        List<string> domToList = new List<string>(domToObject);
         
         UrlDecipherResponse understandableFormat = new UrlDecipherResponse(
-            toUrls.selection_type,
+            domToList,
             instruction_categories[0],
             instruction_categories[1],
-            instruction_categories[2],
-            domToList
+            instruction_categories[2]
         );
         
         return Ok(understandableFormat);
@@ -82,32 +75,22 @@ public class UrlsController : ControllerBase {
     public async Task<IActionResult> UpdateUrlDecipher(CreateUrlDecipher request) {
         ErrorOr<List<DecipherUrlSteps>> instructions = ErrorOr<List<DecipherUrlSteps>>.Success(new List<DecipherUrlSteps>());        
 
-        instructions = instructionDbConversion(instructions, request.Domain, "title" , request.Title_start_end);
+        instructions = instructionDbConversion(instructions, request.domain, "title" , request.title_start_end);
         if (instructions.error != null) {
             return BadRequest(instructions.error);
         }
-        instructions = instructionDbConversion(instructions, request.Domain, "chapter" , request.Chapter_start_end);
+        instructions = instructionDbConversion(instructions, request.domain, "chapter" , request.chapter_start_end);
         if (instructions.error != null) {
             return BadRequest(instructions.error);
         }
-        instructions = instructionDbConversion(instructions, request.Domain, "entertainment" , request.Entertainment_category);
+        instructions = instructionDbConversion(instructions, request.domain, "entertainment" , request.entertainment_category);
         if (instructions.error != null) {
             return BadRequest(instructions.error);
-        }
-
-        string dom_string = "";
-        for (int i = 0; i < request.dom_selector.Count; i++) {
-            if (i == 0) {
-                dom_string = dom_string + request.dom_selector[0];
-            } else {
-                dom_string = dom_string + " " + request.dom_selector[i];
-            }
         }
 
         var urlDecipher = Urls.Create (
-            request.Domain,
-            request.Selection_type,
-            dom_string
+            request.domain,
+            request.decipher_method
         );
 
         if (urlDecipher.error == null) {
@@ -127,17 +110,23 @@ public class UrlsController : ControllerBase {
     
     private ErrorOr<List<DecipherUrlSteps>> instructionDbConversion(ErrorOr<List<DecipherUrlSteps>> instructionsList, string domain, string category, List<List<object>> instructions) {
         for (int i = 0; i < instructions.Count; i++) {
-            string selector = instructions[i][0].ToString();
-            string start = instructions[i][1].ToString();
-            string end = instructions[i][2].ToString();
+            string wordStart = instructions[i][0].ToString();
+            string wordStartIndex = instructions[i][1].ToString();
+            string wordStartAdjustment = instructions[i][2].ToString();
+            string wordEnd = instructions[i][3].ToString();
+            string wordEndIndex = instructions[i][4].ToString();
+            string wordEndAdjustment = instructions[i][5].ToString();
             
             var instruction = DecipherUrlSteps.Create(
                 domain,
                 category,
                 i+1,           
-                selector,
-                Convert.ToInt32(start),
-                Convert.ToInt32(end)
+                wordStart,
+                Convert.ToInt32(wordStartIndex),
+                Convert.ToInt32(wordStartAdjustment),
+                wordEnd,
+                Convert.ToInt32(wordEndIndex),
+                Convert.ToInt32(wordEndAdjustment)
             );
             
             if (instruction.error == null) {
@@ -151,22 +140,23 @@ public class UrlsController : ControllerBase {
     } 
 
     private List<List<List<object>>> cleanInstructions(List<DecipherUrlSteps> instructions) {
-        List<List<StepsConversion>> categorized = new List<List<StepsConversion>>();
-        List<List<List<object>>> sorted = new List<List<List<object>>>();
+        List<List<List<object>>> categorized = new List<List<List<object>>>();
 
         for (int a = 0; a < 3; a++) {
             categorized.Add([]);
         }
 
         for (int i = 0; i < instructions.Count; i++) {
-            StepsConversion instruction = new StepsConversion(
-                instructions[i].step_number,
-                instructions[i].word_to_find,
-                instructions[i].word_start,
-                instructions[i].word_end
-            );
+            List<object> instruction = [
+                instructions[i].word_start, 
+                instructions[i].word_start_index, 
+                instructions[i].word_start_adjustment,
+                instructions[i].word_end, 
+                instructions[i].word_end_index, 
+                instructions[i].word_end_adjustment
+            ];
 
-            switch (instructions[i].decipher_category) {
+            switch (instructions[i].chronicle_info_category) {
                 case "title":
                     categorized[0].Add(instruction);
                     break;
@@ -180,18 +170,7 @@ public class UrlsController : ControllerBase {
                     throw new ArgumentException($"Invalid input: {instructions[i]} does not have a proper category");
             }           
         }
-
-        for (int b = 0; b < categorized.Count; b++) {
-            categorized[b].Sort((stepOne, stepTwo) => stepOne.step_number.CompareTo(stepTwo.step_number));
-        }
-
-        for (int c = 0; c < categorized.Count; c++) {
-            sorted.Add([]);
-            for (int d = 0; d < categorized[c].Count; d++) {
-                sorted[c].Add(categorized[c][d].instruction);
-            }       
-        }
         
-        return sorted;
+        return categorized;
     }
 }

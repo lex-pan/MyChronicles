@@ -28,7 +28,7 @@ namespace MyChroniclesApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("decipher_category")
+                    b.Property<string>("chronicle_info_category")
                         .IsRequired()
                         .HasColumnType("text");
 
@@ -39,15 +39,25 @@ namespace MyChroniclesApi.Migrations
                     b.Property<int>("step_number")
                         .HasColumnType("integer");
 
-                    b.Property<int>("word_end")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("word_start")
-                        .HasColumnType("integer");
-
-                    b.Property<string>("word_to_find")
+                    b.Property<string>("word_end")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<int>("word_end_adjustment")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("word_end_index")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("word_start")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("word_start_adjustment")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("word_start_index")
+                        .HasColumnType("integer");
 
                     b.HasKey("id");
 
@@ -64,10 +74,7 @@ namespace MyChroniclesApi.Migrations
                     b.Property<DateTime>("date_time")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<string>("dom_selector")
-                        .HasColumnType("text");
-
-                    b.Property<string>("selection_type")
+                    b.Property<string>("decipher_method")
                         .HasColumnType("text");
 
                     b.HasKey("domain");

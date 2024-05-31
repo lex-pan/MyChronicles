@@ -1,11 +1,11 @@
 const apiLink = 'http://localhost:5172/urls';
 console.log("script is being run");
 // console.log(window.location.href);
-const fillerTitle = "The Regressed Son of a Duke is an Assassin chapter 14 – Reunion – Asura Scans" ; 
+const fillerTitle = "Mobile War History Gundam Burai Chapter 11.5 - Manganelo"    ; 
 
 let asuraScans =  {
     "domain": "asuracomic.net",
-    "category_selection": ["url", "url", "url"],
+    "decipher_method": ["url", "url", "url"],
     "title_start_end": [  
         ["/", 3, 0, "-chapter", 0, 0],
         ["-", 0 , 1, " ", -1, 0]
@@ -19,10 +19,10 @@ let asuraScans =  {
     ]
 };
 
-/*
+
 let lightNovelCave =  {
     "domain": "www.lightnovelcave.com",
-    "category_selection": ["title", "title", "title"],
+    "decipher_method": ["title", "title", "title"],
     "title_start_end": [  
         ["", 0, 0, " - Chapter", 0, 0],
         ["", 0 , 0, " (", 0, 0]
@@ -35,11 +35,10 @@ let lightNovelCave =  {
         ["Novel", -2, -2, "Novel", -2, -2]
     ]
 };
-*/
-/*
+
 let manganato =  {
     "domain": "chapmanganato.to",
-    "category_selection": ["title", "title", "title"],
+    "decipher_method": ["title", "title", "title"],
     "title_start_end": [  
         ["", 0, 0, " Chapter", 0, 0],
         ["", 0 , 0, " Vol", 0, 0]
@@ -52,7 +51,6 @@ let manganato =  {
         ["Graphic Novel", -2, -2, "Graphic Novel", -2, -2]
     ]
 };
-*/
 
 (async () => {
     result = await pageInfo("https://asuracomic.net/8612194254-the-regressed-son-of-a-duke-is-an-assassin-chapter-14-reunion/");
@@ -66,23 +64,23 @@ async function pageInfo(tabURL) {
     //const raw_response = await fetch(`${apiLink}/${urlOrigin}`);
     //let website_parse_info = await raw_response.json();
     // let website_title = document.title;
-    website_parse_info = asuraScans;
+    website_parse_info = manganato;
     console.log(website_parse_info);
     const website_title = fillerTitle;
 
-    for (let i = 0; i < website_parse_info.category_selection.length; i++) {
-        if (website_parse_info.category_selection[i] == "url") {
-            website_parse_info.category_selection[i] = tabURL;
+    for (let i = 0; i < website_parse_info.decipher_method.length; i++) {
+        if (website_parse_info.decipher_method[i] == "url") {
+            website_parse_info.decipher_method[i] = tabURL;
         } else {
-            website_parse_info.category_selection[i] = fillerTitle;
+            website_parse_info.decipher_method[i] = fillerTitle;
         }
     }
 
-    let title = extractInstruction(website_parse_info.category_selection[0], website_parse_info.title_start_end);
-    const chapter = extractInstruction(website_parse_info.category_selection[1], website_parse_info.chapter_start_end);
-    const entertainment_category = extractInstruction(website_parse_info.category_selection[2], website_parse_info.entertainment_category);
+    let title = extractInstruction(website_parse_info.decipher_method[0], website_parse_info.title_start_end);
+    const chapter = extractInstruction(website_parse_info.decipher_method[1], website_parse_info.chapter_start_end);
+    const entertainment_category = extractInstruction(website_parse_info.decipher_method[2], website_parse_info.entertainment_category);
 
-    if (website_parse_info.category_selection[0] == tabURL) {
+    if (website_parse_info.decipher_method[0] == tabURL) {
         title = cleanUpUrlTitle(title);
     }
 
@@ -107,6 +105,7 @@ function extractInstruction(url, instructions) {
             end = url.indexOf(instructions[i][3], instructions[i][4]) + instructions[i][5];
         }
 
+        // if end doesn't exist we don't want to change the current url
         if (end > -1) {
             url = url.substring(start, end);
         }

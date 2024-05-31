@@ -16,8 +16,7 @@ namespace MyChroniclesApi.Migrations
                 columns: table => new
                 {
                     domain = table.Column<string>(type: "text", nullable: false),
-                    selection_type = table.Column<string>(type: "text", nullable: true),
-                    dom_selector = table.Column<string>(type: "text", nullable: true),
+                    decipher_method = table.Column<string>(type: "text", nullable: true),
                     date_time = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
                 },
                 constraints: table =>
@@ -31,11 +30,14 @@ namespace MyChroniclesApi.Migrations
                 {
                     id = table.Column<Guid>(type: "uuid", nullable: false),
                     domain = table.Column<string>(type: "text", nullable: false),
-                    decipher_category = table.Column<string>(type: "text", nullable: false),
+                    chronicle_info_category = table.Column<string>(type: "text", nullable: false),
                     step_number = table.Column<int>(type: "integer", nullable: false),
-                    word_to_find = table.Column<string>(type: "text", nullable: false),
-                    word_start = table.Column<int>(type: "integer", nullable: false),
-                    word_end = table.Column<int>(type: "integer", nullable: false)
+                    word_start = table.Column<string>(type: "text", nullable: false),
+                    word_start_index = table.Column<int>(type: "integer", nullable: false),
+                    word_start_adjustment = table.Column<int>(type: "integer", nullable: false),
+                    word_end = table.Column<string>(type: "text", nullable: false),
+                    word_end_index = table.Column<int>(type: "integer", nullable: false),
+                    word_end_adjustment = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {

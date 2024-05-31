@@ -2,21 +2,17 @@ POST http://localhost:5172/urls
 Content-Type: application/json
 
 {
-    "Domain": "chapmanganato.to",
-    "Title_start_end": [  
-        ["Chapter", 0, 1]
+    "domain": "asuracomic.net",
+    "decipher_method": ["url", "url", "url"],
+    "title_start_end": [  
+        ["/", 3, 0, "-chapter", 0, 0],
+        ["-", 0 , 1, " ", -1, 0]
     ],
-    "Chapter_start_end": [  
-        ["Chapter", 1, -1],
-        [" ", 0, 1]
+    "chapter_start_end": [  
+        ["chapter-", 0, 8, "/", -1, -1],
+        ["", 0, 0, "-", 1, 0]
     ],
-    "Entertainment_category": [
-        ["Graphic Novel", 0, 0]
-    ],
-    "Selection_type": "title",
-    "dom_selector": [
-        "tag",
-        "title",
-        0
+    "entertainment_category": [
+        ["Graphic Novel", -2, -2, "Graphic Novel", -2, -2]
     ]
 }

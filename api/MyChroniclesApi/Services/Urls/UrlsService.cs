@@ -71,9 +71,10 @@ public class UrlsService : DbContext, IUrlsService {
         string steps_query_string = "SELECT * FROM decipher_steps WHERE domain = {0}";
         var steps = await this.decipher_steps.FromSqlRaw(steps_query_string, domain)
         .ToListAsync();
-        var domain_query = await this.chronicle_extension_decipher.FromSqlRaw(domain_query_string, domain).FirstOrDefaultAsync();
-        UrlsResult query_result = new UrlsResult(domain_query, steps);
-        return ErrorOr<UrlsResult>.Success(query_result);
+        Urls domain_query = await this.chronicle_extension_decipher.FromSqlRaw(domain_query_string, domain).FirstOrDefaultAsync();
+        UrlsResult urlsResult = new UrlsResult();
+        ErrorOr<UrlsResult> query_result = urlsResult.Create(domain_query, steps);
+        return query_result;
     }
 
     public async Task<ErrorOr<string>> DeleteUrlDecipher(string domain) {
