@@ -1,78 +1,24 @@
 const apiLink = 'http://localhost:5172/urls';
 console.log("script is being run");
-// console.log(window.location.href);
-const fillerTitle = "Mobile War History Gundam Burai Chapter 11.5 - Manganelo"    ; 
-
-let asuraScans =  {
-    "domain": "asuracomic.net",
-    "decipher_method": ["url", "url", "url"],
-    "title_start_end": [  
-        ["/", 3, 0, "-chapter", 0, 0],
-        ["-", 0 , 1, " ", -1, 0]
-    ],
-    "chapter_start_end": [  
-        ["chapter-", 0, 8, "/", -1, -1],
-        ["", 0, 0, "-", 1, 0]
-    ],
-    "entertainment_category": [
-        ["Graphic Novel", -2, -2, "Graphic Novel", -2, -2]
-    ]
-};
-
-
-let lightNovelCave =  {
-    "domain": "www.lightnovelcave.com",
-    "decipher_method": ["title", "title", "title"],
-    "title_start_end": [  
-        ["", 0, 0, " - Chapter", 0, 0],
-        ["", 0 , 0, " (", 0, 0]
-    ],
-    "chapter_start_end": [  
-        ["Chapter ", 0, 8, " |", 0, 0],
-        ["", 0, 0, ":", 0 , 0]
-    ],
-    "entertainment_category": [
-        ["Novel", -2, -2, "Novel", -2, -2]
-    ]
-};
-
-let manganato =  {
-    "domain": "chapmanganato.to",
-    "decipher_method": ["title", "title", "title"],
-    "title_start_end": [  
-        ["", 0, 0, " Chapter", 0, 0],
-        ["", 0 , 0, " Vol", 0, 0]
-    ],
-    "chapter_start_end": [  
-        ["Chapter ", 0, 8, " -", 0, 0],
-        ["", 0, 0, ":", 0 , 0]
-    ],
-    "entertainment_category": [
-        ["Graphic Novel", -2, -2, "Graphic Novel", -2, -2]
-    ]
-};
+console.log(window.location.href)
 
 (async () => {
-    result = await pageInfo("https://asuracomic.net/8612194254-the-regressed-son-of-a-duke-is-an-assassin-chapter-14-reunion/");
+    result = await (pageInfo(window.location.href));
     console.log(result);
-    //result = await (pageInfo(window.location.href));
-    //console.log(result);
 })();
 
 async function pageInfo(tabURL) {
     const urlOrigin = getOrigin(tabURL);
-    //const raw_response = await fetch(`${apiLink}/${urlOrigin}`);
-    //let website_parse_info = await raw_response.json();
-    // let website_title = document.title;
-    website_parse_info = manganato;
+    const raw_response = await fetch(`${apiLink}/${urlOrigin}`);
+    let website_parse_info = await raw_response.json();
+    let website_title = document.title;
     console.log(website_parse_info);
-    const website_title = fillerTitle;
 
     for (let i = 0; i < website_parse_info.decipher_method.length; i++) {
         if (website_parse_info.decipher_method[i] == "url") {
             website_parse_info.decipher_method[i] = tabURL;
         } else {
-            website_parse_info.decipher_method[i] = fillerTitle;
+            website_parse_info.decipher_method[i] = website_title;
         }
     }
 
