@@ -59,10 +59,9 @@ public class UrlsController : ControllerBase {
         List<List<List<object>>> instruction_categories = cleanInstructions(toUrls.instructions);
 
         string[] domToObject = toUrls.decipher_method.Split(' ');
-        List<string> domToList = new List<string>(domToObject);
         
         UrlDecipherResponse understandableFormat = new UrlDecipherResponse(
-            domToList,
+            domToObject,
             instruction_categories[0],
             instruction_categories[1],
             instruction_categories[2]

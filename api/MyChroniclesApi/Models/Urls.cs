@@ -31,7 +31,7 @@ public class Urls {
             if (decipher_method_categories[i] != "url" && decipher_method_categories[i] != "title") {
                 return ErrorOr<Urls>.Failure(Error.InvalidInput("", "invalid decipher category type"));
             } else {
-                decipher_method = decipher_method + decipher_method_categories[i];
+                decipher_method = decipher_method + " " + decipher_method_categories[i];
             }
         }
         

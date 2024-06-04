@@ -140,7 +140,7 @@ let asuraScans =  {
     "domain": "asuracomic.net",
     "decipher_method": ["url", "url", "url"],
     "title_start_end": [  
-        ["-", 1, 1, "-chapter", 1, 0],
+        ["-", 1, 1, "-chapter", 1, 0]
     ],
     "chapter_start_end": [  
         ["chapter-", 1, 8, "", -1, -1],

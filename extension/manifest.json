@@ -8,15 +8,22 @@
         "128": "extension.png"
     },
     "permissions": [
+        "storage"
     ],
+    "background": {
+        "service_worker": "background.js"
+    },
     "action": {
         "default_popup": "index.html"
     },
     "content_scripts":[
         {
             "matches": [
-                "https://*.lightnovelcave.com/novel/*/*",
-                "https://chapmanganato.to/*/*"
+                "https://*.lightnovelcave.com/novel/*/chapter-*",
+                "https://chapmanganato.to/*/*",
+                "https://asuracomic.net/*/",
+                "https://asianc.to/*",
+                "https://wuxiaworld.site/novel/*/chapter*"
             ],
             "js": ["contentScript.js"]
         }

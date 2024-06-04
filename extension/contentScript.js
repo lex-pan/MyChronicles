@@ -1,10 +1,17 @@
 const apiLink = 'http://localhost:5172/urls';
 console.log("script is being run");
-console.log(window.location.href)
+console.log(window.location.href);
 
 (async () => {
-    result = await (pageInfo(window.location.href));
+    // this gets the url/title and then deciphers it into a list containing title, chapter, and entertainment category
+    let tabURL = window.location.href;
+    const result = await pageInfo(tabURL);
     console.log(result);
+
+    // send results to storage, so that popup.js can recieve it whenever a user is on a valid tab
+    chrome.storage.session.set({
+        tabURL: result
+    })
 })();
 
 async function pageInfo(tabURL) {
@@ -12,27 +19,26 @@ async function pageInfo(tabURL) {
     const raw_response = await fetch(`${apiLink}/${urlOrigin}`);
     let website_parse_info = await raw_response.json();
     let website_title = document.title;
+    let decipherChoice = [];
     console.log(website_parse_info);
 
     for (let i = 0; i < website_parse_info.decipher_method.length; i++) {
         if (website_parse_info.decipher_method[i] == "url") {
-            website_parse_info.decipher_method[i] = tabURL;
+            decipherChoice.push(tabURL);
         } else {
-            website_parse_info.decipher_method[i] = website_title;
+            decipherChoice.push(website_title);
         }
     }
 
-    let title = extractInstruction(website_parse_info.decipher_method[0], website_parse_info.title_start_end);
-    const chapter = extractInstruction(website_parse_info.decipher_method[1], website_parse_info.chapter_start_end);
-    const entertainment_category = extractInstruction(website_parse_info.decipher_method[2], website_parse_info.entertainment_category);
+    let title = extractInstruction(decipherChoice[0], website_parse_info.title_start_end);
+    const chapter = extractInstruction(decipherChoice[1], website_parse_info.chapter_start_end);
+    const entertainment_category = extractInstruction(decipherChoice[2], website_parse_info.entertainment_category);
 
-    if (website_parse_info.decipher_method[0] == tabURL) {
+    if (decipherChoice[0] == tabURL) {
         title = cleanUpUrlTitle(title);
     }
 
-    console.log(title);
-    console.log(chapter);
-    console.log(entertainment_category);
+    console.log([title, chapter, entertainment_category]);
 
    return "url extracted"
 }
@@ -43,18 +49,43 @@ function extractInstruction(url, instructions) {
     }
 
     for (let i = 0; i < instructions.length; i++) {
-        let start = url.indexOf(instructions[i][0], instructions[i][1]) + instructions[i][2];
-        let end;
-        if (instructions[i][4] == -1) {
-            end = url.length + instructions[i][5];
+        let word_start = instructions[i][0];
+        let repeat_start = instructions[i][1];
+        let adjust_start = instructions[i][2];
+        let word_end = instructions[i][3];
+        let repeat_end = instructions[i][4];
+        let adjust_end = instructions[i][5];
+        let start_index = 0;
+        let end_index = 0;
+
+        if (word_start == "") {
+            start_index = 0;
         } else {
-            end = url.indexOf(instructions[i][3], instructions[i][4]) + instructions[i][5];
+            while (repeat_start > 0) {
+                start_index = url.indexOf(word_start, start_index+1);
+                repeat_start--;
+            }
         }
 
-        // if end doesn't exist we don't want to change the current url
-        if (end > -1) {
-            url = url.substring(start, end);
+        start_index = start_index + adjust_start;
+        
+        // get the rest of the string
+        if (repeat_end == -1) {
+            end_index = url.length;
+        } else {
+            end_index = start_index;
+            while (repeat_end > 0) {
+                end_index = url.indexOf(word_end, end_index);
+                repeat_end--;
+            }            
         }
+        
+        // if end doesn't exist we don't want to change the current url
+        if (end_index > -1) {
+            end_index = end_index + adjust_end;
+            url = url.substring(start_index, end_index);
+        }
+
     }
 
     return url
