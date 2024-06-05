@@ -8,6 +8,7 @@
         "128": "extension.png"
     },
     "permissions": [
+        "tabs",
         "storage"
     ],
     "background": {
@@ -22,7 +23,7 @@
                 "https://*.lightnovelcave.com/novel/*/chapter-*",
                 "https://chapmanganato.to/*/*",
                 "https://asuracomic.net/*/",
-                "https://asianc.to/*",
+                "https://asianc.to/*episode*",
                 "https://wuxiaworld.site/novel/*/chapter*"
             ],
             "js": ["contentScript.js"]

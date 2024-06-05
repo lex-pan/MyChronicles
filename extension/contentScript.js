@@ -8,10 +8,8 @@ console.log(window.location.href);
     const result = await pageInfo(tabURL);
     console.log(result);
 
-    // send results to storage, so that popup.js can recieve it whenever a user is on a valid tab
-    chrome.storage.session.set({
-        tabURL: result
-    })
+    // send to background worker to save in session storage
+    chrome.runtime.sendMessage({ type: "saveToSessionStorage", message: result});
 })();
 
 async function pageInfo(tabURL) {
@@ -40,7 +38,7 @@ async function pageInfo(tabURL) {
 
     console.log([title, chapter, entertainment_category]);
 
-   return "url extracted"
+   return [tabURL, title, chapter, entertainment_category]
 }
 
 function extractInstruction(url, instructions) {
