@@ -18,7 +18,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <nav className="nav-bar">
-          <img src="images/logo.png" className="nav-image"/>
+          <h1 className="nav-bar-title">MyChronicles</h1> 
           <Link href="/about" className="nav-link">About</Link> 
           <Link href="/search" className="nav-link">Search</Link>
           <Link href="/add" className="nav-link">Add</Link> 
