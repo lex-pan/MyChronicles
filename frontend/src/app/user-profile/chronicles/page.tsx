@@ -1,12 +1,14 @@
 /*
 Future ToDo's for this section
     - get books from database
-    - save books to session storage
-    - when a user edits the book section, it should save the result to sessionstorage (this way the state is saved)
+    - save books to redux
+    - when a user edits the book section, it should save the result to redux (this way the state is saved)
     - there should also be a function that checks whether or not the input is valid for user chronicle changes
     - there should be a timer for sending changed requests to db since i don't want the user editing a million times and making a million requests to db
 
 To-Do's I can implement right now:
+    - split chronicles to sections, navigation, and individual read/watch status category
+    - when users update/delete/add new entry, do not refresh, when users change chapter/watch date/rating can change but do not move from spot 
     - dividing novels into categories when clicking on different category
 */
 

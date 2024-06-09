@@ -1,10 +1,8 @@
 namespace MyChroniclesApi.Services.Urls;
-using Npgsql;
 using MyChroniclesApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Transactions;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using MyChroniclesApi.ServiceErrors;
 
 public class UrlsService : DbContext, IUrlsService {
@@ -16,12 +14,6 @@ public class UrlsService : DbContext, IUrlsService {
     // the dependency injection is provided by the framework itself
     public UrlsService(IConfiguration configuration) {
         Configuration = configuration;
-    }
-
-    // declares a method named OnConfiguring that overrides the OnConfiguring method in DbContext
-    protected override void OnConfiguring(DbContextOptionsBuilder options) {
-        // overrides the config option to use Npgsql (.NET driver for postgresql databases)
-        options.UseNpgsql(Configuration.GetConnectionString("DefaultConnection"));
     }
 
     // DbSets are an entry point to a table within a database that allows you to perform crud operations
