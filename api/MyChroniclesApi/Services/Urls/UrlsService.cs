@@ -6,14 +6,8 @@ using System.Transactions;
 using MyChroniclesApi.ServiceErrors;
 
 public class UrlsService : DbContext, IUrlsService {
-
-    // IConfiguration class is used to manage settings from various files such as JSON files, environment variables, Azure key vault and more
-    // In this case we use it to access appsettings.json
-    protected readonly IConfiguration Configuration;
-
-    // the dependency injection is provided by the framework itself
-    public UrlsService(IConfiguration configuration) {
-        Configuration = configuration;
+    public UrlsService(DbContextOptions<UrlsService> options) : base(options) {
+        
     }
 
     // DbSets are an entry point to a table within a database that allows you to perform crud operations

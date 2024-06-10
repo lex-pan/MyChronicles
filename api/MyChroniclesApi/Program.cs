@@ -14,8 +14,6 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddIdentity<User, IdentityRole>()
         .AddEntityFrameworkStores<UsersService>()
         .AddDefaultTokenProviders();
-    builder.Services.AddIdentityApiEndpoints<User>()
-        .AddEntityFrameworkStores<UsersService>();
     builder.Services.AddScoped<IUrlsService, UrlsService>();
     builder.Services.AddCors(options =>
     {
@@ -30,7 +28,6 @@ var app = builder.Build();
 {
     // app.UseExceptionHandler("/error");
     app.UseCors("AllowAnyOrigin");
-    app.MapIdentityApi<User>();
     app.UseHttpsRedirection();
     app.MapControllers();
     app.Run();
