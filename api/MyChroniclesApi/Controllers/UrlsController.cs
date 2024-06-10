@@ -1,10 +1,17 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.ObjectPool;
 using MyChroniclesApi.Contracts.Urls;
 using MyChroniclesApi.Models;
 using MyChroniclesApi.ServiceErrors;
 using MyChroniclesApi.Services.Urls;
 namespace MyChroniclesApi.Controllers;
+
+/*
+The [ApiController] attribute is used in ASP.NET Core to indicate that a controller should follow certain conventions related to API behavior and response handling.
+
+Automatic HTTP 400 responses: ASP.NET Core automatically handles model validation errors and returns a 400 Bad Request response when model validation fails.
+Attribute routing requirement: By default, ASP.NET Core requires attribute routing, meaning you must explicitly define routes using attributes like [HttpGet], [HttpPost], etc.
+Problem details for error responses: ASP.NET Core provides built-in support for returning detailed error responses following the RFC 7807 standard.
+*/
 
 [ApiController]
 [Route("[controller]")]

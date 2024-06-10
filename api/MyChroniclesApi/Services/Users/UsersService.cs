@@ -13,7 +13,6 @@ public class UsersService : IdentityDbContext<User> {
     public DbSet<UserHistory> user_history { get; set; }
     public DbSet<UserChronicles> user_chronicles { get; set; }
     public UsersService(DbContextOptions<UsersService> options) : base(options) {
-
+        
     }
-    
 }

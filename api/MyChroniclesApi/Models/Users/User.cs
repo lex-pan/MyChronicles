@@ -21,16 +21,25 @@ The IdentityUser class includes the following properties by default:
 
 We can add our own custom attributes down below
 
-IdentityUser Properties: Managed by ASP.NET Core Identity framework. You don't need to set attributes such as Id, Username, Email manually unless you have specific requirements.
 Custom Properties in Users Class: You need to initialize these as required, typically in the constructor or when creating an instance.
 Custom Class Inheritance: For your own classes that inherit from other custom classes, you are responsible for initializing both inherited properties and new properties. Call the base class constructor to ensure proper initialization.
 */
 public class User : IdentityUser {
-    private DateTime account_creation_time { get; }
+    public DateTime account_creation_time { get; }
     public string bio { get; set; }
     public DateTime last_login { get; set; }
     public string preferred_language { get; set; }
-    public User() {
+
+    // Parameterless constructor
+    public User() 
+    {
+        account_creation_time = DateTime.UtcNow;
+        last_login = DateTime.UtcNow;
+        preferred_language = "English";
+    }
+    public User(string username, string email) {
+        UserName = username;
+        Email = email;
         account_creation_time = DateTime.UtcNow;
         last_login = DateTime.UtcNow; // Assuming initial last login time as now for new user
         preferred_language = "English"; // Default language can be set as needed
