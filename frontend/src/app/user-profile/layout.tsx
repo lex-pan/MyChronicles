@@ -1,4 +1,4 @@
-import NavOptions from '../navOptions';
+import NavOptions from './navOptions';
 
 const titles = [
     {category: "About", index: 0, link: "/user-profile"},

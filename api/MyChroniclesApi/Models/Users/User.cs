@@ -26,7 +26,7 @@ Custom Class Inheritance: For your own classes that inherit from other custom cl
 */
 public class User : IdentityUser {
     public DateTime account_creation_time { get; }
-    public string bio { get; set; }
+    public string? bio { get; set; }
     public DateTime last_login { get; set; }
     public string preferred_language { get; set; }
 

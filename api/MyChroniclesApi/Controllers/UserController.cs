@@ -59,7 +59,7 @@ public class UserController : ControllerBase {
         }
 
         if (invalidPassword(request.password)) {
-            return BadRequest("Passwords must contain between 8-32 characters with at least one uppercase letter and one number");
+            return BadRequest("Passwords must contain between 8-32 characters with at least one uppercase letter, one number, and one non special character");
         }
 
         var existingUsername = await _userManager.FindByNameAsync(request.username);
@@ -82,7 +82,7 @@ public class UserController : ControllerBase {
             // add functionality where email is sent to user confirming account registration
             return Ok("User created");
         } else {
-            return StatusCode(500, "internal server error");
+            return StatusCode(500, result);
         }
         
     }
@@ -107,10 +107,22 @@ public class UserController : ControllerBase {
     }
 
     // implement user logout
-    [HttpPost("logout")]
+    [HttpGet("logout")]
     public async Task<IActionResult> UserLogout() {
         await _signInManager.SignOutAsync();
-        return Ok();
+        return Ok("User logged out successfully");
+    }
+
+    [HttpGet("login-status")]
+    public async Task<IActionResult> UserLoginStatus() {
+        bool isSignedIn = _signInManager.IsSignedIn(User);
+
+        if (isSignedIn) {
+            return Ok("true");
+        } else {
+            return Ok("not signed in");
+        }
+        
     }
 
     private bool invalidEmail(string email) {
@@ -134,6 +146,7 @@ public class UserController : ControllerBase {
         int length = 0;
         bool hasUpper = false;
         bool hasNumber = false;
+        bool nonAlphaNumeric = false;
         for (int i=0; i < password.Length; i++) {
             char c = password[i];
             if (char.IsUpper(c)) {
@@ -143,10 +156,15 @@ public class UserController : ControllerBase {
             if (char.IsDigit(c)) {
                 hasNumber= true;
             }
+            
+            if (!char.IsLetterOrDigit(c)) {
+                nonAlphaNumeric = true;
+            }
+
             length++;
         }
 
-        if (length >= 8 && length <= 32 && hasUpper && hasNumber) {
+        if (length >= 8 && length <= 32 && hasUpper && hasNumber && nonAlphaNumeric) {
             return false;
         } else {
             return true;

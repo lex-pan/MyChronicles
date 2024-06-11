@@ -2,18 +2,21 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyChroniclesApi.Services.Users;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace MyChroniclesApi.Migrations
+namespace MyChroniclesApi.Migrations.UsersServiceMigrations
 {
     [DbContext(typeof(UsersService))]
-    partial class UsersServiceModelSnapshot : ModelSnapshot
+    [Migration("20240611132140_UserTable")]
+    partial class UserTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -207,6 +210,7 @@ namespace MyChroniclesApi.Migrations
                         .HasColumnType("character varying(256)");
 
                     b.Property<string>("bio")
+                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("last_login")

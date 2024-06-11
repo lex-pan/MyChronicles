@@ -6,8 +6,8 @@
 }
 
 @font-face {
-    font-family: 'copyduck';
-    src: url("/fonts/copyduck.ttf");
+    font-family: 'coffee';
+    src: url("/fonts/coffee.ttf");
 }
 
 * {
@@ -55,15 +55,37 @@
 .nav-profile {
     height: 3em;
     width: 3em;
+    padding: 0.2em;
     position: absolute;
     top: 5px;
-    background-color: rgb(0, 153, 255);
-    right: 30px;
+    right: 120px;
     border-radius: 50%;
+    border: 3px solid white;
 }
 
 .nav-profile:hover {
-    background-color: white;
+    background-color: rgb(0, 119, 199);
+}
+
+.nav-profile-options {
+    position: absolute;
+    right: 5px;
+}
+
+.nav-logout {
+    height: 3.5em;
+    width: 3.5em;
+    padding: 0.2em;
+    position: absolute;
+    top: 5px;
+    right: 30px;
+    border: 3px solid white;
+    background-color: rgb(255, 30, 30);
+}
+
+.nav-logout:hover {
+    cursor: pointer;
+    background-color: rgba(255, 0, 0, 0.897);
 }
 
 /* Nav Bar End*/
@@ -235,7 +257,7 @@
 
 .login-page {
     position: absolute;
-    top:  40%;
+    top: 44%;
     left: 50%;
     transform: translate(-50%,-50%);
     display: flex;
@@ -243,12 +265,13 @@
     justify-content: flex-start;
     flex-direction: column;
     width: 25em;
+    height: 33em;
     border: 1px solid rgb(172, 172, 172);
     padding: 0.5em;
 }
 
 .login-page h1 {
-    font-family: 'copyduck';
+    font-family: 'coffee';
     margin-top: 1em;
     padding-top: 0.5em;
     padding-bottom: 0.5em;

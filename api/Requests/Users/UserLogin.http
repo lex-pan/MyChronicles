@@ -1,0 +1,7 @@
+POST http://localhost:5172/user/login
+Content-Type: application/json
+
+{
+    "emailOrUsername": "lexus",
+    "password": "Password1#"
+}
