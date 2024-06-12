@@ -17,17 +17,24 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IUrlsService, UrlsService>();
     builder.Services.AddCors(options =>
     {
-        options.AddPolicy("AllowAnyOrigin",
-            builder => builder.AllowAnyOrigin()
-                              .AllowAnyMethod()
-                              .AllowAnyHeader());
+        options.AddPolicy("http://localhost:3000",
+            builder => builder.WithOrigins("http://localhost:3000")
+                          .AllowAnyMethod()
+                          .AllowAnyHeader()
+                          .AllowCredentials());
+                            
+        options.AddPolicy("chrome-extension",
+            builder => builder.WithOrigins("chrome-extension://your-extension-id")
+                          .AllowAnyMethod()
+                          .AllowAnyHeader()
+                          .AllowCredentials());
     });
 }
 
 var app = builder.Build();
 {
     // app.UseExceptionHandler("/error");
-    app.UseCors("AllowAnyOrigin");
+    app.UseCors();
     app.UseHttpsRedirection();
     app.MapControllers();
     app.Run();

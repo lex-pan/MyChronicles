@@ -1,9 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.ObjectPool;
-using MyChroniclesApi.Contracts.Urls;
-using MyChroniclesApi.Models;
-using MyChroniclesApi.ServiceErrors;
-using MyChroniclesApi.Services.Urls;
+using Microsoft.AspNetCore.Cors;
 using MyChroniclesApi.Services.Users;
 namespace MyChroniclesApi.Controllers;
 using Microsoft.AspNetCore.Identity;
@@ -28,7 +24,7 @@ User Registration Flow
         Once the user is saved, SignInManager<User> handles the login process.
         It creates an authentication session (via cookies or tokens) so the user stays logged in while interacting with the website.
 */
-
+[EnableCors("http://localhost:3000")]
 [ApiController]
 [Route("[controller]")]
 public class UserController : ControllerBase {
@@ -99,8 +95,13 @@ public class UserController : ControllerBase {
         }
 
         if (validPassword) {
-            await _signInManager.SignInAsync(user, isPersistent: true);
-            return Ok();
+            try {
+                await _signInManager.PasswordSignInAsync(user, request.password, isPersistent: true, lockoutOnFailure: false);
+                return Ok();
+            } catch {
+                return StatusCode(500, "internal server error");
+            }
+
         } else {
             return BadRequest("Invalid password");
         }
@@ -118,9 +119,9 @@ public class UserController : ControllerBase {
         bool isSignedIn = _signInManager.IsSignedIn(User);
 
         if (isSignedIn) {
-            return Ok("true");
+            return Ok(true);
         } else {
-            return Ok("not signed in");
+            return Ok(false);
         }
         
     }
