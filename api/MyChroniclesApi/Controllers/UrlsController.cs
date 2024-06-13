@@ -2,7 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using MyChroniclesApi.Contracts.Urls;
 using MyChroniclesApi.Models;
 using MyChroniclesApi.ServiceErrors;
-using MyChroniclesApi.Services.Urls;
+using MyChroniclesApi.Services;
 namespace MyChroniclesApi.Controllers;
 
 /*

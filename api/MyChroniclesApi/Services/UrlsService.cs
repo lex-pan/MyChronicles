@@ -1,4 +1,4 @@
-namespace MyChroniclesApi.Services.Urls;
+namespace MyChroniclesApi.Services;
 using MyChroniclesApi.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +18,7 @@ public class UrlsService : DbContext, IUrlsService {
         modelBuilder.Entity<DecipherUrlSteps>()
             .HasOne(u => u.urls)  // specifies that DecipherUrlSteps has a navigation property (Urls) that points to a single instance of Urls.
             .WithMany()  // WithMany() specifies that Urls can have many instances of DecipherUrlSteps associated with it.
-            .HasForeignKey(u => u.domain); // Assuming you have a foreign key property domain in DecipherUrlSteps`    
+            .HasForeignKey(u => u.domain); // Assuming you have a foreign key property domain in DecipherUrlSteps`that allows you to identify the url in decipher steps    
     }
 
     // Method to handle the POST command

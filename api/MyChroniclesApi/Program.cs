@@ -1,8 +1,7 @@
-using MyChroniclesApi.Services.Urls;
 using Microsoft.EntityFrameworkCore;
-using MyChroniclesApi.Services.Users;
+using MyChroniclesApi.Services;
 using Microsoft.AspNetCore.Identity;
-using MyChroniclesApi.Models;
+using MyChroniclesApi.Models.Users;
 
 var builder = WebApplication.CreateBuilder(args);
 {
@@ -10,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
     var configuration = builder.Configuration;
     builder.Services.AddDbContext<UrlsService>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
     builder.Services.AddDbContext<UsersService>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+    builder.Services.AddDbContext<ChroniclesService>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
     builder.Services.AddAuthorization();
     builder.Services.AddIdentity<User, IdentityRole>()
         .AddEntityFrameworkStores<UsersService>()

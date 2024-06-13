@@ -12,8 +12,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MyChroniclesApi.Migrations.UsersServiceMigrations
 {
     [DbContext(typeof(UsersService))]
-    [Migration("20240611132140_UserTable")]
-    partial class UserTable
+    [Migration("20240613190630_userTableRelations")]
+    partial class userTableRelations
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -157,7 +157,46 @@ namespace MyChroniclesApi.Migrations.UsersServiceMigrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("MyChroniclesApi.Models.User", b =>
+            modelBuilder.Entity("MyChroniclesApi.Models.Chronicles.Chronicles", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("author")
+                        .HasColumnType("text");
+
+                    b.Property<string>("country")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime?>("creation_date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTime>("db_add_date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("entertainment_category")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("episodes")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("language")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("length")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("id");
+
+                    b.ToTable("Chronicles");
+                });
+
+            modelBuilder.Entity("MyChroniclesApi.Models.Users.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("text");
@@ -210,7 +249,6 @@ namespace MyChroniclesApi.Migrations.UsersServiceMigrations
                         .HasColumnType("character varying(256)");
 
                     b.Property<string>("bio")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("last_login")
@@ -232,7 +270,7 @@ namespace MyChroniclesApi.Migrations.UsersServiceMigrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("MyChroniclesApi.Models.UserChronicles", b =>
+            modelBuilder.Entity("MyChroniclesApi.Models.Users.UserChronicles", b =>
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
@@ -241,31 +279,47 @@ namespace MyChroniclesApi.Migrations.UsersServiceMigrations
                     b.Property<Guid>("book_id")
                         .HasColumnType("uuid");
 
+                    b.Property<int>("episode")
+                        .HasColumnType("integer");
+
                     b.Property<DateTime>("last_read")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<bool>("private_review")
                         .HasColumnType("boolean");
 
-                    b.Property<int>("rating")
-                        .HasColumnType("integer");
+                    b.Property<float>("rating")
+                        .HasColumnType("real");
 
                     b.Property<string>("review")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("source")
                         .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("start_date")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<Guid>("user_id")
-                        .HasColumnType("uuid");
+                    b.Property<string>("status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("user_id")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("id");
+
+                    b.HasIndex("book_id");
+
+                    b.HasIndex("user_id");
 
                     b.ToTable("user_chronicles");
                 });
 
-            modelBuilder.Entity("MyChroniclesApi.Models.UserHistory", b =>
+            modelBuilder.Entity("MyChroniclesApi.Models.Users.UserHistory", b =>
                 {
                     b.Property<Guid>("id")
                         .ValueGeneratedOnAdd()
@@ -285,10 +339,13 @@ namespace MyChroniclesApi.Migrations.UsersServiceMigrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("user_id")
-                        .HasColumnType("uuid");
+                    b.Property<string>("user_id")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.HasKey("id");
+
+                    b.HasIndex("user_id");
 
                     b.ToTable("user_history");
                 });
@@ -304,7 +361,7 @@ namespace MyChroniclesApi.Migrations.UsersServiceMigrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("MyChroniclesApi.Models.User", null)
+                    b.HasOne("MyChroniclesApi.Models.Users.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -313,7 +370,7 @@ namespace MyChroniclesApi.Migrations.UsersServiceMigrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("MyChroniclesApi.Models.User", null)
+                    b.HasOne("MyChroniclesApi.Models.Users.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -328,7 +385,7 @@ namespace MyChroniclesApi.Migrations.UsersServiceMigrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("MyChroniclesApi.Models.User", null)
+                    b.HasOne("MyChroniclesApi.Models.Users.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -337,11 +394,41 @@ namespace MyChroniclesApi.Migrations.UsersServiceMigrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("MyChroniclesApi.Models.User", null)
+                    b.HasOne("MyChroniclesApi.Models.Users.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("MyChroniclesApi.Models.Users.UserChronicles", b =>
+                {
+                    b.HasOne("MyChroniclesApi.Models.Chronicles.Chronicles", "chronicles")
+                        .WithMany()
+                        .HasForeignKey("book_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MyChroniclesApi.Models.Users.User", "users")
+                        .WithMany()
+                        .HasForeignKey("user_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("chronicles");
+
+                    b.Navigation("users");
+                });
+
+            modelBuilder.Entity("MyChroniclesApi.Models.Users.UserHistory", b =>
+                {
+                    b.HasOne("MyChroniclesApi.Models.Users.User", "users")
+                        .WithMany()
+                        .HasForeignKey("user_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("users");
                 });
 #pragma warning restore 612, 618
         }

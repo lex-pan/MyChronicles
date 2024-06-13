@@ -1,4 +1,4 @@
-namespace MyChroniclesApi.Services.Urls;
+namespace MyChroniclesApi.Services;
 using Microsoft.EntityFrameworkCore;
 using MyChroniclesApi.Models;
 using MyChroniclesApi.ServiceErrors;

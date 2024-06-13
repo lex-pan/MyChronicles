@@ -1,10 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
-using MyChroniclesApi.Services.Users;
+using MyChroniclesApi.Services;
 namespace MyChroniclesApi.Controllers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using MyChroniclesApi.Models;
+using MyChroniclesApi.Models.Users;
 using MyChroniclesApi.Contracts.Users;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;

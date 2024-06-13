@@ -1,4 +1,4 @@
-namespace MyChroniclesApi.Models;
+namespace MyChroniclesApi.Models.Users;
 using Microsoft.AspNetCore.Identity;
 
 /*
