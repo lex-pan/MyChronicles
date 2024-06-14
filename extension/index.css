@@ -42,12 +42,73 @@
     padding: 8px;
 }
 
+.rating-div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 2.8em;
+}
+
+.rating-div-input {
+    margin-top: 0.25em;
+    height: 1.8em;
+    width: 5em;
+    padding: 0.1em;
+    font-size: 16px;
+}
+
+.rating-div input:focus {
+    outline: 0;
+}
+
 .grid-info-textarea {
     resize: none;
     font-size: 16px;
     margin: 8px;
     padding: 8px;
     height: 5em;
+}
+
+/* A child div with position: absolute is positioned relative to the nearest ancestor with a position property of relative, absolute, fixed, or sticky.*/
+/*position absolute is required so that the inner star can be placed directly on top of the outer star*/
+.grid-info-stars-outer {
+    position: relative;
+    margin-left: 1em;
+    font-size: 35px;
+    -webkit-text-stroke: 2px rgb(0, 153, 255); /* width and color */
+    letter-spacing: 3px;
+    color: white;
+}
+
+.grid-info-stars-outer::before {
+    content: "\2605\2605\2605\2605\2605";
+}
+
+.grid-info-stars-inner {
+    position: absolute;
+    display: inline-block;
+    top: 0;
+    left: 0;
+    white-space: nowrap; /* collapses to one single line. does not allow line breaks*/
+    overflow: hidden;   /* this is essential because it basically hides content that surpasses width length */
+    width: 0em;
+}
+
+.grid-info-stars-inner::before {
+    content: "\2605\2605\2605\2605\2605";
+    color: rgb(103, 199, 255);
+}
+
+.status-div {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.status-options {
+    height: 1.8em;
+    font-size: 16px;
+    width: 8em;
 }
 
 .extension-button{

@@ -17,6 +17,7 @@ public class UserChronicles {
     public bool private_review { get; set; }
     public DateTime start_date { get; set; }
     public DateTime last_read { get; set; }
+    public string notes { get; set; }
     public string source { get; set; }  // which website and title did the person read from
     public User users { get; set; }
     public Chronicles chronicles { get; set; }
@@ -32,6 +33,7 @@ public class UserChronicles {
             string Status,
             float Rating,
             string Review,
+            string Notes,
             string Source)
     {
         id = Guid.NewGuid();
@@ -44,6 +46,7 @@ public class UserChronicles {
         private_review = true;
         start_date = DateTime.UtcNow;
         last_read = DateTime.UtcNow;
+        notes = Notes;
         source = Source;
     }
 

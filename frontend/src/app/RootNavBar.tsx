@@ -49,7 +49,7 @@ export default function RootNavBar() {
         <Link href="/add" className="nav-link">Add</Link> 
         <Link href="/user-profile" className="nav-link">Profile</Link> 
         <img className="nav-profile" onClick={handleProfileClick} src="images/default-profile-image.png"/>
-        <button onClick={handleLogOut}><img className="nav-logout" src="images/logout.png"/></button> 
+        <img onClick={handleLogOut} className="nav-logout" src="images/logout.png"/>
     </nav>
   );
 }

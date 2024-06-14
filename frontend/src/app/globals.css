@@ -73,19 +73,19 @@
 }
 
 .nav-logout {
-    height: 3.5em;
-    width: 3.5em;
+    height: 3em;
+    width: 3em;
     padding: 0.2em;
     position: absolute;
     top: 5px;
     right: 30px;
     border: 3px solid white;
-    background-color: rgb(255, 30, 30);
+    background-color: rgb(30, 71, 255);
 }
 
 .nav-logout:hover {
     cursor: pointer;
-    background-color: rgba(255, 0, 0, 0.897);
+    background-color: rgb(56, 30, 255);
 }
 
 /* Nav Bar End*/
