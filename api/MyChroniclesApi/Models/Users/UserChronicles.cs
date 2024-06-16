@@ -19,6 +19,7 @@ public class UserChronicles {
     public DateTime last_read { get; set; }
     public string notes { get; set; }
     public string source { get; set; }  // which website and title did the person read from
+    public string entertainment_category { get; set; }
     public User users { get; set; }
     public Chronicles chronicles { get; set; }
 

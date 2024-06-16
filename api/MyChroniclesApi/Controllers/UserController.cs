@@ -8,6 +8,7 @@ using MyChroniclesApi.Models.Users;
 using MyChroniclesApi.Contracts.Users;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Claims; // Ensure this using directive is included
 
 /*
 User Registration Flow
@@ -97,7 +98,7 @@ public class UserController : ControllerBase {
         if (validPassword) {
             try {
                 await _signInManager.PasswordSignInAsync(user, request.password, isPersistent: true, lockoutOnFailure: false);
-                return Ok();
+                return Ok(user.UserName);
             } catch {
                 return StatusCode(500, "internal server error");
             }
@@ -117,9 +118,10 @@ public class UserController : ControllerBase {
     [HttpGet("login-status")]
     public async Task<IActionResult> UserLoginStatus() {
         bool isSignedIn = _signInManager.IsSignedIn(User);
+        string Username = User.FindFirst(ClaimTypes.Name)?.Value;
 
         if (isSignedIn) {
-            return Ok(true);
+            return Ok(new {username = Username});
         } else {
             return Ok(false);
         }

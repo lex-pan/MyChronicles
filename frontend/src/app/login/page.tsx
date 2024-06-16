@@ -1,6 +1,9 @@
 'use client';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function Login() {
+  const router = useRouter();
+  const searchParam = useSearchParams();
 
   // in this function when you send a fetch request, if login is successful
   // the response will contain a set-cookie header that the browser will automatically set for you
@@ -15,7 +18,8 @@ export default function Login() {
     const loginUserResult = await fetch('http://localhost:5172/user/login', {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'Accept': 'application/text' // Example: Accept JSON responses
         },
         credentials: 'include',
         body: JSON.stringify({
@@ -23,28 +27,19 @@ export default function Login() {
             "password": password
         })
     });
-
-    console.log(loginUserResult);
+    const result = await loginUserResult.text();
+    // instead of redirecting to user-profile we want to redirect to user-profile/[username] if they came after clicking login
+    // otherwise we want to send them to about page for now change to homepage in future
+    console.log(result);
     if (loginUserResult.status == 200) {
-      //const cookieHeader = loginUserResult.headers.get('Set-Cookie');
-      // Parse the cookie header to get the cookie value
-      //const cookieValue = cookieHeader.split(';')[0];
-      //console.log(cookieValue);
-      // Set the cookie in the client's browser
-      // document.cookie = cookieValue;
-    } else {
-      console.log("sign in failed");
-    }
-    /*
-    setTimeout(async () => {
-      const request = await fetch('http://localhost:5172/user/login-status', {
-          method: 'GET'
-      });
-
-      let loginResult = await request.text();
-      console.log(loginResult);
-  }, 1000); // Adjust the delay time as needed
-    */
+      const toProfile = searchParam.get("toProfile");
+      console.log(toProfile);
+      if (toProfile) {
+        router.push('/user-profile');
+      } else {
+        router.push('/about');
+      }
+    }     
   }
 
   return ( 

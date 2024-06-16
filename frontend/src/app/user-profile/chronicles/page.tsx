@@ -7,6 +7,8 @@ Future ToDo's for this section
     - there should be a timer for sending changed requests to db since i don't want the user editing a million times and making a million requests to db
 
 To-Do's I can implement right now:
+    - check docs on what else I can consider adding right now
+    - make delete button work 
     - split chronicles to sections, navigation, and individual read/watch status category
     - when users update/delete/add new entry, do not refresh, when users change chapter/watch date/rating can change but do not move from spot 
     - dividing novels into categories when clicking on different category
@@ -15,77 +17,72 @@ To-Do's I can implement right now:
 "use client";
 import { useState } from 'react';
 import { MouseEvent } from 'react';
+import UserChronicle from './UserChronicle';
 export default function ChronicleCategoryLayout() {
-    interface Chronicle {
-        title: string;
-        rating: number;
-        start_date: Date;
-        last_read: string;
-        chapter: number;
-        img_src: string;
-        notes: string;
-        category: string;
-        status: string;
-    }
 
     // call function to get user's entries 
     const userChronicles = 
     [
         {
+            userChronicleId: 37,
+            bookId: 1,
             title: "Harry Potter and the deathly hallows ",
             rating: 4, // Just an example rating
-            start_date: new Date(), // Current date as an example
+            start_date: "2021-04-22", // Current date as an example
             last_read: "2023-04-22", // Example last read date
-            chapter: 10, // Example chapter
+            episode: 10, // Example chapter
             img_src: "https://example.com/harry.jpg", // Example image URL
-            notes: "This is a great book!", // Example notes
+            review: "this is a great book",
+            notes: "Harry is very hairy will reread 10/10", // Example notes
             category: "Novel", // Example category
             status: "Reading" // Example status
         },
         {
+            userChronicleId: 48,
+            bookId: 2,
             title: "Example Title",
             rating: 5, // Just an example rating
-            start_date: new Date(), // Current date as an example
+            start_date: "2023-02-22", // Current date as an example
             last_read: "2023-02-28", // Example last read date
-            chapter: 20, // Example chapter
+            episode: 20, // Example chapter
             img_src: "https://example.com/example.jpg", // Example image URL
+            review: "a masterpiece of its time",
             notes: "This book is amazing!", // Example notes
             category: "Graphic Novel", // Example category
             status: "Completed" // Example status
         },
         {
+            userChronicleId: 127,
+            bookId: 3,
             title: "Another Example",
             rating: 4, // Just an example rating
-            start_date: new Date(), // Current date as an example
+            start_date: "2020-04-22", // Current date as an example
             last_read: "2023-01-10", // Example last read date
-            chapter: 15, // Example chapter
+            episode: 15, // Example chapter
             img_src: "https://example.com/another-example.jpg", // Example image URL
+            review: "I mean it's very enjoyable",
             notes: "Enjoyed reading this one", // Example notes
             category: "Graphic Novel", // Example category
             status: "Completed" // Example status
         },
         {
-        title: "Sun Zhu - The Art of Testing",
-        rating: 3, // Just an example rating
-        start_date: new Date(), // Current date as an example
-        last_read: "2023-03-15", // Example last read date
-        chapter: 5, // Example chapter
-        img_src: "https://example.com/default.jpg", // Example image URL
-        notes: "Good book so far", // Example notes
-        category: "Film", // Example category
-        status: "Reading" // Example status
+            userChronicleId: 506,
+            bookId: 4,
+            title: "Sun Zhu - The Art of Testing",
+            rating: 3, // Just an example rating
+            start_date: "2022-08-22", // Current date as an example
+            last_read: "2023-03-15", // Example last read date
+            episode: 5, // Example chapter
+            img_src: "https://example.com/default.jpg", // Example image URL
+            review: "Subduing the mind through a good book - Sun Zhu",
+            notes: "Good book so far", // Example notes
+            category: "Film", // Example category
+            status: "Reading" // Example status
     }
     ];
 
-    const titles = [
-    {category: "About", index: 0, link: "/user-profile"},
-    {category: "Chronicles", index: 1, link: "/user-profile/chronicles"},
-    {category: "History", index: 2, link:"/user-profile/history"},
-    {category: "Statistics", index: 3, link:"/user-profile/statistics"}
-    ]
-
     // retrieve data from session storage
-    const [chronicleStatus, setChronicleStatus] = useState(["Reading", "Completed", "Plan To Read", "Dropped"]);
+    const [chronicleStatus, setChronicleStatus] = useState(["Reading", "Completed", "Rereading", "Plan To Read", "Paused", "Dropped"]);
     const [chronicles, setUserChronicles] = useState<Array<Array<Chronicle>>>(sortByStatus(userChronicles));
 
     function sortByStatus(filteredChronicles: Array<Chronicle>) {
@@ -172,18 +169,14 @@ export default function ChronicleCategoryLayout() {
           {chronicleStatus.map((title, index) => (
               <div className='user-container-section' key={index}>
                   <h1 className='user-section-title'>{title}</h1>
-                  <p className='user-container-category pOne'>Title</p>
+                  <p className='user-container-category'>Title</p>
                   <p className='user-container-category'>Score</p>
-                  <p className='user-container-category'>Chapters Read</p>
+                  <p className='user-container-category'>Episodes</p>
+                  <p className='user-container-category'>Category</p>
                   <p className='user-container-category'>Last Read</p>
                   <ul className='chronicle-status-list'>
-                    {chronicles.length > 0 && chronicles[index].map((item, i) => (
-                        <li className='user-container-item' key={i}>
-                            <p className='chronicle-title chronicle-status-list-info'>{item.title}</p>
-                            <p className='chronicle-status-list-info' contentEditable suppressContentEditableWarning={true}>{item.rating}</p>
-                            <p className='chronicle-status-list-info' contentEditable suppressContentEditableWarning={true}>{item.chapter}</p>
-                            <p className='chronicle-status-list-info'contentEditable suppressContentEditableWarning={true}>{item.last_read}</p>
-                        </li>
+                    {chronicles.length > 0 && chronicles[index].map(item => (
+                        <UserChronicle UserChronicleId={item.userChronicleId} item={item}/>
                     ))}
                   </ul>
               </div>

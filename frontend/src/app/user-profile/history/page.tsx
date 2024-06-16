@@ -45,10 +45,10 @@ export default function UserHistory() {
           <ul className='chronicle-status-list '>
             {history.length > 0 && history.map((item, i) => (
                 <li className='user-container-item' key={i}>
-                    <p className='chronicle-title chronicle-status-list-info'>{item.title}</p>
-                    <p className='chronicle-status-list-info'>{item.chapter}</p>
-                    <p className='chronicle-status-list-info'>{item.date}</p>
-                    <p className='chronicle-title chronicle-status-list-info'>{item.link}</p>
+                    <p className='chronicle-title user-chronicle-info'>{item.title}</p>
+                    <p className='user-chronicle-info'>{item.chapter}</p>
+                    <p className='user-chronicle-info'>{item.date}</p>
+                    <p className='chronicle-title user-chronicle-info'>{item.link}</p>
                 </li>
             ))}
           </ul>

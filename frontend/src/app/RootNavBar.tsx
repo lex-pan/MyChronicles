@@ -15,10 +15,6 @@ export default function RootNavBar() {
       });
       
       console.log(logoutResult);
-      if (pathname == '/user-profile') {
-        router.back();
-        router.push('login');
-      } 
   }
   
   // in this function when you send a fetch request, you need to send the user cookie
@@ -37,7 +33,7 @@ export default function RootNavBar() {
       router.push("/user-profile");
     } else {
       console.log("going to login");
-      router.push("/login");
+      router.push("/login?toProfile=true");
     }
   }
 
@@ -47,7 +43,7 @@ export default function RootNavBar() {
         <Link href="/about" className="nav-link">About</Link> 
         <Link href="/search" className="nav-link">Search</Link>
         <Link href="/add" className="nav-link">Add</Link> 
-        <Link href="/user-profile" className="nav-link">Profile</Link> 
+        <p onClick={handleProfileClick} className="nav-link">Profile</p> 
         <img className="nav-profile" onClick={handleProfileClick} src="images/default-profile-image.png"/>
         <img onClick={handleLogOut} className="nav-logout" src="images/logout.png"/>
     </nav>
