@@ -14,6 +14,12 @@ interface Chronicle {
 }
 
 interface UserChronicleProps {
-    UserChronicleId: number;
     item: Chronicle;
+    removeChronicle: (userChronicleId : number) => void;
+}
+
+interface StatusContainerProps {
+    status: string,
+    chroniclesStatus: Array<Chronicle>
+    chronicles: Record<number, Chronicle>
 }

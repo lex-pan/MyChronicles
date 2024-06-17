@@ -17,87 +17,94 @@ To-Do's I can implement right now:
 "use client";
 import { useState } from 'react';
 import { MouseEvent } from 'react';
-import UserChronicle from './UserChronicle';
+import StatusContainer from './StatusContainer';
 export default function ChronicleCategoryLayout() {
 
-    // call function to get user's entries 
-    const userChronicles = 
-    [
-        {
-            userChronicleId: 37,
-            bookId: 1,
-            title: "Harry Potter and the deathly hallows ",
-            rating: 4, // Just an example rating
-            start_date: "2021-04-22", // Current date as an example
-            last_read: "2023-04-22", // Example last read date
-            episode: 10, // Example chapter
-            img_src: "https://example.com/harry.jpg", // Example image URL
-            review: "this is a great book",
-            notes: "Harry is very hairy will reread 10/10", // Example notes
-            category: "Novel", // Example category
-            status: "Reading" // Example status
-        },
-        {
-            userChronicleId: 48,
-            bookId: 2,
-            title: "Example Title",
-            rating: 5, // Just an example rating
-            start_date: "2023-02-22", // Current date as an example
-            last_read: "2023-02-28", // Example last read date
-            episode: 20, // Example chapter
-            img_src: "https://example.com/example.jpg", // Example image URL
-            review: "a masterpiece of its time",
-            notes: "This book is amazing!", // Example notes
-            category: "Graphic Novel", // Example category
-            status: "Completed" // Example status
-        },
-        {
-            userChronicleId: 127,
-            bookId: 3,
-            title: "Another Example",
-            rating: 4, // Just an example rating
-            start_date: "2020-04-22", // Current date as an example
-            last_read: "2023-01-10", // Example last read date
-            episode: 15, // Example chapter
-            img_src: "https://example.com/another-example.jpg", // Example image URL
-            review: "I mean it's very enjoyable",
-            notes: "Enjoyed reading this one", // Example notes
-            category: "Graphic Novel", // Example category
-            status: "Completed" // Example status
-        },
-        {
-            userChronicleId: 506,
-            bookId: 4,
-            title: "Sun Zhu - The Art of Testing",
-            rating: 3, // Just an example rating
-            start_date: "2022-08-22", // Current date as an example
-            last_read: "2023-03-15", // Example last read date
-            episode: 5, // Example chapter
-            img_src: "https://example.com/default.jpg", // Example image URL
-            review: "Subduing the mind through a good book - Sun Zhu",
-            notes: "Good book so far", // Example notes
-            category: "Film", // Example category
-            status: "Reading" // Example status
-    }
-    ];
+    let UserChronicles : Record<number, Chronicle> = {};
+    const chroniclesFromStorage = window.sessionStorage.getItem("UserChronicles");
+    console.log(chroniclesFromStorage);
+    if (chroniclesFromStorage === undefined || chroniclesFromStorage === null || chroniclesFromStorage === "" || chroniclesFromStorage === "{}") {
+        UserChronicles = {
+            37: {
+                userChronicleId: 37,
+                bookId: 1,
+                title: "Harry Potter and the deathly hallows ",
+                rating: 4, // Just an example rating
+                start_date: "2021-04-22", // Current date as an example
+                last_read: "2023-04-22", // Example last read date
+                episode: 10, // Example chapter
+                img_src: "https://example.com/harry.jpg", // Example image URL
+                review: "this is a great book",
+                notes: "Harry is very hairy will reread 10/10", // Example notes
+                category: "Novel", // Example category
+                status: "Reading" // Example status
+            },
+            48: {
+                userChronicleId: 48,
+                bookId: 2,
+                title: "Example Title",
+                rating: 5, // Just an example rating
+                start_date: "2023-02-22", // Current date as an example
+                last_read: "2023-02-28", // Example last read date
+                episode: 20, // Example chapter
+                img_src: "https://example.com/example.jpg", // Example image URL
+                review: "a masterpiece of its time",
+                notes: "This book is amazing!", // Example notes
+                category: "Graphic Novel", // Example category
+                status: "Completed" // Example status
+            },
+            127: {
+                userChronicleId: 127,
+                bookId: 3,
+                title: "Another Example",
+                rating: 4, // Just an example rating
+                start_date: "2020-04-22", // Current date as an example
+                last_read: "2023-01-10", // Example last read date
+                episode: 15, // Example chapter
+                img_src: "https://example.com/another-example.jpg", // Example image URL
+                review: "I mean it's very enjoyable",
+                notes: "Enjoyed reading this one", // Example notes
+                category: "Graphic Novel", // Example category
+                status: "Completed" // Example status
+            },
+            506: {
+                userChronicleId: 506,
+                bookId: 4,
+                title: "Sun Zhu - The Art of Testing",
+                rating: 3, // Just an example rating
+                start_date: "2022-08-22", // Current date as an example
+                last_read: "2023-03-15", // Example last read date
+                episode: 5, // Example chapter
+                img_src: "https://example.com/default.jpg", // Example image URL
+                review: "Subduing the mind through a good book - Sun Zhu",
+                notes: "Good book so far", // Example notes
+                category: "Film", // Example category
+                status: "Reading" // Example status
+            }
+        }
 
+        window.sessionStorage.setItem("UserChronicles", JSON.stringify(UserChronicles));
+    } else {
+        UserChronicles = JSON.parse(chroniclesFromStorage);
+    }
+    // call function to get user's entries 
     // retrieve data from session storage
     const [chronicleStatus, setChronicleStatus] = useState(["Reading", "Completed", "Rereading", "Plan To Read", "Paused", "Dropped"]);
-    const [chronicles, setUserChronicles] = useState<Array<Array<Chronicle>>>(sortByStatus(userChronicles));
-
-    function sortByStatus(filteredChronicles: Array<Chronicle>) {
-        let newArray = [];
+    const [categorizedChronicles, setCategorizedChronicles] = useState<Array<Array<Chronicle>>>(sortByStatus(UserChronicles));
+    
+    function sortByStatus(filteredChronicles: Record<number, Chronicle>) {
+        let newArray : any[] = [];
         let statusMap: {[key: string]: number} = {};
         for (let i = 0; i < chronicleStatus.length; i++) {
             newArray.push([]);
             statusMap[chronicleStatus[i]] = i;
         }
 
-        for (let a = 0; a < filteredChronicles.length; a++) {
-            const chronicle = filteredChronicles[a];
+        for (const key in filteredChronicles) {
+            const chronicle = filteredChronicles[key];
             const status = chronicle.status;
             const index = statusMap[status];
-            newArray[index] = [...newArray[index], chronicle];
+            newArray[index].push(chronicle);
         }
 
         return newArray;
@@ -118,22 +125,35 @@ export default function ChronicleCategoryLayout() {
         }
     }
 
+    function filterUserChronicles(entertainment_category : string) {
+        let desiredMedium : Record<number, Chronicle> = {};
+
+        Object.keys(UserChronicles).forEach(key => {
+            const numericKey = parseInt(key, 10); // Parse key to integer
+            if (UserChronicles[numericKey].category == entertainment_category) {
+                desiredMedium[numericKey] = UserChronicles[numericKey];
+            }
+        });
+
+        return desiredMedium
+    }
+
     function filterChroniclesByMedium(mediumType: string) {
         switch(mediumType){
             case 'Novels':
-                const novelsOnly = userChronicles.filter(chronicle => chronicle.category == "Novel");
+                const novelsOnly : Record<number, Chronicle> = filterUserChronicles("Novel");
                 return novelsOnly;
             case 'Graphic Novels':
-                const graphicNovelsOnly = userChronicles.filter(chronicle => chronicle.category == "Graphic Novel");
+                const graphicNovelsOnly : Record<number, Chronicle> = filterUserChronicles("Graphic Novel");
                 return graphicNovelsOnly;
             case 'Films':
-                const filmsOnly = userChronicles.filter(chronicle => chronicle.category == "Film");
+                const filmsOnly : Record<number, Chronicle> = filterUserChronicles("Film");
                 return filmsOnly;
             case 'Shows':
-                const showsOnly = userChronicles.filter(chronicle => chronicle.category == "Show");
+                const showsOnly : Record<number, Chronicle> = filterUserChronicles("Show");
                 return showsOnly;
             default: 
-                return userChronicles;
+                return UserChronicles;
         }
     }
 
@@ -141,7 +161,7 @@ export default function ChronicleCategoryLayout() {
         cssFolderEffect(e, index);
         let filteredChronicles = filterChroniclesByMedium(medium);
         let sortedChronicles = sortByStatus(filteredChronicles);
-        setUserChronicles(sortedChronicles);
+        setCategorizedChronicles(sortedChronicles);
     }
 
   // when users edit, save changes to session storage
@@ -167,19 +187,7 @@ export default function ChronicleCategoryLayout() {
     </div>
       <div className='user-container'>            
           {chronicleStatus.map((title, index) => (
-              <div className='user-container-section' key={index}>
-                  <h1 className='user-section-title'>{title}</h1>
-                  <p className='user-container-category'>Title</p>
-                  <p className='user-container-category'>Score</p>
-                  <p className='user-container-category'>Episodes</p>
-                  <p className='user-container-category'>Category</p>
-                  <p className='user-container-category'>Last Read</p>
-                  <ul className='chronicle-status-list'>
-                    {chronicles.length > 0 && chronicles[index].map(item => (
-                        <UserChronicle UserChronicleId={item.userChronicleId} item={item}/>
-                    ))}
-                  </ul>
-              </div>
+            <StatusContainer status={title} key={index} chroniclesStatus={categorizedChronicles[index]} chronicles={UserChronicles}/>
           ))}
       </div>
       </>

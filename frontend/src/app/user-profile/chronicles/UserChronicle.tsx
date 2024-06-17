@@ -1,6 +1,6 @@
 import { useState } from "react"
 
-export default function UserChronicle({UserChronicleId, item} : UserChronicleProps) {
+export default function UserChronicle({item, removeChronicle} : UserChronicleProps) {
     const [detailedInfo, setDetailedInfo] = useState(false);
 
     function toggleInfo() {
@@ -8,7 +8,7 @@ export default function UserChronicle({UserChronicleId, item} : UserChroniclePro
     }
 
     return (
-        <li className='user-container-item' key={UserChronicleId}>
+        <li className='user-container-item'>
             <div className='user-container-overview'>
                 <p className='chronicle-title user-chronicle-info'>{item.title}</p>
                 <p className='user-chronicle-info' contentEditable suppressContentEditableWarning={true}>{item.rating}</p>
@@ -16,7 +16,7 @@ export default function UserChronicle({UserChronicleId, item} : UserChroniclePro
                 <p className='user-chronicle-info'>{item.category}</p>
                 <p className='user-chronicle-info'contentEditable suppressContentEditableWarning={true}>{item.last_read}</p>
                 <button onClick={toggleInfo} className='chronicle-list-more-info-button'>v</button>
-                <button className='chronicle-list-broader'></button>
+                <button onClick={() => removeChronicle(item.userChronicleId)} className='chronicle-list-broader'></button>
             </div>
             {detailedInfo && 
                 <div className='chronicle-list-more-info'>
