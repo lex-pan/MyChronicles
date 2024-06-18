@@ -14,8 +14,7 @@ export default function({status, chroniclesStatus, chronicles} : StatusContainer
     function removeChronicle(userChronicleId : number) {
         const filtered = chroniclesMatchingStatus.filter(chronicle => chronicle.userChronicleId !== userChronicleId);
         setChroniclesMatchingStatus(filtered);
-        delete chronicles[userChronicleId];
-        sessionStorage.setItem("UserChronicles", JSON.stringify(chronicles));
+        // delete from db
     }
 
     return (

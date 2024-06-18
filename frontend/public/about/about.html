@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MyChronicles</title>
+    <link rel="stylesheet" href="./sakura/dist/sakura.min.css">
+    <link rel="stylesheet" href="./about.css">
+    <script src="loginLogout.js"></script>
+    <!-- Include any additional meta tags, stylesheets, or scripts here -->
+</head>
+<body>
+    <script src="./sakura/dist/sakura.min.js"></script>
+    <script>
+        var sakura = new Sakura('body', {
+            minSize: 30,
+            maxSize: 40,
+            delay: 100
+        });
+      </script>
+    <nav class="nav-bar">
+        <h1 class="nav-bar-title">MyChronicles</h1> 
+        <p class="nav-link">About</p> 
+        <a href="/search" class="nav-link">Search</a>
+        <a href="/add" class="nav-link">Add</a> 
+        <p onClick="handleProfileClick()" class="nav-link">Profile</p> 
+        <img class="nav-profile" onClick="handleProfileClick()" src="/images/default-profile-image.png"/>
+        <img onClick="handleLogOut()" class="nav-logout" src="/images/logout.png"/>
+    </nav>
+    <span class="sakura-body">
+        <div class="about-section">
+            <h1>Welcome to MyChronicles</h1>
+            <p>Keep track of your shows, and novels in one place. <br><br>
+               MyChronicles has an extension that automatically 
+               tracks all online shows and films for you so that you don't have to lift a finger.
+               Enjoy!
+            </p>
+        </div>
+    </span>
+
+</body>
+</html>

@@ -40,7 +40,7 @@ export default function RootNavBar() {
   return (
     <nav className="nav-bar">
         <h1 className="nav-bar-title">MyChronicles</h1> 
-        <Link href="/about" className="nav-link">About</Link> 
+        <a href="/about/about.html" className="nav-link">About</a> 
         <Link href="/search" className="nav-link">Search</Link>
         <Link href="/add" className="nav-link">Add</Link> 
         <p onClick={handleProfileClick} className="nav-link">Profile</p> 

@@ -20,73 +20,66 @@ import { MouseEvent } from 'react';
 import StatusContainer from './StatusContainer';
 export default function ChronicleCategoryLayout() {
 
-    let UserChronicles : Record<number, Chronicle> = {};
-    const chroniclesFromStorage = window.sessionStorage.getItem("UserChronicles");
-    console.log(chroniclesFromStorage);
-    if (chroniclesFromStorage === undefined || chroniclesFromStorage === null || chroniclesFromStorage === "" || chroniclesFromStorage === "{}") {
-        UserChronicles = {
-            37: {
-                userChronicleId: 37,
-                bookId: 1,
-                title: "Harry Potter and the deathly hallows ",
-                rating: 4, // Just an example rating
-                start_date: "2021-04-22", // Current date as an example
-                last_read: "2023-04-22", // Example last read date
-                episode: 10, // Example chapter
-                img_src: "https://example.com/harry.jpg", // Example image URL
-                review: "this is a great book",
-                notes: "Harry is very hairy will reread 10/10", // Example notes
-                category: "Novel", // Example category
-                status: "Reading" // Example status
-            },
-            48: {
-                userChronicleId: 48,
-                bookId: 2,
-                title: "Example Title",
-                rating: 5, // Just an example rating
-                start_date: "2023-02-22", // Current date as an example
-                last_read: "2023-02-28", // Example last read date
-                episode: 20, // Example chapter
-                img_src: "https://example.com/example.jpg", // Example image URL
-                review: "a masterpiece of its time",
-                notes: "This book is amazing!", // Example notes
-                category: "Graphic Novel", // Example category
-                status: "Completed" // Example status
-            },
-            127: {
-                userChronicleId: 127,
-                bookId: 3,
-                title: "Another Example",
-                rating: 4, // Just an example rating
-                start_date: "2020-04-22", // Current date as an example
-                last_read: "2023-01-10", // Example last read date
-                episode: 15, // Example chapter
-                img_src: "https://example.com/another-example.jpg", // Example image URL
-                review: "I mean it's very enjoyable",
-                notes: "Enjoyed reading this one", // Example notes
-                category: "Graphic Novel", // Example category
-                status: "Completed" // Example status
-            },
-            506: {
-                userChronicleId: 506,
-                bookId: 4,
-                title: "Sun Zhu - The Art of Testing",
-                rating: 3, // Just an example rating
-                start_date: "2022-08-22", // Current date as an example
-                last_read: "2023-03-15", // Example last read date
-                episode: 5, // Example chapter
-                img_src: "https://example.com/default.jpg", // Example image URL
-                review: "Subduing the mind through a good book - Sun Zhu",
-                notes: "Good book so far", // Example notes
-                category: "Film", // Example category
-                status: "Reading" // Example status
-            }
+    // retrieve entries from db 
+    let UserChronicles : Record<number, Chronicle> = {
+        37: {
+            userChronicleId: 37,
+            bookId: 1,
+            title: "Harry Potter and the deathly hallows ",
+            rating: 4, // Just an example rating
+            start_date: "2021-04-22", // Current date as an example
+            last_read: "2023-04-22", // Example last read date
+            episode: 10, // Example chapter
+            img_src: "https://example.com/harry.jpg", // Example image URL
+            review: "this is a great book",
+            notes: "Harry is very hairy will reread 10/10", // Example notes
+            category: "Novel", // Example category
+            status: "Reading" // Example status
+        },
+        48: {
+            userChronicleId: 48,
+            bookId: 2,
+            title: "Example Title",
+            rating: 5, // Just an example rating
+            start_date: "2023-02-22", // Current date as an example
+            last_read: "2023-02-28", // Example last read date
+            episode: 20, // Example chapter
+            img_src: "https://example.com/example.jpg", // Example image URL
+            review: "a masterpiece of its time",
+            notes: "This book is amazing!", // Example notes
+            category: "Graphic Novel", // Example category
+            status: "Completed" // Example status
+        },
+        127: {
+            userChronicleId: 127,
+            bookId: 3,
+            title: "Another Example",
+            rating: 4, // Just an example rating
+            start_date: "2020-04-22", // Current date as an example
+            last_read: "2023-01-10", // Example last read date
+            episode: 15, // Example chapter
+            img_src: "https://example.com/another-example.jpg", // Example image URL
+            review: "I mean it's very enjoyable",
+            notes: "Enjoyed reading this one", // Example notes
+            category: "Graphic Novel", // Example category
+            status: "Completed" // Example status
+        },
+        506: {
+            userChronicleId: 506,
+            bookId: 4,
+            title: "Sun Zhu - The Art of Testing",
+            rating: 3, // Just an example rating
+            start_date: "2022-08-22", // Current date as an example
+            last_read: "2023-03-15", // Example last read date
+            episode: 5, // Example chapter
+            img_src: "https://example.com/default.jpg", // Example image URL
+            review: "Subduing the mind through a good book - Sun Zhu",
+            notes: "Good book so far", // Example notes
+            category: "Film", // Example category
+            status: "Reading" // Example status
         }
-
-        window.sessionStorage.setItem("UserChronicles", JSON.stringify(UserChronicles));
-    } else {
-        UserChronicles = JSON.parse(chroniclesFromStorage);
     }
+
     // call function to get user's entries 
     // retrieve data from session storage
     const [chronicleStatus, setChronicleStatus] = useState(["Reading", "Completed", "Rereading", "Plan To Read", "Paused", "Dropped"]);
@@ -185,11 +178,54 @@ export default function ChronicleCategoryLayout() {
             <p className=''>Shows</p>
         </div>
     </div>
-      <div className='user-container'>            
-          {chronicleStatus.map((title, index) => (
-            <StatusContainer status={title} key={index} chroniclesStatus={categorizedChronicles[index]} chronicles={UserChronicles}/>
-          ))}
-      </div>
+    <div className='user-container'>            
+        <div className='user-chronicle-filters'>
+            <input placeholder='search bar'></input>
+            <div className='filter-category'>
+                <p className='filter-category-name'>Status</p>
+                <select className="status-options">
+                <option value="reading">Reading</option>
+                <option value="completed">Completed</option>
+                <option value="paused">Paused</option>
+                <option value="dropped">Dropped</option>
+                <option value="plan to read">Plan to Read</option>
+                <option value="rereading">Rereading</option>
+                </select>
+            </div>
+            <div className='filter-category'>
+                <p className='filter-category-name'>Country</p>
+                {/*add a country data list not drop down */}
+                <select className="status-options">
+                <option value="reading">Reading</option>
+                <option value="completed">Completed</option>
+                <option value="paused">Paused</option>
+                <option value="dropped">Dropped</option>
+                <option value="plan to read">Plan to Read</option>
+                <option value="rereading">Rereading</option>
+                </select>
+            </div>
+            <div className='filter-category'>
+                <p className='filter-category-name'>Sort</p>
+                {/*title, score, progress, last updated, last, added, start date, completion date, release date, avg score, popularity*/}
+                <select className="status-options">
+                <option value="reading">Reading</option>
+                <option value="completed">Completed</option>
+                <option value="paused">Paused</option>
+                <option value="dropped">Dropped</option>
+                <option value="plan to read">Plan to Read</option>
+                <option value="rereading">Rereading</option>
+                </select>
+            </div>
+            <div className='filter-category-bottom'>
+                <p>Year</p>
+                <input placeholder='ex: 2019-2024'></input>
+            </div>
+    
+        </div>
+        {chronicleStatus.map((title, index) => (
+        <StatusContainer status={title} key={index} chroniclesStatus={categorizedChronicles[index]} chronicles={UserChronicles}/>
+        ))}
+    </div>
       </>
   );
 }

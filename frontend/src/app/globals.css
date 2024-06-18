@@ -177,6 +177,60 @@
     /*background-color: rgb(109, 186, 207);*/
 }
 
+.filter-category {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.filter-category-bottom {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    margin-left: 0.6em;
+}
+
+.user-chronicle-filters {
+    margin-top: 3em;
+    width: 84%;
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    grid-template-columns: repeat(auto-fill, 15.4em);
+    grid-auto-rows: minmax(4em, 4em); /* Makes sure that the height of the head of the display stays the same when the navigations for lists pop up and when window is resized*/
+}
+
+.user-chronicle-filters input {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 2.5em;
+    width: 12em;
+    padding-left: 0.4em;
+    font-size: 16px;
+    margin-left: 0.4em;
+    margin-right: 0.4em;
+    margin-top: 0.3em;
+}
+
+.filter-category-name {
+    display: flex;
+    justify-content: right;
+    align-items: center;
+    margin-right: 0.5em;
+    margin-left: 1em;
+}
+
+.user-chronicle-filters select {
+    display: flex;
+    height: 2.5em;
+    width: 9em;
+    background-color: white;
+    border: 1px solid rgb(172, 172, 172);
+    font-size: 16px;
+    padding-left: 0.4em;
+}
+
 .user-container-section {
     display: grid;
     grid-template-rows: auto auto auto;
