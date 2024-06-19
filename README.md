@@ -1,1 +1,1 @@
-Keep track of whatever english content you watch or read online all in one place
+[![About MyChronicles](https://img.youtube.com/vi/bwOx61Z53Ow/maxresdefault.jpg)](https://www.youtube.com/watch?v=bwOx61Z53Ow&feature=youtu.be)

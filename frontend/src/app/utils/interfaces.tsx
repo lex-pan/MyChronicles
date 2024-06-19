@@ -16,10 +16,12 @@ interface Chronicle {
 interface UserChronicleProps {
     item: Chronicle;
     removeChronicle: (userChronicleId : number) => void;
+    listOfChanges : Record<number, any>;
 }
 
 interface StatusContainerProps {
     status: string,
     chroniclesStatus: Array<Chronicle>
     chronicles: Record<number, Chronicle>
+    listOfChanges : Record<number, any>;
 }

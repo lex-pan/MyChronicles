@@ -1,7 +1,7 @@
 import UserChronicle from "./UserChronicle"
 import { useState, useEffect } from "react"
 
-export default function({status, chroniclesStatus, chronicles} : StatusContainerProps) {
+export default function({status, chroniclesStatus, chronicles, listOfChanges} : StatusContainerProps) {
     // when updating chronicles (remove, add, change) update chronicles
     // when deleting 
 
@@ -23,11 +23,11 @@ export default function({status, chroniclesStatus, chronicles} : StatusContainer
             <p className='user-container-category'>Title</p>
             <p className='user-container-category'>Score</p>
             <p className='user-container-category'>Episodes</p>
-            <p className='user-container-category'>Category</p>
+            <p className='user-container-category'>Status</p>
             <p className='user-container-category'>Last Read</p>
-            <ul className='chronicle-status-list'>
+            <ul className='chronicle-list'>
             {chroniclesMatchingStatus.length > 0 && chroniclesMatchingStatus.map(item => (
-                <UserChronicle key={item.userChronicleId} item={item} removeChronicle={removeChronicle}/>
+                <UserChronicle key={item.userChronicleId} item={item} removeChronicle={removeChronicle} listOfChanges={listOfChanges}/>
             ))}
             </ul>
         </div>

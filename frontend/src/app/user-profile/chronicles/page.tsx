@@ -1,21 +1,17 @@
 /*
 Future ToDo's for this section
-    - get books from database
-    - save books to redux
-    - when a user edits the book section, it should save the result to redux (this way the state is saved)
-    - there should also be a function that checks whether or not the input is valid for user chronicle changes
-    - there should be a timer for sending changed requests to db since i don't want the user editing a million times and making a million requests to db
+    - data caching and modification when user decides to change it 
+    - implement db actions for chronicles request, delete, update
+    - QOL filter actions on chronicles
+    - different ways to categorize chronicles 
 
 To-Do's I can implement right now:
-    - check docs on what else I can consider adding right now
-    - make delete button work 
-    - split chronicles to sections, navigation, and individual read/watch status category
-    - when users update/delete/add new entry, do not refresh, when users change chapter/watch date/rating can change but do not move from spot 
-    - dividing novels into categories when clicking on different category
+    - search function
+    - add function
 */
 
 "use client";
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { MouseEvent } from 'react';
 import StatusContainer from './StatusContainer';
 export default function ChronicleCategoryLayout() {
@@ -79,6 +75,21 @@ export default function ChronicleCategoryLayout() {
             status: "Reading" // Example status
         }
     }
+
+    let listOfChanges : Record<number, any> = {};
+
+    useEffect(() => {
+        
+        window.onbeforeunload = function(event)
+        {
+            console.log(listOfChanges);
+        };
+
+        return () => {
+            // send to db and cached for change
+            console.log(listOfChanges);
+        }
+    });
 
     // call function to get user's entries 
     // retrieve data from session storage
@@ -160,72 +171,75 @@ export default function ChronicleCategoryLayout() {
   // when users edit, save changes to session storage
   // when the user closes the browser/reloads the browser update the database 
   return (
-    <>
-    <div className='chronicle-category-options'>
-        <div className='chronicle-category-option selected-chronicle-category' onClick={(e) => mediumChange(e, 0, "")}>
-            <p className=''>All</p>
+    <div className='chronicles-section'>
+        <div className='chronicle-category-options'>
+            <div className='chronicle-category-option selected-chronicle-category' onClick={(e) => mediumChange(e, 0, "")}>
+                <p className=''>All</p>
+            </div>
+            <div className='chronicle-category-option' onClick={(e) => mediumChange(e, 1, "Novels")}>
+                <p className=''>Novels</p>
+            </div>
+            <div className='chronicle-category-option' onClick={(e) => mediumChange(e, 2, "Graphic Novels")}>
+                <p className=''>Graphic Novels</p>
+            </div>
+            <div className='chronicle-category-option' onClick={(e) => mediumChange(e, 3, "Films")}>
+                <p className=''>Films</p>
+            </div>
+            <div className='chronicle-category-option' onClick={(e) => mediumChange(e, 4, "Shows")}>
+                <p className=''>Shows</p>
+            </div>
         </div>
-        <div className='chronicle-category-option' onClick={(e) => mediumChange(e, 1, "Novels")}>
-            <p className=''>Novels</p>
+        <div className='sidebar-options'>
         </div>
-        <div className='chronicle-category-option' onClick={(e) => mediumChange(e, 2, "Graphic Novels")}>
-            <p className=''>Graphic Novels</p>
-        </div>
-        <div className='chronicle-category-option' onClick={(e) => mediumChange(e, 3, "Films")}>
-            <p className=''>Films</p>
-        </div>
-        <div className='chronicle-category-option' onClick={(e) => mediumChange(e, 4, "Shows")}>
-            <p className=''>Shows</p>
+        <div className='user-container'>            
+            <div className='user-chronicle-filters'>
+                <input className='user-chronicle-filters-search' placeholder='search bar'></input>
+                <button className='user-chronicle-filters-button'>Add Chronicle</button>
+                <div className='filter-category'>
+                    <p className='filter-category-name'>Status</p>
+                    <select className="status-options">
+                        <option value="reading">Reading</option>
+                        <option value="completed">Completed</option>
+                        <option value="paused">Paused</option>
+                        <option value="dropped">Dropped</option>
+                        <option value="plan to read">Plan to Read</option>
+                        <option value="rereading">Rereading</option>
+                    </select>
+                </div>
+                <div className='filter-category'>
+                    <p className='filter-category-name'>Country</p>
+                    {/*add a country data list not drop down */}
+                    <select className="status-options">
+                    <option value="reading">Reading</option>
+                    <option value="completed">Completed</option>
+                    <option value="paused">Paused</option>
+                    <option value="dropped">Dropped</option>
+                    <option value="plan to read">Plan to Read</option>
+                    <option value="rereading">Rereading</option>
+                    </select>
+                </div>
+                <div className='filter-category-bottom'>
+                    <p className='filter-category-name'>Sort</p>
+                    {/*title, score, progress, last updated, last, added, start date, completion date, release date, avg score, popularity*/}
+                    <select className="status-options">
+                    <option value="reading">Reading</option>
+                    <option value="completed">Completed</option>
+                    <option value="paused">Paused</option>
+                    <option value="dropped">Dropped</option>
+                    <option value="plan to read">Plan to Read</option>
+                    <option value="rereading">Rereading</option>
+                    </select>
+                </div>
+                <div className='filter-category'>
+                    <p className='filter-category-name'>Year</p>
+                    <input className='user-chronicle-filters-year' placeholder='ex: 2019-2024'></input>
+                </div>
+        
+            </div>
+            {chronicleStatus.map((title, index) => (
+            <StatusContainer status={title} key={index} chroniclesStatus={categorizedChronicles[index]} chronicles={UserChronicles} listOfChanges={listOfChanges}/>
+            ))}
         </div>
     </div>
-    <div className='user-container'>            
-        <div className='user-chronicle-filters'>
-            <input placeholder='search bar'></input>
-            <div className='filter-category'>
-                <p className='filter-category-name'>Status</p>
-                <select className="status-options">
-                <option value="reading">Reading</option>
-                <option value="completed">Completed</option>
-                <option value="paused">Paused</option>
-                <option value="dropped">Dropped</option>
-                <option value="plan to read">Plan to Read</option>
-                <option value="rereading">Rereading</option>
-                </select>
-            </div>
-            <div className='filter-category'>
-                <p className='filter-category-name'>Country</p>
-                {/*add a country data list not drop down */}
-                <select className="status-options">
-                <option value="reading">Reading</option>
-                <option value="completed">Completed</option>
-                <option value="paused">Paused</option>
-                <option value="dropped">Dropped</option>
-                <option value="plan to read">Plan to Read</option>
-                <option value="rereading">Rereading</option>
-                </select>
-            </div>
-            <div className='filter-category'>
-                <p className='filter-category-name'>Sort</p>
-                {/*title, score, progress, last updated, last, added, start date, completion date, release date, avg score, popularity*/}
-                <select className="status-options">
-                <option value="reading">Reading</option>
-                <option value="completed">Completed</option>
-                <option value="paused">Paused</option>
-                <option value="dropped">Dropped</option>
-                <option value="plan to read">Plan to Read</option>
-                <option value="rereading">Rereading</option>
-                </select>
-            </div>
-            <div className='filter-category-bottom'>
-                <p>Year</p>
-                <input placeholder='ex: 2019-2024'></input>
-            </div>
-    
-        </div>
-        {chronicleStatus.map((title, index) => (
-        <StatusContainer status={title} key={index} chroniclesStatus={categorizedChronicles[index]} chronicles={UserChronicles}/>
-        ))}
-    </div>
-      </>
   );
 }

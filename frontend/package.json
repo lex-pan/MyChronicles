@@ -21,7 +21,6 @@
     "@types/react-dom": "^18",
     "eslint": "^8",
     "eslint-config-next": "14.2.2",
-    "gulp": "^5.0.0",
     "typescript": "^5"
   }
 }
