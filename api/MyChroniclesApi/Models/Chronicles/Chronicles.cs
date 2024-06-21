@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 public class Chronicles {
     [Key]
-    public Guid id { get; set; }
+    public Guid chronicle_id { get; set; }
     public string title { get; set; }
     public string? author { get; set; }
     public string? entertainment_category { get; set; }
@@ -26,7 +26,7 @@ public class Chronicles {
             string Language, 
             string Country) 
     {
-        id = Guid.NewGuid();
+        chronicle_id = Guid.NewGuid();
         title = Title;
         author = Author;
         entertainment_category = EntertainmentCategory;

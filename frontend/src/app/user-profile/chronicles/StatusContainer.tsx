@@ -5,7 +5,7 @@ export default function({status, chroniclesStatus, chronicles, listOfChanges} : 
     // when updating chronicles (remove, add, change) update chronicles
     // when deleting 
 
-    const [chroniclesMatchingStatus, setChroniclesMatchingStatus] = useState<Array<Chronicle>>(chroniclesStatus);
+    const [chroniclesMatchingStatus, setChroniclesMatchingStatus] = useState<Array<UserChronicle>>(chroniclesStatus);
 
     useEffect(() => {
         setChroniclesMatchingStatus(chroniclesStatus);

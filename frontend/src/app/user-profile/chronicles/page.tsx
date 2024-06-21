@@ -6,18 +6,19 @@ Future ToDo's for this section
     - different ways to categorize chronicles 
 
 To-Do's I can implement right now:
-    - search function
     - add function
 */
 
 "use client";
-import { useEffect, useState } from 'react';
+import { InputHTMLAttributes, useEffect, useState } from 'react';
 import { MouseEvent } from 'react';
 import StatusContainer from './StatusContainer';
+import AddChronicle from './AddChroniclesPage';
+import AddChroniclesPage from './AddChroniclesPage';
 export default function ChronicleCategoryLayout() {
 
     // retrieve entries from db 
-    let UserChronicles : Record<number, Chronicle> = {
+    let UserChronicles : Record<number, UserChronicle> = {
         37: {
             userChronicleId: 37,
             bookId: 1,
@@ -94,9 +95,10 @@ export default function ChronicleCategoryLayout() {
     // call function to get user's entries 
     // retrieve data from session storage
     const [chronicleStatus, setChronicleStatus] = useState(["Reading", "Completed", "Rereading", "Plan To Read", "Paused", "Dropped"]);
-    const [categorizedChronicles, setCategorizedChronicles] = useState<Array<Array<Chronicle>>>(sortByStatus(UserChronicles));
+    const [categorizedChronicles, setCategorizedChronicles] = useState<Array<Array<UserChronicle>>>(sortByStatus(UserChronicles));
+    const [toggleAddChronicles, setToggleAddChronicles] = useState(false);
     
-    function sortByStatus(filteredChronicles: Record<number, Chronicle>) {
+    function sortByStatus(filteredChronicles: Record<number, UserChronicle>) {
         let newArray : any[] = [];
         let statusMap: {[key: string]: number} = {};
         for (let i = 0; i < chronicleStatus.length; i++) {
@@ -130,7 +132,7 @@ export default function ChronicleCategoryLayout() {
     }
 
     function filterUserChronicles(entertainment_category : string) {
-        let desiredMedium : Record<number, Chronicle> = {};
+        let desiredMedium : Record<number, UserChronicle> = {};
 
         Object.keys(UserChronicles).forEach(key => {
             const numericKey = parseInt(key, 10); // Parse key to integer
@@ -145,16 +147,16 @@ export default function ChronicleCategoryLayout() {
     function filterChroniclesByMedium(mediumType: string) {
         switch(mediumType){
             case 'Novels':
-                const novelsOnly : Record<number, Chronicle> = filterUserChronicles("Novel");
+                const novelsOnly : Record<number, UserChronicle> = filterUserChronicles("Novel");
                 return novelsOnly;
             case 'Graphic Novels':
-                const graphicNovelsOnly : Record<number, Chronicle> = filterUserChronicles("Graphic Novel");
+                const graphicNovelsOnly : Record<number, UserChronicle> = filterUserChronicles("Graphic Novel");
                 return graphicNovelsOnly;
             case 'Films':
-                const filmsOnly : Record<number, Chronicle> = filterUserChronicles("Film");
+                const filmsOnly : Record<number, UserChronicle> = filterUserChronicles("Film");
                 return filmsOnly;
             case 'Shows':
-                const showsOnly : Record<number, Chronicle> = filterUserChronicles("Show");
+                const showsOnly : Record<number, UserChronicle> = filterUserChronicles("Show");
                 return showsOnly;
             default: 
                 return UserChronicles;
@@ -166,6 +168,27 @@ export default function ChronicleCategoryLayout() {
         let filteredChronicles = filterChroniclesByMedium(medium);
         let sortedChronicles = sortByStatus(filteredChronicles);
         setCategorizedChronicles(sortedChronicles);
+    }
+
+    function searchChronicleTitles(e : React.ChangeEvent<HTMLInputElement>) {
+        let searchResults : Record<number, UserChronicle> = {};
+
+        console.log(e.target.value);
+        let searchText = e.target.value;
+        
+        Object.keys(UserChronicles).forEach(key => {
+            const numericKey = parseInt(key);
+            if (UserChronicles[numericKey].title.toLowerCase().includes(searchText.toLowerCase())) {
+                searchResults[numericKey] = UserChronicles[numericKey];
+            }
+        })
+
+        let sortedChronicles = sortByStatus(searchResults);
+        setCategorizedChronicles(sortedChronicles);
+    }
+
+    function openAddChroniclesTab() {
+        setToggleAddChronicles(value => !value);
     }
 
   // when users edit, save changes to session storage
@@ -193,8 +216,8 @@ export default function ChronicleCategoryLayout() {
         </div>
         <div className='user-container'>            
             <div className='user-chronicle-filters'>
-                <input className='user-chronicle-filters-search' placeholder='search bar'></input>
-                <button className='user-chronicle-filters-button'>Add Chronicle</button>
+                <input className='user-chronicle-filters-search' placeholder='search bar' onChange={searchChronicleTitles}></input>
+                <button className='user-chronicle-filters-button' onClick={openAddChroniclesTab}>Add Chronicle</button>
                 <div className='filter-category'>
                     <p className='filter-category-name'>Status</p>
                     <select className="status-options">
@@ -210,12 +233,12 @@ export default function ChronicleCategoryLayout() {
                     <p className='filter-category-name'>Country</p>
                     {/*add a country data list not drop down */}
                     <select className="status-options">
-                    <option value="reading">Reading</option>
-                    <option value="completed">Completed</option>
-                    <option value="paused">Paused</option>
-                    <option value="dropped">Dropped</option>
-                    <option value="plan to read">Plan to Read</option>
-                    <option value="rereading">Rereading</option>
+                        <option value="reading">Reading</option>
+                        <option value="completed">Completed</option>
+                        <option value="paused">Paused</option>
+                        <option value="dropped">Dropped</option>
+                        <option value="plan to read">Plan to Read</option>
+                        <option value="rereading">Rereading</option>
                     </select>
                 </div>
                 <div className='filter-category-bottom'>
@@ -234,10 +257,10 @@ export default function ChronicleCategoryLayout() {
                     <p className='filter-category-name'>Year</p>
                     <input className='user-chronicle-filters-year' placeholder='ex: 2019-2024'></input>
                 </div>
-        
             </div>
+            <AddChroniclesPage/>
             {chronicleStatus.map((title, index) => (
-            <StatusContainer status={title} key={index} chroniclesStatus={categorizedChronicles[index]} chronicles={UserChronicles} listOfChanges={listOfChanges}/>
+                <StatusContainer status={title} key={index} chroniclesStatus={categorizedChronicles[index]} chronicles={UserChronicles} listOfChanges={listOfChanges}/>
             ))}
         </div>
     </div>
