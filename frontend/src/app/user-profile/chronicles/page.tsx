@@ -78,6 +78,11 @@ export default function ChronicleCategoryLayout() {
     }
 
     let listOfChanges : Record<number, any> = {};
+    // call function to get user's entries 
+    // retrieve data from session storage
+    const [chronicleStatus, setChronicleStatus] = useState(["Reading", "Completed", "Rereading", "Plan To Read", "Paused", "Dropped"]);
+    const [categorizedChronicles, setCategorizedChronicles] = useState<Array<Array<UserChronicle>>>(sortByStatus(UserChronicles));
+    const [toggleAddChronicles, setToggleAddChronicles] = useState(false);
 
     useEffect(() => {
         
@@ -91,12 +96,6 @@ export default function ChronicleCategoryLayout() {
             console.log(listOfChanges);
         }
     });
-
-    // call function to get user's entries 
-    // retrieve data from session storage
-    const [chronicleStatus, setChronicleStatus] = useState(["Reading", "Completed", "Rereading", "Plan To Read", "Paused", "Dropped"]);
-    const [categorizedChronicles, setCategorizedChronicles] = useState<Array<Array<UserChronicle>>>(sortByStatus(UserChronicles));
-    const [toggleAddChronicles, setToggleAddChronicles] = useState(false);
     
     function sortByStatus(filteredChronicles: Record<number, UserChronicle>) {
         let newArray : any[] = [];
@@ -258,7 +257,7 @@ export default function ChronicleCategoryLayout() {
                     <input className='user-chronicle-filters-year' placeholder='ex: 2019-2024'></input>
                 </div>
             </div>
-            <AddChroniclesPage/>
+            {toggleAddChronicles && <AddChroniclesPage/>} 
             {chronicleStatus.map((title, index) => (
                 <StatusContainer status={title} key={index} chroniclesStatus={categorizedChronicles[index]} chronicles={UserChronicles} listOfChanges={listOfChanges}/>
             ))}

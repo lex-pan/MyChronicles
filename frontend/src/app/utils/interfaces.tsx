@@ -30,5 +30,9 @@ interface AddChronicleInfo {
     chronicle_id: number,
     title: string,
     category: string
-    creation_date: string
+    year: string
+}
+
+interface SearchedChronicle {   
+    searched_chronicle : AddChronicleInfo
 }

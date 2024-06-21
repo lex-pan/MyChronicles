@@ -17,6 +17,15 @@
     list-style: none;
     box-sizing: border-box;
     font-family: 'Quicksand';
+}  
+
+.overlay {
+    top: 0%;
+    height: 100vh;
+    z-index: 5;
+    position: fixed;
+    width: 100vw;
+    background-color: rgba(0,0,0,.75); /*this sets the slightly see-through black*/
 }
 
 /* Navigation Bar */
@@ -124,10 +133,6 @@
 
 /* Chronicles Section */
 
-.chronicles-section {
-    position: relative;
-}
-
 .chronicle-category-options {
     display: flex;
     justify-content: center;
@@ -167,7 +172,6 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    
 }
 
 .user-container {
@@ -256,8 +260,11 @@
 }
 
 .add-chronicles-page {
+    position: absolute;
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%);
     padding: 1.4em;
-    position: fixed;
     z-index: 2;
     width: 76em;
     background-color: white;
@@ -275,7 +282,7 @@
     padding: 0.8em;
     font-size: 16px;
     width: 30%;
-    margin-left: 1em;
+    margin-left: 0.5em;
     height: 2.5em;
 }
 
@@ -288,8 +295,8 @@
 .add-chronicles-section {
     border: 1px solid rgb(172, 172, 172);
     width: 100%;
-    margin-left: 1em;
-    margin-right: 1em;
+    margin-left: 0.5em;
+    margin-right: 0.5em;
 }
 
 .add-chronicles-section h1{
@@ -322,8 +329,8 @@
     position: relative;
     left: -0.3%;
     border: 1px solid rgb(172, 172, 172);
-    width: 160%;
-    margin-right: 10em;
+    width: 160.7%;
+    margin-bottom: -1px;
 }
 
 .add-chronicle-item-top {
@@ -368,6 +375,9 @@
     width: 8.5em;
     height: 2.5em;
     font-size: 14px;
+    background-color: white;
+    border: 1px solid rgb(172, 172, 172);
+    padding: 0.4em;
 }
 
 .add-chronicle-bottom-first input {
