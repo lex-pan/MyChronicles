@@ -1,5 +1,6 @@
 /*
 Future ToDo's for this section
+    - implement react window for smooth user exp in the case we are overwhelmed
     - data caching and modification when user decides to change it 
     - implement db actions for chronicles request, delete, update
     - QOL filter actions on chronicles
@@ -72,6 +73,260 @@ export default function ChronicleCategoryLayout() {
             notes: "Good book so far", // Example notes
             category: "Film", // Example category
             status: "Reading" // Example status
+        }, 
+        501: {
+            userChronicleId: 501,
+            bookId: 1,
+            title: "Journey to the West - Rediscovering the Myth",
+            rating: 5,
+            start_date: "2022-01-10",
+            last_read: "2023-02-10",
+            episode: 30,
+            img_src: "https://example.com/journey.jpg",
+            review: "An epic journey through history and mythology.",
+            notes: "Engaging and deeply insightful.",
+            category: "Novel",
+            status: "Completed"
+        },
+        
+        502: {
+            userChronicleId: 502,
+            bookId: 2,
+            title: "The Matrix - Unplugged",
+            rating: 4,
+            start_date: "2022-02-05",
+            last_read: "2023-01-25",
+            episode: 10,
+            img_src: "https://example.com/matrix.jpg",
+            review: "A deep dive into the philosophy of the Matrix universe.",
+            notes: "Complex but rewarding.",
+            category: "Film",
+            status: "Completed"
+        },
+        
+        503: {
+            userChronicleId: 503,
+            bookId: 3,
+            title: "Avatar - The Last Airbender: The Legend Continues",
+            rating: 5,
+            start_date: "2022-03-15",
+            last_read: "2023-05-20",
+            episode: 12,
+            img_src: "https://example.com/avatar.jpg",
+            review: "A compelling continuation of the beloved series.",
+            notes: "Captivating characters and story.",
+            category: "Show",
+            status: "Reading"
+        },
+        
+        504: {
+            userChronicleId: 504,
+            bookId: 5,
+            title: "The Odyssey - Modern Interpretations",
+            rating: 4,
+            start_date: "2022-04-22",
+            last_read: "2023-01-30",
+            episode: 8,
+            img_src: "https://example.com/odyssey.jpg",
+            review: "A modern twist on an ancient classic.",
+            notes: "Thought-provoking and well-written.",
+            category: "Novel",
+            status: "Completed"
+        },
+        
+        505: {
+            userChronicleId: 505,
+            bookId: 6,
+            title: "The Witcher - The Saga Continues",
+            rating: 4,
+            start_date: "2022-05-01",
+            last_read: "2023-04-05",
+            episode: 6,
+            img_src: "https://example.com/witcher.jpg",
+            review: "Rich in lore and adventure.",
+            notes: "Fantastically written.",
+            category: "Novel",
+            status: "Reading"
+        },
+        
+        507: {
+            userChronicleId: 507,
+            bookId: 7,
+            title: "The Sandman - Dream's Awakening",
+            rating: 5,
+            start_date: "2022-06-15",
+            last_read: "2023-04-01",
+            episode: 20,
+            img_src: "https://example.com/sandman.jpg",
+            review: "A mesmerizing journey into the world of dreams.",
+            notes: "Neil Gaiman at his best.",
+            category: "Graphic Novel",
+            status: "Completed"
+        },
+        
+        508: {
+            userChronicleId: 508,
+            bookId: 8,
+            title: "Breaking Bad - The Complete Experience",
+            rating: 5,
+            start_date: "2022-07-10",
+            last_read: "2023-03-20",
+            episode: 50,
+            img_src: "https://example.com/breakingbad.jpg",
+            review: "Intense and unforgettable.",
+            notes: "Masterpiece of modern television.",
+            category: "Show",
+            status: "Completed"
+        },
+        
+        509: {
+            userChronicleId: 509,
+            bookId: 9,
+            title: "Star Wars - A New Vision",
+            rating: 4,
+            start_date: "2022-08-01",
+            last_read: "2023-05-30",
+            episode: 9,
+            img_src: "https://example.com/starwars.jpg",
+            review: "A fresh take on the iconic saga.",
+            notes: "Impressive visuals and storytelling.",
+            category: "Film",
+            status: "Reading"
+        },
+        
+        510: {
+            userChronicleId: 510,
+            bookId: 10,
+            title: "Harry Potter - The Untold Stories",
+            rating: 5,
+            start_date: "2022-09-22",
+            last_read: "2023-04-18",
+            episode: 40,
+            img_src: "https://example.com/harrypotter.jpg",
+            review: "Magical and enchanting.",
+            notes: "New perspectives on the wizarding world.",
+            category: "Novel",
+            status: "Completed"
+        },
+        
+        511: {
+            userChronicleId: 511,
+            bookId: 11,
+            title: "Game of Thrones - The Winter Chronicles",
+            rating: 4,
+            start_date: "2022-10-15",
+            last_read: "2023-02-28",
+            episode: 60,
+            img_src: "https://example.com/gameofthrones.jpg",
+            review: "Intriguing and complex.",
+            notes: "Detailed and engaging.",
+            category: "Show",
+            status: "Reading"
+        },
+        
+        512: {
+            userChronicleId: 512,
+            bookId: 12,
+            title: "Inception - The Dream Within",
+            rating: 4,
+            start_date: "2022-11-10",
+            last_read: "2023-03-11",
+            episode: 2,
+            img_src: "https://example.com/inception.jpg",
+            review: "A mind-bending journey into dreams.",
+            notes: "Intricately crafted plot.",
+            category: "Film",
+            status: "Plan To Read"
+        },
+        
+        513: {
+            userChronicleId: 513,
+            bookId: 13,
+            title: "Sherlock Holmes - The New Adventures",
+            rating: 5,
+            start_date: "2022-12-01",
+            last_read: "2023-04-22",
+            episode: 15,
+            img_src: "https://example.com/sherlock.jpg",
+            review: "Mystery and intrigue at its finest.",
+            notes: "Brilliant storytelling and character work.",
+            category: "Show",
+            status: "Rereading"
+        },
+        
+        514: {
+            userChronicleId: 514,
+            bookId: 14,
+            title: "The Expanse - Beyond the Stars",
+            rating: 5,
+            start_date: "2023-01-10",
+            last_read: "2023-06-01",
+            episode: 22,
+            img_src: "https://example.com/expanse.jpg",
+            review: "Epic and expansive space saga.",
+            notes: "Gripping and well-executed.",
+            category: "Show",
+            status: "Dropped"
+        },
+        
+        515: {
+            userChronicleId: 515,
+            bookId: 15,
+            title: "Dune - The Spice Must Flow",
+            rating: 4,
+            start_date: "2023-02-14",
+            last_read: "2023-05-15",
+            episode: 12,
+            img_src: "https://example.com/dune.jpg",
+            review: "A detailed exploration of the Dune universe.",
+            notes: "Rich and immersive.",
+            category: "Film",
+            status: "Paused"
+        },
+        
+        516: {
+            userChronicleId: 516,
+            bookId: 16,
+            title: "Naruto - The Hidden Leaf Chronicles",
+            rating: 5,
+            start_date: "2023-03-10",
+            last_read: "2023-06-12",
+            episode: 220,
+            img_src: "https://example.com/naruto.jpg",
+            review: "An inspiring journey of a ninja.",
+            notes: "Emotional and action-packed.",
+            category: "Show",
+            status: "Plan To Read"
+        },
+        
+        517: {
+            userChronicleId: 517,
+            bookId: 17,
+            title: "The Great Gatsby - Reimagined",
+            rating: 4,
+            start_date: "2023-04-22",
+            last_read: "2023-05-25",
+            episode: 4,
+            img_src: "https://example.com/gatsby.jpg",
+            review: "A fresh take on a classic tale.",
+            notes: "Captivating narrative and characters.",
+            category: "Novel",
+            status: "Rereading"
+        },
+        
+        518: {
+            userChronicleId: 518,
+            bookId: 18,
+            title: "Rick and Morty - The Multiverse Misadventures",
+            rating: 5,
+            start_date: "2023-05-10",
+            last_read: "2023-06-15",
+            episode: 30,
+            img_src: "https://example.com/rickmorty.jpg",
+            review: "Hilarious and thought-provoking.",
+            notes: "Inventive and unique.",
+            category: "Show",
+            status: "Rereading"
         }
     }
 
@@ -80,6 +335,8 @@ export default function ChronicleCategoryLayout() {
     // retrieve data from session storage
     const [chronicleStatus, setChronicleStatus] = useState(["Reading", "Completed", "Rereading", "Plan To Read", "Paused", "Dropped"]);
     const [categorizedChronicles, setCategorizedChronicles] = useState<Array<Array<UserChronicleData>>>(sortByStatus(UserChronicles));
+    const [deleteChronicleName, setDeleteChronicleName] = useState<[string, number]>(["", 0]);
+    const [toggleConfirmDelete, setToggleConfirmDelete] = useState(false);
     const [toggleAddChronicles, setToggleAddChronicles] = useState(false);
 
     useEffect(() => {
@@ -188,6 +445,37 @@ export default function ChronicleCategoryLayout() {
         setToggleAddChronicles(value => !value);
     }
 
+    function toggleDelete(userChronicleId : number) {
+        if (!isNaN(userChronicleId)) {
+            setDeleteChronicleName(value => [UserChronicles[userChronicleId].title, userChronicleId]);
+        }
+        setToggleConfirmDelete(value => !value);
+    }
+
+    function deleteChronicle() {
+        let index = 0;
+
+        for (let i = 0; i < chronicleStatus.length; i++) {
+            // will need a way to dynamically switch based on how it's categorized
+            console.log(UserChronicles[deleteChronicleName[1]].category);
+            if (chronicleStatus[i] == UserChronicles[deleteChronicleName[1]].status) {
+                index = i;
+            }
+        }   
+
+        const filtered = categorizedChronicles[index].filter(chronicle => chronicle.userChronicleId !== deleteChronicleName[1]);
+        const updatedCategorizedChronicles = categorizedChronicles.map((categoryChronicles, i) => {
+            if (i === index) {
+                return filtered;
+            }
+            return categoryChronicles;
+        });
+        setCategorizedChronicles(updatedCategorizedChronicles);
+        toggleDelete(NaN);
+
+        // send call to db notifying it that user has deleted item 
+    }
+
   // when users edit, save changes to session storage
   // when the user closes the browser/reloads the browser update the database 
   return (
@@ -255,9 +543,21 @@ export default function ChronicleCategoryLayout() {
                     <input className='user-chronicle-filters-year' placeholder='ex: 2019-2024'></input>
                 </div>
             </div>
+            {toggleConfirmDelete &&
+            <div className='overlay'>
+                <div className='confirm-delete'>
+                    <h1>Delete {deleteChronicleName[0]}?</h1>
+                    <div className='confirm-delete-button-container'>
+                        <button onClick={() => toggleDelete(NaN)} className='no'>No</button>
+                        <button onClick={deleteChronicle} className='yes'>Yes</button>
+                    </div>
+                </div>
+            </div>
+            }
             {toggleAddChronicles && <AddChroniclesPage toggle={toggleSearch}/>} 
             {chronicleStatus.map((title, index) => (
-                <StatusContainer status={title} key={index} chroniclesStatus={categorizedChronicles[index]} chronicles={UserChronicles} listOfChanges={listOfChanges}/>
+                <StatusContainer status={title} key={index} chroniclesStatus={categorizedChronicles[index]} 
+                                 listOfChanges={listOfChanges} confirmDelete={toggleDelete} />
             ))}
         </div>
     </div>

@@ -25,7 +25,7 @@
     z-index: 5;
     position: fixed;
     width: 100vw;
-    background-color: rgba(0,0,0,.30); /*this sets the slightly see-through black*/
+    background-color: rgba(0,0,0,.08); /*this sets the slightly see-through black*/
 }
 
 /* Navigation Bar */
@@ -198,6 +198,48 @@
     display: flex;
     align-items: center;
     margin-left: -0.5em;
+}
+
+.confirm-delete {
+    background-color: white;
+    position: absolute;
+    top: 50%; 
+    left: 50%; 
+    transform: translate(-50%, -50%);
+    height: 22em;
+    width: 36em;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.confirm-delete h1 {
+    padding-left: 1em;
+    padding-right: 1em;
+    font-size: 36px;
+    font-weight: 300;
+    text-align: center;
+}
+
+.confirm-delete button {
+    background-color: white;
+    width: 8em;
+    height: 2.7em;
+    font-size: 16px;
+    border: 1px solid rgb(172, 172, 172);
+    margin: 0.8em;
+    margin-top: 2em;
+}
+
+.no:hover {
+    background-color: rgb(0, 153, 255);
+    color: white;
+}
+
+.yes:hover {
+    background-color: rgb(255, 69, 63);
+    color: white;
 }
 
 .user-chronicle-filters {
@@ -420,7 +462,7 @@
 }
 
 .add-chronicle-textarea {
-    width: 96%;
+    width: 95%;
     height: 5em;
     margin-left: 0.7em;
     resize: none;
@@ -444,6 +486,7 @@
     width: 9em;
     height: 2.5em;
     margin: 1em;
+    font-size: 16px;
     background-color: white;
     border: 1px solid rgb(172, 172, 172);
 }
@@ -461,7 +504,7 @@
     font-weight: 300;
     grid-row: 1;
     grid-column: 1/7;
-    width: 93%;
+    width: 92.3%;
     margin-left: 2.9%;
     border-bottom: 1px solid rgb(172, 172, 172);
 }
@@ -495,6 +538,8 @@
 }
 
 .user-chronicle-info {
+    overflow-x: scroll;
+    white-space: nowrap; 
     padding: 0.5em;
     font-size: 18px;
     outline: 1px solid rgb(172, 172, 172);
@@ -503,7 +548,6 @@
     width: 18%;
     background-color: white;
     border: 1px solid transparent;
-    overflow-wrap: break-word;
 }
 
 .user-chronicle-info-small {
@@ -695,7 +739,7 @@
 .filter-search-options {
     margin: auto;
     margin-top: 2em;
-    width: 52.7em;
+    width: 55.7em;
     display: flex;
 }
 
@@ -714,23 +758,61 @@
 
 .search-results-attributes {
     margin-top: 1em;
+    margin-right: 2.4em;
     display: grid;
     grid-template-columns: 20.2em 6em 6.5em 6em 8em 6em;
 }
 
 .searched-chronicle {
     display: grid;
-    grid-template-columns: 20em 6em 6.5em 6em 8em 6em;
+    grid-template-columns: 20em 6em 6.5em 6em 8em 6em 3em;
+    grid-template-rows: minmax(2.7em, 2.7em);
 }
 
-.searched-chronicle p {
+.searched-chronicle-text {
     font-size: 17px;
+    display: flex;
+    align-items: center;
     border: 1px solid rgb(172, 172, 172);
     padding: 0.3em;
     margin-left: -1px;
     margin-bottom: -1px;
 }
 
+.searched-chronicle-add {
+    position: relative;
+    right: 0.2%;
+    border: 1px solid rgb(172, 172, 172);
+    width: 52.55em;
+    margin-bottom: -1px;
+}
 
+.searched-chronicle-bottom {
+    display: grid;
+    margin-left: 1em;
+    grid-template-columns: 3.5em 12em 4em 10em 4em 4em;
+    margin-top: 1em;    
+}
 
+.searched-chronicle-bottom p {
+    font-size: 16px;
+    display: flex;
+    margin-right: 0.2em;
+    align-items: center;
+}
 
+.searched-chronicle-bottom select {
+    width: 8.5em;
+    height: 2.5em;
+    font-size: 14px;
+    background-color: white;
+    border: 1px solid rgb(172, 172, 172);
+    padding: 0.4em;
+}
+
+.searched-chronicle-bottom input {
+    width: 5em;
+    height: 2.5em;
+    font-size: 14px;
+    padding: 0.4em;
+}

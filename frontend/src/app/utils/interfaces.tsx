@@ -1,5 +1,3 @@
-import { Dispatch, SetStateAction } from "react";
-
 export interface UserChronicleData {
     userChronicleId: number,
     bookId: number,
@@ -17,28 +15,41 @@ export interface UserChronicleData {
 
 export interface UserChronicleProps {
     item: UserChronicleData;
-    removeChronicle: (userChronicleId : number) => void;
+    confirmDelete: (userChronicleId : number) => void;
     listOfChanges : Record<number, any>;
 }
 
 export interface StatusContainerProps {
-    status: string,
-    chroniclesStatus: Array<UserChronicleData>
-    chronicles: Record<number, UserChronicleData>
+    status: string;
+    chroniclesStatus: Array<UserChronicleData>;
     listOfChanges : Record<number, any>;
+    confirmDelete: (userChronicleId : number) => void;
 }
 
 export interface AddChronicleInfo {
-    chronicle_id: number,
-    title: string,
-    category: string
-    year: string
+    chronicle_id: number;
+    title: string;
+    category: string;
+    year: string;
 }
 
 export interface SearchedChronicle {   
-    searched_chronicle : AddChronicleInfo
+    searched_chronicle : AddChronicleInfo;
 }
 
 export interface searchChroniclePageProps {
     toggle: () => void;
+}
+
+export interface SearchedChronicleInfo {
+    chronicle_id: number,
+    title: string,
+    rating: number,
+    members: number,
+    category: string;
+    date: string;
+}
+
+export interface SearchedChronicleInfoProps {
+    chronicle: SearchedChronicleInfo;
 }

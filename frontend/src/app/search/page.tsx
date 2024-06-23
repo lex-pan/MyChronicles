@@ -1,13 +1,68 @@
 // should include a search bar and beneath it, a bunch of filters
+'use client'
+import { useState } from "react";
+import { SearchedChronicleInfo } from "../utils/interfaces";
+import SearchedChronicle from "./searchedChronicle";
 
 export default function Search() {
+  let [searchResults, setSearchResults] = useState<Array<SearchedChronicleInfo>>([
+    {
+      chronicle_id: 2,
+      title: "some book",
+      rating: 4,
+      members: 348576,
+      category: "Novel",
+      date: "Apr 2024"
+    },
+    {
+      chronicle_id: 3,
+      title: "some book",
+      rating: 4,
+      members: 348576,
+      category: "Novel",
+      date: "Apr 2024"
+    },
+    {
+      chronicle_id: 4,
+      title: "some book",
+      rating: 4,
+      members: 348576,
+      category: "Novel",
+      date: "Apr 2024"
+    },
+    {
+      chronicle_id: 5,
+      title: "some book",
+      rating: 4,
+      members: 348576,
+      category: "Novel",
+      date: "Apr 2024"
+    },
+    {
+      chronicle_id: 6,
+      title: "some book",
+      rating: 4,
+      members: 348576,
+      category: "Novel",
+      date: "Apr 2024"
+    },
+    {
+      chronicle_id: 7,
+      title: "some book",
+      rating: 4,
+      members: 348576,
+      category: "Novel",
+      date: "Apr 2024"
+    }
+  ])
+
     return (
       <div className="search-page">
         <div className="filter-search-options">
           <input className="filter-search-bar" placeholder="search-bar"></input>
         </div>
         <div className="search-results">
-          <div className="search-results-attributes">
+        <div className="search-results-attributes">
             <p>Title</p>
             <p>Score</p>
             <p>Members</p>
@@ -15,38 +70,9 @@ export default function Search() {
             <p>Category</p>
             <p>Year</p>
           </div>
-          <div className="searched-chronicle">
-            <p>book one</p>
-            <p>5</p>
-            <p>348,576</p>
-            <p>32</p>
-            <p>Novel</p>
-            <p>Apr 2024</p>
-          </div>
-          <div className="searched-chronicle">
-            <p>book one</p>
-            <p>5</p>
-            <p>348,576</p>
-            <p>32</p>
-            <p>Novel</p>
-            <p>Apr 2024</p>
-          </div>
-          <div className="searched-chronicle">
-            <p>book one</p>
-            <p>5</p>
-            <p>348,576</p>
-            <p>32</p>
-            <p>Novel</p>
-            <p>Apr 2024</p>
-          </div>
-          <div className="searched-chronicle">
-            <p>book one</p>
-            <p>5</p>
-            <p>348,576</p>
-            <p>32</p>
-            <p>Novel</p>
-            <p>Apr 2024</p>
-          </div>
+          {searchResults.map(chronicle => (
+            <SearchedChronicle key={chronicle.chronicle_id} chronicle={chronicle}/>
+          ))}
         </div>
       </div>
     );

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { UserChronicleProps } from "@/app/utils/interfaces";
 
-export default function UserChronicle({item, removeChronicle, listOfChanges} : UserChronicleProps) {
+export default function UserChronicle({item, confirmDelete, listOfChanges} : UserChronicleProps) {
     const [detailedInfo, setDetailedInfo] = useState(false);
     
     // get the id
@@ -26,6 +26,10 @@ export default function UserChronicle({item, removeChronicle, listOfChanges} : U
         }
 
         if (chronicleDetail == "status") {
+            e.target.value = inputValue;
+        }
+
+        if (chronicleDetail == "last_read" || chronicleDetail == "start_date") {
             e.target.value = inputValue;
         }
 
@@ -76,7 +80,7 @@ export default function UserChronicle({item, removeChronicle, listOfChanges} : U
     return (
         <li className='user-container-item'>
             <div className='user-container-overview'>
-                <button onClick={() => removeChronicle(item.userChronicleId)} className='chronicle-list-broader'></button>
+                <button onClick={() => confirmDelete(item.userChronicleId)} className='chronicle-list-broader'></button>
                 <p className='chronicle-title user-chronicle-info'>{item.title}</p>
                 <input className="user-chronicle-info-small" onBlur={(e) => updateChronicle(e, "rating")} defaultValue={item.rating ?? "-"} />
                 <input className="user-chronicle-info-small" onBlur={(e) => updateChronicle(e, "episode")} defaultValue={item.episode ?? "-"} />
