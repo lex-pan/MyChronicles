@@ -4,9 +4,6 @@ Future ToDo's for this section
     - implement db actions for chronicles request, delete, update
     - QOL filter actions on chronicles
     - different ways to categorize chronicles 
-
-To-Do's I can implement right now:
-    - add function
 */
 
 "use client";
@@ -14,11 +11,12 @@ import { InputHTMLAttributes, useEffect, useState } from 'react';
 import { MouseEvent } from 'react';
 import StatusContainer from './StatusContainer';
 import AddChronicle from './AddChroniclesPage';
+import { UserChronicleData } from '@/app/utils/interfaces';
 import AddChroniclesPage from './AddChroniclesPage';
 export default function ChronicleCategoryLayout() {
 
     // retrieve entries from db 
-    let UserChronicles : Record<number, UserChronicle> = {
+    let UserChronicles : Record<number, UserChronicleData> = {
         37: {
             userChronicleId: 37,
             bookId: 1,
@@ -81,7 +79,7 @@ export default function ChronicleCategoryLayout() {
     // call function to get user's entries 
     // retrieve data from session storage
     const [chronicleStatus, setChronicleStatus] = useState(["Reading", "Completed", "Rereading", "Plan To Read", "Paused", "Dropped"]);
-    const [categorizedChronicles, setCategorizedChronicles] = useState<Array<Array<UserChronicle>>>(sortByStatus(UserChronicles));
+    const [categorizedChronicles, setCategorizedChronicles] = useState<Array<Array<UserChronicleData>>>(sortByStatus(UserChronicles));
     const [toggleAddChronicles, setToggleAddChronicles] = useState(false);
 
     useEffect(() => {
@@ -97,7 +95,7 @@ export default function ChronicleCategoryLayout() {
         }
     });
     
-    function sortByStatus(filteredChronicles: Record<number, UserChronicle>) {
+    function sortByStatus(filteredChronicles: Record<number, UserChronicleData>) {
         let newArray : any[] = [];
         let statusMap: {[key: string]: number} = {};
         for (let i = 0; i < chronicleStatus.length; i++) {
@@ -131,7 +129,7 @@ export default function ChronicleCategoryLayout() {
     }
 
     function filterUserChronicles(entertainment_category : string) {
-        let desiredMedium : Record<number, UserChronicle> = {};
+        let desiredMedium : Record<number, UserChronicleData> = {};
 
         Object.keys(UserChronicles).forEach(key => {
             const numericKey = parseInt(key, 10); // Parse key to integer
@@ -146,16 +144,16 @@ export default function ChronicleCategoryLayout() {
     function filterChroniclesByMedium(mediumType: string) {
         switch(mediumType){
             case 'Novels':
-                const novelsOnly : Record<number, UserChronicle> = filterUserChronicles("Novel");
+                const novelsOnly : Record<number, UserChronicleData> = filterUserChronicles("Novel");
                 return novelsOnly;
             case 'Graphic Novels':
-                const graphicNovelsOnly : Record<number, UserChronicle> = filterUserChronicles("Graphic Novel");
+                const graphicNovelsOnly : Record<number, UserChronicleData> = filterUserChronicles("Graphic Novel");
                 return graphicNovelsOnly;
             case 'Films':
-                const filmsOnly : Record<number, UserChronicle> = filterUserChronicles("Film");
+                const filmsOnly : Record<number, UserChronicleData> = filterUserChronicles("Film");
                 return filmsOnly;
             case 'Shows':
-                const showsOnly : Record<number, UserChronicle> = filterUserChronicles("Show");
+                const showsOnly : Record<number, UserChronicleData> = filterUserChronicles("Show");
                 return showsOnly;
             default: 
                 return UserChronicles;
@@ -170,7 +168,7 @@ export default function ChronicleCategoryLayout() {
     }
 
     function searchChronicleTitles(e : React.ChangeEvent<HTMLInputElement>) {
-        let searchResults : Record<number, UserChronicle> = {};
+        let searchResults : Record<number, UserChronicleData> = {};
 
         console.log(e.target.value);
         let searchText = e.target.value;
@@ -186,7 +184,7 @@ export default function ChronicleCategoryLayout() {
         setCategorizedChronicles(sortedChronicles);
     }
 
-    function openAddChroniclesTab() {
+    function toggleSearch() {
         setToggleAddChronicles(value => !value);
     }
 
@@ -216,7 +214,7 @@ export default function ChronicleCategoryLayout() {
         <div className='user-container'>            
             <div className='user-chronicle-filters'>
                 <input className='user-chronicle-filters-search' placeholder='search bar' onChange={searchChronicleTitles}></input>
-                <button className='user-chronicle-filters-button' onClick={openAddChroniclesTab}>Add Chronicle</button>
+                <button className='user-chronicle-filters-button' onClick={toggleSearch}>Add Chronicle</button>
                 <div className='filter-category'>
                     <p className='filter-category-name'>Status</p>
                     <select className="status-options">
@@ -257,7 +255,7 @@ export default function ChronicleCategoryLayout() {
                     <input className='user-chronicle-filters-year' placeholder='ex: 2019-2024'></input>
                 </div>
             </div>
-            {toggleAddChronicles && <AddChroniclesPage/>} 
+            {toggleAddChronicles && <AddChroniclesPage toggle={toggleSearch}/>} 
             {chronicleStatus.map((title, index) => (
                 <StatusContainer status={title} key={index} chroniclesStatus={categorizedChronicles[index]} chronicles={UserChronicles} listOfChanges={listOfChanges}/>
             ))}

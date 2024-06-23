@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
+import React from 'react';
 
 export default function RootNavBar() {
   const router = useRouter();
@@ -39,8 +40,7 @@ export default function RootNavBar() {
 
   return (
     <nav className="nav-bar">
-        <h1 className="nav-bar-title">MyChronicles</h1> 
-        <a href="/about/about.html" className="nav-link">About</a> 
+        <h1><Link href="/about.html" className="nav-bar-title">MyChronicles</Link></h1> 
         <Link href="/search" className="nav-link">Search</Link>
         <Link href="/add" className="nav-link">Add</Link> 
         <p onClick={handleProfileClick} className="nav-link">Profile</p> 

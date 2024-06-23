@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { UserChronicleProps } from "@/app/utils/interfaces";
 
 export default function UserChronicle({item, removeChronicle, listOfChanges} : UserChronicleProps) {
     const [detailedInfo, setDetailedInfo] = useState(false);

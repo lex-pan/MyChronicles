@@ -1,4 +1,6 @@
-interface UserChronicle {
+import { Dispatch, SetStateAction } from "react";
+
+export interface UserChronicleData {
     userChronicleId: number,
     bookId: number,
     title: string;
@@ -13,26 +15,30 @@ interface UserChronicle {
     status: string;
 }
 
-interface UserChronicleProps {
-    item: UserChronicle;
+export interface UserChronicleProps {
+    item: UserChronicleData;
     removeChronicle: (userChronicleId : number) => void;
     listOfChanges : Record<number, any>;
 }
 
-interface StatusContainerProps {
+export interface StatusContainerProps {
     status: string,
-    chroniclesStatus: Array<UserChronicle>
-    chronicles: Record<number, UserChronicle>
+    chroniclesStatus: Array<UserChronicleData>
+    chronicles: Record<number, UserChronicleData>
     listOfChanges : Record<number, any>;
 }
 
-interface AddChronicleInfo {
+export interface AddChronicleInfo {
     chronicle_id: number,
     title: string,
     category: string
     year: string
 }
 
-interface SearchedChronicle {   
+export interface SearchedChronicle {   
     searched_chronicle : AddChronicleInfo
+}
+
+export interface searchChroniclePageProps {
+    toggle: () => void;
 }

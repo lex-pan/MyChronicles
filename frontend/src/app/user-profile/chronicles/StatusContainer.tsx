@@ -1,11 +1,12 @@
 import UserChronicle from "./UserChronicle"
 import { useState, useEffect } from "react"
+import { StatusContainerProps, UserChronicleData } from "@/app/utils/interfaces";
 
 export default function({status, chroniclesStatus, chronicles, listOfChanges} : StatusContainerProps) {
     // when updating chronicles (remove, add, change) update chronicles
     // when deleting 
 
-    const [chroniclesMatchingStatus, setChroniclesMatchingStatus] = useState<Array<UserChronicle>>(chroniclesStatus);
+    const [chroniclesMatchingStatus, setChroniclesMatchingStatus] = useState<Array<UserChronicleData>>(chroniclesStatus);
 
     useEffect(() => {
         setChroniclesMatchingStatus(chroniclesStatus);

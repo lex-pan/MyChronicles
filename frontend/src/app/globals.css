@@ -25,7 +25,7 @@
     z-index: 5;
     position: fixed;
     width: 100vw;
-    background-color: rgba(0,0,0,.75); /*this sets the slightly see-through black*/
+    background-color: rgba(0,0,0,.30); /*this sets the slightly see-through black*/
 }
 
 /* Navigation Bar */
@@ -33,7 +33,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: rgb(0, 153, 255);
+    background-color: rgb(0, 153, 255); /*201, 107, 255   232, 116, 255*/
     height: 3.7em;
 }
 
@@ -42,6 +42,7 @@
     color: white;
     position: absolute;
     left: 30px;
+    top: 3px;
     font-size: 52px;
 }
 
@@ -89,12 +90,12 @@
     top: 5px;
     right: 30px;
     border: 3px solid white;
-    background-color: rgb(30, 71, 255);
+    background-color: rgb(0, 153, 255);
 }
 
 .nav-logout:hover {
     cursor: pointer;
-    background-color: rgb(56, 30, 255);
+    background-color: rgb(220, 44, 255);
 }
 
 /* Nav Bar End*/
@@ -284,6 +285,30 @@
     width: 30%;
     margin-left: 0.5em;
     height: 2.5em;
+}
+
+.close-chronicles-options {
+    position: absolute;
+    right: 2.5%;
+    height: 3.2em;
+    width: 3.2em;
+    background-color: white;
+    border: 1px solid rgb(172, 172, 172);
+}
+
+.close-chronicles-options:hover {
+    background-color: rgb(255, 69, 63);
+}
+
+.close-chronicles-options::before {
+    content: "\274c";
+    padding: 0.4em;
+    color: transparent;
+    text-shadow: 0 0 0 rgb(119, 119, 119);
+}
+
+.close-chronicles-options:hover::before {
+    text-shadow: 0 0 0 white;
 }
 
 .add-chronicles-section-container {
@@ -666,3 +691,46 @@
     background-image: linear-gradient(to right, rgb(0, 153, 255), rgb(81, 17, 255));
     margin-bottom: 2em;
 }
+
+.filter-search-options {
+    margin: auto;
+    margin-top: 2em;
+    width: 52.7em;
+    display: flex;
+}
+
+.filter-search-bar {
+    font-size: 16px;
+    padding: 0.4em;
+}
+
+.search-results {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 50%;
+    margin: auto;
+}
+
+.search-results-attributes {
+    margin-top: 1em;
+    display: grid;
+    grid-template-columns: 20.2em 6em 6.5em 6em 8em 6em;
+}
+
+.searched-chronicle {
+    display: grid;
+    grid-template-columns: 20em 6em 6.5em 6em 8em 6em;
+}
+
+.searched-chronicle p {
+    font-size: 17px;
+    border: 1px solid rgb(172, 172, 172);
+    padding: 0.3em;
+    margin-left: -1px;
+    margin-bottom: -1px;
+}
+
+
+
+

@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import AddChronicle from "./AddChronicle";
+import { searchChroniclePageProps, AddChronicleInfo } from "@/app/utils/interfaces";
 
-export default function AddChroniclesPage() {
+export default function AddChroniclesPage({toggle} : searchChroniclePageProps) {
     
     // call api to retrieve results 
     let searchResults : Record<number, AddChronicleInfo> = {
@@ -95,6 +96,7 @@ export default function AddChroniclesPage() {
             <div className='add-chronicles-page'>
                 <div className='add-chronicles-options'>
                     <input className='add-chronicles-search' onKeyUp={(e) => processSearch(e)} placeholder='search bar'></input>
+                    <button className='close-chronicles-options' onClick={toggle}></button>
                 </div>
                 <div className='add-chronicles-section-container'>
                     <div className='add-chronicles-section'>

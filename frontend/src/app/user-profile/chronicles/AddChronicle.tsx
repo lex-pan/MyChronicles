@@ -1,10 +1,5 @@
 import { useState } from "react"
-
-/*
-To-Do's:
-    - rename previous
-    - make background when clicking add chronicle darker so you can focus on search chronicles
-*/
+import { SearchedChronicle } from "@/app/utils/interfaces";
 
 export default function AddChronicle({searched_chronicle} : SearchedChronicle) {
     const [toggledChronicle, setToggledChronicle] = useState(false);

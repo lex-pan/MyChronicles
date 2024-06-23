@@ -9,13 +9,13 @@ Attribution to https://github.com/jhammann/sakura for sakura petals
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MyChronicles</title>
-    <link rel="stylesheet" href="./sakura/dist/sakura.min.css">
-    <link rel="stylesheet" href="./about.css">
-    <script src="loginLogout.js"></script>
+    <link rel="stylesheet" href="./about/sakura/dist/sakura.min.css">
+    <link rel="stylesheet" href="./about/about.css">
+    <script src="./about/loginLogout.js"></script>
     <!-- Include any additional meta tags, stylesheets, or scripts here -->
 </head>
 <body>
-    <script src="./sakura/dist/sakura.min.js"></script>
+    <script src="./about/sakura/dist/sakura.min.js"></script>
     <script>
         var sakura = new Sakura('body', {
             minSize: 30,
@@ -25,7 +25,6 @@ Attribution to https://github.com/jhammann/sakura for sakura petals
       </script>
     <nav class="nav-bar">
         <h1 class="nav-bar-title">MyChronicles</h1> 
-        <p class="nav-link">About</p> 
         <a href="/search" class="nav-link">Search</a>
         <a href="/add" class="nav-link">Add</a> 
         <p onClick="handleProfileClick()" class="nav-link">Profile</p> 
