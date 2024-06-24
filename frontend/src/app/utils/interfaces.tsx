@@ -42,14 +42,25 @@ export interface searchChroniclePageProps {
 }
 
 export interface SearchedChronicleInfo {
-    chronicle_id: number,
-    title: string,
-    rating: number,
-    members: number,
+    chronicle_id: number;
+    title: string;
+    rating: number;
+    members: number;
     category: string;
     date: string;
 }
 
 export interface SearchedChronicleInfoProps {
     chronicle: SearchedChronicleInfo;
+}
+
+export interface UserReview {
+    user_review_id: number;
+    username: string;
+    rating: number;
+    review: string;
+}
+
+export interface ReviewProps {
+    review_data: UserReview
 }

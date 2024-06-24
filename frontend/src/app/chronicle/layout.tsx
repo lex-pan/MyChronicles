@@ -1,3 +1,4 @@
+import ChronicleNavBar from "./ChronicleNavBar";
 
 export default function RootLayout({
   children,
@@ -5,6 +6,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    {children}
+    <>
+        <ChronicleNavBar />
+        {children}
+    </>
   );
 }

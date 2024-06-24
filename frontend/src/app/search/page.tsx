@@ -2,7 +2,7 @@
 'use client'
 import { useState } from "react";
 import { SearchedChronicleInfo } from "../utils/interfaces";
-import SearchedChronicle from "./searchedChronicle";
+import SearchedChronicle from "./SearchedChronicle";
 
 export default function Search() {
   let [searchResults, setSearchResults] = useState<Array<SearchedChronicleInfo>>([
