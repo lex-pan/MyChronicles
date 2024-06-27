@@ -25,7 +25,7 @@ User Registration Flow
         Once the user is saved, SignInManager<User> handles the login process.
         It creates an authentication session (via cookies or tokens) so the user stays logged in while interacting with the website.
 */
-[EnableCors("http://localhost:3000")]
+[EnableCors("allow-specific-origins")]  // Apply the CORS policy to the entire controller
 [ApiController]
 [Route("[controller]")]
 public class UserController : ControllerBase {

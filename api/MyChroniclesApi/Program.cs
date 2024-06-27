@@ -17,23 +17,35 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IUrlsService, UrlsService>();
     builder.Services.AddCors(options =>
     {
-        options.AddPolicy("http://localhost:3000",
-            builder => builder.WithOrigins("http://localhost:3000")
-                          .AllowAnyMethod()
-                          .AllowAnyHeader()
-                          .AllowCredentials());
-                            
-        options.AddPolicy("chrome-extension",
-            builder => builder.WithOrigins("chrome-extension://your-extension-id")
+        options.AddPolicy("allow-specific-origins",
+            builder => builder.WithOrigins("http://localhost:3000", "chrome-extension://keokakefjhiabclbgfleifjbhhbamnbg")
                           .AllowAnyMethod()
                           .AllowAnyHeader()
                           .AllowCredentials());
     });
-}
 
+    builder.Services.ConfigureApplicationCookie(options =>
+    {
+        options.Cookie.SameSite = SameSiteMode.None;
+        options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Ensure cookies are sent only over HTTPS
+    });
+
+    builder.Services.Configure<CookiePolicyOptions>(options =>
+    {
+        options.OnAppendCookie = context =>
+        {
+            if (context.CookieOptions.Secure && context.CookieOptions.SameSite == SameSiteMode.None)
+            {
+                context.CookieOptions.Extensions.Add("Partitioned");
+            }
+        };
+    });
+}
+// chrome-extension://keokakefjhiabclbgfleifjbhhbamnbg
 var app = builder.Build();
 {
     // app.UseExceptionHandler("/error");
+    app.UseCookiePolicy();
     app.UseCors();
     app.UseHttpsRedirection();
     app.MapControllers();

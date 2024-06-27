@@ -1,7 +1,7 @@
 // to get chrome.storage.session, use the following command
 // chrome.storage.session.get(null, function(data) { console.log(data); })
 
-// we want to remove entries that are no longer relevant (the user closed the page, or moved to the next chapter/episode for example)
+// we want to remove entries that are no longer relevant (the user closed the page for example)
 chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
     chrome.storage.session.remove(tabId.toString(), function(){
         var error = chrome.runtime.lasterror;

@@ -1,5 +1,7 @@
 import { ReviewProps } from "@/app/utils/interfaces"
 
+// add option that allows users to view the entire review when they click on it
+
 export default function Review({review_data} : ReviewProps) {
     return(
         <li className="chronicle-review">

@@ -12,7 +12,13 @@ public class Chronicles {
     public DateTime? creation_date { get; set; }
     public string? language { get; set; }
     public string? country { get; set; }
-    public DateTime db_add_date { get; set; }
+    public int? members { get; set; }
+    public int? rating { get; set; }
+    public string? status { get; set; }
+    public DateTime? start_date { get; set; }
+    public DateTime? end_date { get; set; }
+    public string? synopsis { get; set; }
+    public DateTime? db_add_date { get; set; }
 
     public Chronicles() {}
 
@@ -24,7 +30,14 @@ public class Chronicles {
             int Length, 
             DateTime CreationDate, 
             string Language, 
-            string Country) 
+            string Country,
+            int Members,
+            int Rating,
+            string Status,
+            DateTime Started,
+            DateTime Ended,
+            string Synopsis    
+        ) 
     {
         chronicle_id = Guid.NewGuid();
         title = Title;
@@ -36,5 +49,10 @@ public class Chronicles {
         language = Language;
         country = Country;
         db_add_date = DateTime.UtcNow;
+        members = Members;
+        rating = Rating;
+        status = Status;
+        start_date = Started;
+        end_date = Ended;
     }
 }

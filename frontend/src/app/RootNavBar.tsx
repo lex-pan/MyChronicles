@@ -28,13 +28,13 @@ export default function RootNavBar() {
     
     const isLoggedIn = await request.text();
     console.log(isLoggedIn);
-    if (isLoggedIn == "true") {
+    if (isLoggedIn == "false") {
+      console.log("going to login");
+      router.push("/login?toProfile=true");
+    } else {
       console.log("going to profile");
       // redirect to user-profile
       router.push("/user-profile");
-    } else {
-      console.log("going to login");
-      router.push("/login?toProfile=true");
     }
   }
 

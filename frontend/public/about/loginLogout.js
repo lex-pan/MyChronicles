@@ -18,12 +18,12 @@ async function handleProfileClick() {
   
   const isLoggedIn = await request.text();
   console.log(isLoggedIn);
-  if (isLoggedIn == "true") {
+  if (isLoggedIn == "false") {
+    console.log("going to login");
+    window.location.href = "/login?toProfile=true";
+  } else {
     console.log("going to profile");
     // redirect to user-profile
     window.location.href = "/user-profile";
-  } else {
-    console.log("going to login");
-    window.location.href = "/login?toProfile=true";
   }
 }
