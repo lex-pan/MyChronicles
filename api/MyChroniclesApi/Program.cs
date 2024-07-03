@@ -2,19 +2,20 @@ using Microsoft.EntityFrameworkCore;
 using MyChroniclesApi.Services;
 using Microsoft.AspNetCore.Identity;
 using MyChroniclesApi.Models.Users;
+using MyChroniclesApi.Controllers;
 
 var builder = WebApplication.CreateBuilder(args);
 {
     builder.Services.AddControllers();
     var configuration = builder.Configuration;
-    builder.Services.AddDbContext<UrlsService>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
-    builder.Services.AddDbContext<UsersService>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
-    builder.Services.AddDbContext<ChroniclesService>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
+    builder.Services.AddDbContext<MyChroniclesDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
     builder.Services.AddAuthorization();
     builder.Services.AddIdentity<User, IdentityRole>()
-        .AddEntityFrameworkStores<UsersService>()
+        .AddEntityFrameworkStores<MyChroniclesDbContext>()
         .AddDefaultTokenProviders();
     builder.Services.AddScoped<IUrlsService, UrlsService>();
+    builder.Services.AddScoped<UsersService>();
+    builder.Services.AddScoped<ChroniclesService>();
     builder.Services.AddCors(options =>
     {
         options.AddPolicy("allow-specific-origins",

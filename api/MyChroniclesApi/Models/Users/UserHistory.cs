@@ -11,7 +11,6 @@ public class UserHistory {
     public int chapter { get; set; }
     public string url { get; set; }
     public DateTime date_read { get; set; }
-
     public User users { get; set; }
 
     public UserHistory() {

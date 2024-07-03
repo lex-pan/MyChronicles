@@ -122,7 +122,7 @@ let wuxiaworld = {
 };
 
 let asianc = {
-    "domain": "asianc.to",
+    "domain": "asianc.sh",
     "decipher_method": ["title", "title", "title"],
     "title_start_end": [
         ["", 1, 6, " (", 1, 0],
@@ -183,6 +183,26 @@ let manganato =  {
     ]
 };
 
+let listOfMethods = [wuxiaworld, manganato, lightNovelCave, asuraScans, asianc]
+
+async function addToDecipherTable(methods) {
+    for (let i = 0; i < methods.length; i++) {
+        try {
+            await fetch('http://localhost:5172/urls', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(methods[i])
+            })
+        } catch {
+            console.log("internal server error");
+        }
+    }   
+}
+
+await addToDecipherTable();
+
 console.log(pageInfo(wuxiaworld, "https://wuxiaworld.site/novel/archean-eon-art-complete-novel/chapter-761/", "Archean Eon Art - Chapter 761 - WuxiaWorld", "Archean Eon Art", 761, "Novel"));
 console.log(pageInfo(wuxiaworld, "https://wuxiaworld.site/novel/the-great-genetic-era-wuxia-dao-novel/chapter-1663/", "The Great Genetic Era - Chapter 1663 - Chapter 1663: The True Value of the Blue Star Force (1) - WuxiaWorld" , "The Great Genetic Era", 1663, "Novel"));
 console.log(pageInfo(wuxiaworld, "https://wuxiaworld.site/novel/global-lord-100-drop-rate/chapter-1201/", "Global Lord: 100% Drop Rate - Chapter 1201 - 1201 Mythical-Tier—The Only Lord Talent—King Of Undying! - WuxiaWorld", "Global Lord: 100% Drop Rate", 1201, "Novel"));
@@ -207,8 +227,8 @@ console.log(pageInfo(asuraScans, "https://asuracomic.net/8612194254-the-regresse
 console.log(pageInfo(asuraScans, "https://asuracomic.net/1908287720-standard-of-reincarnation-chapter-98/", "98 – [S2 END] – Asura Scans"  , "Standard of Reincarnation", 98, "Graphic Novel"));
 
 
-console.log(pageInfo(asianc, "https://asianc.to/goblin-special-episode-2.html", "Watch Goblin Special Episode 2 Online With English sub | Dramacool" , "Goblin Special", 2, "Show"));
-console.log(pageInfo(asianc, "https://asianc.to/zombie-brother-2024-episode-5.html", "Watch Zombie Brother (2024) Episode 5 Online With English sub | Dramacool"  , "Zombie Brother", 5, "Show"));
-console.log(pageInfo(asianc, "https://asianc.to/the-last-cook-2024-episode-10.html", "Watch The Last Cook (2024) Episode 10 Online With English sub | Dramacool" , "The Last Cook", 10, "Show"));
+console.log(pageInfo(asianc, "https://asianc.sh/goblin-special-episode-2.html", "Watch Goblin Special Episode 2 Online With English sub | Dramacool" , "Goblin Special", 2, "Show"));
+console.log(pageInfo(asianc, "https://asianc.sh/zombie-brother-2024-episode-5.html", "Watch Zombie Brother (2024) Episode 5 Online With English sub | Dramacool"  , "Zombie Brother", 5, "Show"));
+console.log(pageInfo(asianc, "https://asianc.sh/the-last-cook-2024-episode-10.html", "Watch The Last Cook (2024) Episode 10 Online With English sub | Dramacool" , "The Last Cook", 10, "Show"));
 
 // function pageInfo(decipherInstructions, tabURL, tabTitle, expectedTitle, expectedChapter, expectedCategory) {

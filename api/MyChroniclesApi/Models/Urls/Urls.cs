@@ -1,4 +1,4 @@
-namespace MyChroniclesApi.Models;
+namespace MyChroniclesApi.Models.Urls;
 using System.ComponentModel.DataAnnotations;
 using MyChroniclesApi.ServiceErrors;
 

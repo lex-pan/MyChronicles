@@ -1,4 +1,4 @@
-namespace MyChroniclesApi.Models;
+namespace MyChroniclesApi.Models.Urls;
 public class StepsConversion {
     public int step_number { get; set; }
     public List<object> instruction { get; set; }

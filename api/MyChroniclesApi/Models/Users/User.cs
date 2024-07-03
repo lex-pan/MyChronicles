@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 /*
 The IdentityUser class includes the following properties by default:
-    Id: The unique identifier for the user (usually a GUID).
+    Id: The unique identifier for the user (In the case of asp.net identity the ID is a string).
     UserName: The username for the user.
     NormalizedUserName: The normalized username for the user (usually in uppercase for lookup purposes).
     Email: The email address for the user.

@@ -4,54 +4,58 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Transactions;
 using MyChroniclesApi.ServiceErrors;
+using Microsoft.Extensions.ObjectPool;
 
-public class ChroniclesService : DbContext {
-    public ChroniclesService(DbContextOptions<ChroniclesService> options) : base(options) {
+public class ChroniclesService : MyChroniclesDbContext {
+    public ChroniclesService(DbContextOptions<MyChroniclesDbContext> options) : base(options) {
         
     }
 
-    // DbSets are an entry point to a table within a database that allows you to perform crud operations
-    // DbSet for the UrlModel
-    public DbSet<AlternativeTitles> alternative_titles { get; set; }
-    public DbSet<Character> character { get; set; }
-    public DbSet<Chronicles> chronicles { get; set; }
-    public DbSet<ChroniclesCast> chronicles_cast { get; set; }
-    public DbSet<ChroniclesGenre> chronicles_genre { get; set; }
-    public DbSet<ChroniclesTag> chronicles_tag { get; set; }
+    public async Task<ErrorOr<AlternativeTitles>> existingChronicle(string title, string entertainment_category) {
+        var existingTitle = await this.Set<AlternativeTitles>().FirstOrDefaultAsync(alt_title => alt_title.alternative_title == title && alt_title.entertainment_category == entertainment_category);
+        
+        if (existingTitle is null) {
+            return ErrorOr<AlternativeTitles>.Failure(Error.NotFound("", "alternative title does not exist"));
+        } else {
+            return ErrorOr<AlternativeTitles>.Success(existingTitle);
+        }
+    }   
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)  {
-        modelBuilder.Entity<AlternativeTitles>()
-            .HasOne(u => u.chronicles)  
-            .WithMany()  
-            .HasForeignKey(u => u.chronicle_id); 
-        
-        modelBuilder.Entity<ChroniclesGenre>()
-            .HasOne(u => u.chronicles) 
-            .WithMany()  
-            .HasForeignKey(u => u.chronicle_id);   
-        
-        modelBuilder.Entity<ChroniclesGenre>()
-            .HasKey(cg => new { cg.chronicle_id, cg.genre });
-        
-        modelBuilder.Entity<ChroniclesTag>()
-            .HasOne(u => u.chronicles)  
-            .WithMany()  
-            .HasForeignKey(u => u.chronicle_id);
-        
-        modelBuilder.Entity<ChroniclesTag>()
-            .HasKey(cg => new { cg.chronicle_id, cg.tag });
+    public async Task<ErrorOr<string>> addChronicle(Chronicles chronicle) {
+        try {
+            await this.Set<Chronicles>().AddAsync(chronicle);   
+            await this.SaveChangesAsync();
+            return ErrorOr<string>.Success("chronicle successfully added");
+        } catch {
+            return ErrorOr<string>.Failure(Error.InternalServerError("", "something went wrong with the server"));
+        }
+    }
 
-        modelBuilder.Entity<ChroniclesCast>()
-            .HasOne(u => u.chronicles)  
-            .WithMany()  
-            .HasForeignKey(u => u.chronicle_id); 
-        
-        modelBuilder.Entity<ChroniclesCast>()
-            .HasOne(u => u.characters)  
-            .WithMany()  
-            .HasForeignKey(u => u.character_id); 
+    public async Task<ErrorOr<Guid>> matchUrls(string url) {
+        try {
+            ChronicleUrlMatch alt_title = await this.Set<ChronicleUrlMatch>().FindAsync(url);
 
-        modelBuilder.Entity<ChroniclesCast>()
-            .HasKey(cg => new { cg.chronicle_id, cg.character_id });
-    }       
+            if (alt_title is null) {
+                return ErrorOr<Guid>.Failure(Error.NotFound("", "no matching url found"));
+            } else {
+                return ErrorOr<Guid>.Success(alt_title.chronicle_id);
+            }
+        } catch {
+            return ErrorOr<Guid>.Failure(Error.InternalServerError("", "Internal Server Error"));
+        }
+    }
+
+    /*
+            Guid? chronicleId = _chronicles.existingChronicle(info.title);
+
+        if (chronicleId is null) {
+            // create a model that accepts a chronicle with only the name
+            var newChronicle = new Chronicles(
+                info.title
+            );
+            
+            // should add a chronicle and return chronicle id
+            chronicleId = _chronicles.addChronicle(newChronicle);
+        }
+    */       
 }

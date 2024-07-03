@@ -4,7 +4,7 @@ public class Error
     public string Code { get; }
     public string Description { get; }
 
-    private Error(string code, string description)
+    public Error(string code, string description)
     {
         Code = code;
         Description = description;

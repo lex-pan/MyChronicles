@@ -10,8 +10,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace MyChroniclesApi.Migrations
 {
-    [DbContext(typeof(UsersService))]
-    partial class UsersServiceModelSnapshot : ModelSnapshot
+    [DbContext(typeof(MyChroniclesDbContext))]
+    partial class MyChroniclesDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
@@ -154,9 +154,90 @@ namespace MyChroniclesApi.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("MyChroniclesApi.Models.Chronicles.Chronicles", b =>
+            modelBuilder.Entity("MyChroniclesApi.Models.Chronicles.AlternativeTitles", b =>
                 {
                     b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("alternative_title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("chronicle_id")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("entertainment_category")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<bool>("isUnique")
+                        .HasColumnType("boolean");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("chronicle_id");
+
+                    b.ToTable("AlternativeTitles");
+                });
+
+            modelBuilder.Entity("MyChroniclesApi.Models.Chronicles.Character", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("abilities")
+                        .HasColumnType("text");
+
+                    b.Property<string>("about")
+                        .HasColumnType("text");
+
+                    b.Property<int?>("age")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("appearance")
+                        .HasColumnType("text");
+
+                    b.Property<string>("background")
+                        .HasColumnType("text");
+
+                    b.Property<string>("gender")
+                        .HasColumnType("text");
+
+                    b.Property<string>("name")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("personality")
+                        .HasColumnType("text");
+
+                    b.Property<string>("social_connections")
+                        .HasColumnType("text");
+
+                    b.HasKey("id");
+
+                    b.ToTable("Characters");
+                });
+
+            modelBuilder.Entity("MyChroniclesApi.Models.Chronicles.ChronicleUrlMatch", b =>
+                {
+                    b.Property<string>("url")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("chronicle_id")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("url");
+
+                    b.HasIndex("chronicle_id");
+
+                    b.ToTable("ChronicleUrlMatch");
+                });
+
+            modelBuilder.Entity("MyChroniclesApi.Models.Chronicles.Chronicles", b =>
+                {
+                    b.Property<Guid>("chronicle_id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
@@ -166,10 +247,10 @@ namespace MyChroniclesApi.Migrations
                     b.Property<string>("country")
                         .HasColumnType("text");
 
-                    b.Property<DateTime?>("creation_date")
+                    b.Property<DateTime?>("db_add_date")
                         .HasColumnType("timestamp with time zone");
 
-                    b.Property<DateTime>("db_add_date")
+                    b.Property<DateTime?>("end_date")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("entertainment_category")
@@ -184,13 +265,138 @@ namespace MyChroniclesApi.Migrations
                     b.Property<int?>("length")
                         .HasColumnType("integer");
 
+                    b.Property<int?>("members")
+                        .HasColumnType("integer");
+
+                    b.Property<int?>("rating")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("start_date")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("status")
+                        .HasColumnType("text");
+
+                    b.Property<string>("synopsis")
+                        .HasColumnType("text");
+
                     b.Property<string>("title")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.HasKey("id");
+                    b.HasKey("chronicle_id");
 
                     b.ToTable("Chronicles");
+                });
+
+            modelBuilder.Entity("MyChroniclesApi.Models.Chronicles.ChroniclesCast", b =>
+                {
+                    b.Property<Guid>("chronicle_id")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(1);
+
+                    b.Property<Guid>("character_id")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(0);
+
+                    b.Property<string>("notes")
+                        .HasColumnType("text");
+
+                    b.HasKey("chronicle_id", "character_id");
+
+                    b.HasIndex("character_id");
+
+                    b.ToTable("ChroniclesCast");
+                });
+
+            modelBuilder.Entity("MyChroniclesApi.Models.Chronicles.ChroniclesGenre", b =>
+                {
+                    b.Property<Guid>("chronicle_id")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(0);
+
+                    b.Property<string>("genre")
+                        .HasColumnType("text")
+                        .HasColumnOrder(1);
+
+                    b.HasKey("chronicle_id", "genre");
+
+                    b.ToTable("ChroniclesGenres");
+                });
+
+            modelBuilder.Entity("MyChroniclesApi.Models.Chronicles.ChroniclesTag", b =>
+                {
+                    b.Property<Guid>("chronicle_id")
+                        .HasColumnType("uuid")
+                        .HasColumnOrder(0);
+
+                    b.Property<string>("tag")
+                        .HasColumnType("text")
+                        .HasColumnOrder(1);
+
+                    b.HasKey("chronicle_id", "tag");
+
+                    b.ToTable("ChroniclesTags");
+                });
+
+            modelBuilder.Entity("MyChroniclesApi.Models.Urls.DecipherUrlSteps", b =>
+                {
+                    b.Property<Guid>("id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("chronicle_info_category")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("domain")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("step_number")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("word_end")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("word_end_adjustment")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("word_end_index")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("word_start")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<int>("word_start_adjustment")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("word_start_index")
+                        .HasColumnType("integer");
+
+                    b.HasKey("id");
+
+                    b.HasIndex("domain");
+
+                    b.ToTable("DecipherUrlSteps");
+                });
+
+            modelBuilder.Entity("MyChroniclesApi.Models.Urls.Urls", b =>
+                {
+                    b.Property<string>("domain")
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("date_time")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("decipher_method")
+                        .HasColumnType("text");
+
+                    b.HasKey("domain");
+
+                    b.ToTable("Urls");
                 });
 
             modelBuilder.Entity("MyChroniclesApi.Models.Users.User", b =>
@@ -269,12 +475,15 @@ namespace MyChroniclesApi.Migrations
 
             modelBuilder.Entity("MyChroniclesApi.Models.Users.UserChronicles", b =>
                 {
-                    b.Property<Guid>("id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                    b.Property<string>("user_id")
+                        .HasColumnType("text");
 
                     b.Property<Guid>("book_id")
                         .HasColumnType("uuid");
+
+                    b.Property<string>("entertainment_category")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<int>("episode")
                         .HasColumnType("integer");
@@ -282,38 +491,29 @@ namespace MyChroniclesApi.Migrations
                     b.Property<DateTime>("last_read")
                         .HasColumnType("timestamp with time zone");
 
+                    b.Property<string>("notes")
+                        .HasColumnType("text");
+
                     b.Property<bool>("private_review")
                         .HasColumnType("boolean");
 
-                    b.Property<float>("rating")
+                    b.Property<float?>("rating")
                         .HasColumnType("real");
 
                     b.Property<string>("review")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("source")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<DateTime>("start_date")
                         .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("status")
-                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("user_id")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.HasKey("id");
+                    b.HasKey("user_id", "book_id");
 
                     b.HasIndex("book_id");
 
-                    b.HasIndex("user_id");
-
-                    b.ToTable("user_chronicles");
+                    b.ToTable("UserChronicles");
                 });
 
             modelBuilder.Entity("MyChroniclesApi.Models.Users.UserHistory", b =>
@@ -344,7 +544,7 @@ namespace MyChroniclesApi.Migrations
 
                     b.HasIndex("user_id");
 
-                    b.ToTable("user_history");
+                    b.ToTable("UserHistory");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -396,6 +596,80 @@ namespace MyChroniclesApi.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("MyChroniclesApi.Models.Chronicles.AlternativeTitles", b =>
+                {
+                    b.HasOne("MyChroniclesApi.Models.Chronicles.Chronicles", "chronicles")
+                        .WithMany()
+                        .HasForeignKey("chronicle_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("chronicles");
+                });
+
+            modelBuilder.Entity("MyChroniclesApi.Models.Chronicles.ChronicleUrlMatch", b =>
+                {
+                    b.HasOne("MyChroniclesApi.Models.Chronicles.Chronicles", "chronicles")
+                        .WithMany()
+                        .HasForeignKey("chronicle_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("chronicles");
+                });
+
+            modelBuilder.Entity("MyChroniclesApi.Models.Chronicles.ChroniclesCast", b =>
+                {
+                    b.HasOne("MyChroniclesApi.Models.Chronicles.Character", "characters")
+                        .WithMany()
+                        .HasForeignKey("character_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("MyChroniclesApi.Models.Chronicles.Chronicles", "chronicles")
+                        .WithMany()
+                        .HasForeignKey("chronicle_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("characters");
+
+                    b.Navigation("chronicles");
+                });
+
+            modelBuilder.Entity("MyChroniclesApi.Models.Chronicles.ChroniclesGenre", b =>
+                {
+                    b.HasOne("MyChroniclesApi.Models.Chronicles.Chronicles", "chronicles")
+                        .WithMany()
+                        .HasForeignKey("chronicle_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("chronicles");
+                });
+
+            modelBuilder.Entity("MyChroniclesApi.Models.Chronicles.ChroniclesTag", b =>
+                {
+                    b.HasOne("MyChroniclesApi.Models.Chronicles.Chronicles", "chronicles")
+                        .WithMany()
+                        .HasForeignKey("chronicle_id")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("chronicles");
+                });
+
+            modelBuilder.Entity("MyChroniclesApi.Models.Urls.DecipherUrlSteps", b =>
+                {
+                    b.HasOne("MyChroniclesApi.Models.Urls.Urls", "urls")
+                        .WithMany()
+                        .HasForeignKey("domain")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("urls");
                 });
 
             modelBuilder.Entity("MyChroniclesApi.Models.Users.UserChronicles", b =>

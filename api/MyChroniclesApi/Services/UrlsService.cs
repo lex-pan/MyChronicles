@@ -1,24 +1,13 @@
 namespace MyChroniclesApi.Services;
-using MyChroniclesApi.Models;
+using MyChroniclesApi.Models.Urls;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using System.Transactions;
 using MyChroniclesApi.ServiceErrors;
 
-public class UrlsService : DbContext, IUrlsService {
-    public UrlsService(DbContextOptions<UrlsService> options) : base(options) {
+public class UrlsService : MyChroniclesDbContext, IUrlsService {
+    public UrlsService(DbContextOptions<MyChroniclesDbContext> options) : base(options) {
         
-    }
-
-    // DbSets are an entry point to a table within a database that allows you to perform crud operations
-    // DbSet for the UrlModel
-    public DbSet<Urls> chronicle_extension_decipher { get; set; }
-    public DbSet<DecipherUrlSteps> decipher_steps { get; set; }
-    protected override void OnModelCreating(ModelBuilder modelBuilder)  {
-        modelBuilder.Entity<DecipherUrlSteps>()
-            .HasOne(u => u.urls)  // specifies that DecipherUrlSteps has a navigation property (Urls) that points to a single instance of Urls.
-            .WithMany()  // WithMany() specifies that Urls can have many instances of DecipherUrlSteps associated with it.
-            .HasForeignKey(u => u.domain); // Assuming you have a foreign key property domain in DecipherUrlSteps`that allows you to identify the url in decipher steps    
     }
 
     // Method to handle the POST command
@@ -53,23 +42,24 @@ public class UrlsService : DbContext, IUrlsService {
     }
 
     public async Task<ErrorOr<UrlsResult>> GetUrlDecipher(string domain) {
-        string domain_query_string = "SELECT * FROM chronicle_extension_decipher WHERE domain = {0}";
         string steps_query_string = "SELECT * FROM decipher_steps WHERE domain = {0} ORDER BY step_number";
-        var steps = await this.decipher_steps.FromSqlRaw(steps_query_string, domain)
-        .ToListAsync();
-        var domain_query = await this.chronicle_extension_decipher.FromSqlRaw(domain_query_string, domain).FirstOrDefaultAsync();
+        var steps = await this.Set<DecipherUrlSteps>()
+            .Where(s => s.domain == domain)
+            .OrderBy(s => s.step_number)
+            .ToListAsync();
+        var domain_query = await this.Set<Urls>().FindAsync(domain);
         UrlsResult urlsResult = new UrlsResult();
         ErrorOr<UrlsResult> query_result = urlsResult.Create(domain_query, steps);
         return query_result;
     }
 
     public async Task<ErrorOr<string>> DeleteUrlDecipher(string domain) {
-        var entityToDelete = await chronicle_extension_decipher.FirstOrDefaultAsync(u => u.domain == domain);
+        var entityToDelete = await Set<Urls>().FirstOrDefaultAsync(u => u.domain == domain);
 
         if (entityToDelete != null)
         {
             // Remove the entity from the context
-            chronicle_extension_decipher.Remove(entityToDelete);
+            Set<Urls>().Remove(entityToDelete);
             // Save the changes to the database
             await SaveChangesAsync();
         }

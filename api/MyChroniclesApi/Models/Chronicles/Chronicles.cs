@@ -1,5 +1,6 @@
 namespace MyChroniclesApi.Models.Chronicles;
 using System.ComponentModel.DataAnnotations;
+using MyChroniclesApi.ServiceErrors;
 
 public class Chronicles {
     [Key]
@@ -9,7 +10,6 @@ public class Chronicles {
     public string? entertainment_category { get; set; }
     public int? episodes { get; set; }
     public int? length { get; set; }
-    public DateTime? creation_date { get; set; }
     public string? language { get; set; }
     public string? country { get; set; }
     public int? members { get; set; }
@@ -19,24 +19,21 @@ public class Chronicles {
     public DateTime? end_date { get; set; }
     public string? synopsis { get; set; }
     public DateTime? db_add_date { get; set; }
-
     public Chronicles() {}
-
-    public Chronicles(
+    private Chronicles(
             string Title, 
-            string Author, 
-            string EntertainmentCategory, 
-            int Episodes, 
-            int Length, 
-            DateTime CreationDate, 
-            string Language, 
-            string Country,
-            int Members,
-            int Rating,
-            string Status,
-            DateTime Started,
-            DateTime Ended,
-            string Synopsis    
+            string Author = null, 
+            string EntertainmentCategory = null, 
+            int? Episodes = null, 
+            int? Length = null, 
+            string Language = null, 
+            string Country = null,
+            int? Members = null,
+            int? Rating = null,
+            string Status = null,
+            DateTime? Started = null,
+            DateTime? Ended = null,
+            string Synopsis = null   
         ) 
     {
         chronicle_id = Guid.NewGuid();
@@ -45,7 +42,6 @@ public class Chronicles {
         entertainment_category = EntertainmentCategory;
         episodes = Episodes;
         length = Length;
-        creation_date = CreationDate;
         language = Language;
         country = Country;
         db_add_date = DateTime.UtcNow;
@@ -54,5 +50,14 @@ public class Chronicles {
         status = Status;
         start_date = Started;
         end_date = Ended;
+        synopsis = Synopsis;
+    }
+
+    public static ErrorOr<Chronicles> CreateAutomatic(string title) {
+        if (title.Length < 1) {
+            return ErrorOr<Chronicles>.Failure(Error.InvalidInput("", "Title can't be empty"));
+        } 
+
+        return ErrorOr<Chronicles>.Success(new Chronicles(Title: title));
     }
 }

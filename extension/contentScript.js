@@ -5,17 +5,19 @@ console.log(window.location.href);
 (async () => {
     // this gets the url/title and then deciphers it into a list containing title, chapter, and entertainment category
     let tabURL = window.location.href;
-    const result = await pageInfo(tabURL);
-    console.log(result);
-
-    // send to background worker to save in session storage
-    chrome.runtime.sendMessage({ type: "saveToSessionStorage", message: result});
+    
+    // get background.js to retrieve url decipher (when a request comes from background.js, the origin will be the extension and not the page we're currently on)
+    chrome.runtime.sendMessage({type: "decipherUrlMethod", message: tabURL}, (response) => {
+        const result = pageInfo(response, tabURL);
+        console.log(result);
+        // send to background worker to save in session storage (this way our extension can save it in case the user wants to review it later)
+        chrome.runtime.sendMessage({ type: "saveToSessionStorage", message: result});
+        // if user is logged in send to db
+        chrome.runtime.sendMessage({type: "sendToDb", message: result})
+    });
 })();
 
-async function pageInfo(tabURL) {
-    const urlOrigin = getOrigin(tabURL);
-    const raw_response = await fetch(`${apiLink}/${urlOrigin}`);
-    let website_parse_info = await raw_response.json();
+function pageInfo(website_parse_info, tabURL) {
     let website_title = document.title;
     let decipherChoice = [];
     console.log(website_parse_info);
@@ -110,11 +112,4 @@ function cleanUpUrlTitle(title) {
     title = title.join(' ');
 
     return title
-}
-
-function getOrigin(tabURL) {
-    const start = tabURL.indexOf("//")+2;
-    const end = tabURL.indexOf("/", start);
-    const origin = tabURL.substring(start, end);
-    return origin
 }

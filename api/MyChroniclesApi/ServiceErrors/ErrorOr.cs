@@ -5,7 +5,7 @@ public class ErrorOr<T> {
 
     protected ErrorOr(T Value) {
         value = Value;
-        error = null;
+        error = new Error("No Error", "No Error");
     }
 
     protected ErrorOr(Error error_msg) {

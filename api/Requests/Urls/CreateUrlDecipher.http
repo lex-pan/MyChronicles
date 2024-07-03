@@ -5,14 +5,14 @@ Content-Type: application/json
     "domain": "asuracomic.net",
     "decipher_method": ["url", "url", "url"],
     "title_start_end": [  
-        ["/", 0, "-chapter", 0],
-        ["-", 1, " ", 0]
+        ["-", 1, 1, "-chapter", 1, 0]
     ],
     "chapter_start_end": [  
-        ["chapter-", 8, "/", -1],
-        ["", 0, "-", 0]
+        ["chapter-", 1, 8, "", -1, -1],
+        ["", 1, 0, "-", 1, 0]
     ],
     "entertainment_category": [
-        ["Graphic Novel", -2, "Graphic Novel", -2]
+        ["Graphic Novel", -2, -2, "Graphic Novel", -2, -2]
     ]
 }
+

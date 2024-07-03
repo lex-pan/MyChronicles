@@ -8,31 +8,42 @@ using Microsoft.Extensions.Configuration;
 using System.Transactions;
 using MyChroniclesApi.ServiceErrors;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http.HttpResults;
 
-public class UsersService : IdentityDbContext<User> {
-    public DbSet<UserHistory> user_history { get; set; }
-    public DbSet<UserChronicles> user_chronicles { get; set; }
-    public DbSet<User> User { get; set; }
-    public UsersService(DbContextOptions<UsersService> options) : base(options) {
-
+public class UsersService : MyChroniclesDbContext {
+    public UsersService(DbContextOptions<MyChroniclesDbContext> options) : base(options) {
+        
     }
 
-    // add relationship between chronicle and user for user_chronicles, add relationship between user_history and user 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)  {
-        base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<UserChronicles>()
-            .HasOne(u => u.chronicles)  
-            .WithMany()  
-            .HasForeignKey(u => u.book_id);
+    public async Task<ErrorOr<string>> addUserHistory(UserHistory history) {
+        try {
+            await this.Set<UserHistory>().AddAsync(history);
+            await this.SaveChangesAsync();
+            return ErrorOr<string>.Success("userHistory added");
+        } catch {
+            return ErrorOr<string>.Failure(Error.InternalServerError("", "internal server error"));
+        }
+    }
 
-        modelBuilder.Entity<UserChronicles>()
-            .HasOne(u => u.users)  
-            .WithMany()  
-            .HasForeignKey(u => u.user_id); 
-        
-        modelBuilder.Entity<UserHistory>()
-            .HasOne(u => u.users)  
-            .WithMany()  
-            .HasForeignKey(u => u.user_id);
+    public async Task<ErrorOr<string>> updateAutomaticUserchronicle(UserChronicles automaticUC) {
+        try {
+            // find if the user chronicle first exists
+            // if it does, update
+            // otherwise insert the new one
+            var userChronicleExists = await this.Set<UserChronicles>().FindAsync(automaticUC.user_id, automaticUC.book_id);
+
+            if (userChronicleExists is null) {
+                await this.Set<UserChronicles>().AddAsync(automaticUC);
+            } else {
+                userChronicleExists.episode = automaticUC.episode;
+            }
+
+            await this.SaveChangesAsync();
+            return ErrorOr<string>.Success("successfully updated");
+
+        } catch {
+            return ErrorOr<string>.Failure(Error.InternalServerError("", "internal server error"));
+        }
     }
 }

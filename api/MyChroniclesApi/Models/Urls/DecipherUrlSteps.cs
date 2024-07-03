@@ -1,3 +1,4 @@
+namespace MyChroniclesApi.Models.Urls;
 using System.ComponentModel.DataAnnotations;
 using MyChroniclesApi.Models;
 using System.ComponentModel.DataAnnotations.Schema;

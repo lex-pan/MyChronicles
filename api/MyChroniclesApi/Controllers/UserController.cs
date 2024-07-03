@@ -9,6 +9,8 @@ using MyChroniclesApi.Contracts.Users;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
 using System.Security.Claims; // Ensure this using directive is included
+using MyChroniclesApi.Models.Chronicles;
+using MyChroniclesApi.ServiceErrors;
 
 /*
 User Registration Flow
@@ -37,11 +39,13 @@ public class UserController : ControllerBase {
     //This service handles user authentication. It manages sign-in and sign-out processes, as well as other authentication-related operations. 
     //It works in conjunction with UserManager<User> to validate users' credentials and manage their authentication status.
     private readonly SignInManager<User> _signInManager;
-    public UserController(UserManager<User> userManager, SignInManager<User> signInManager, UsersService User)
+    private readonly ChroniclesService _chronicles;
+    public UserController(UserManager<User> userManager, SignInManager<User> signInManager, UsersService User, ChroniclesService Chronicles)
     {
         _user = User;
         _userManager = userManager;
         _signInManager = signInManager;
+        _chronicles = Chronicles;
     }
 
     // my goal is to allow users to register
@@ -125,7 +129,42 @@ public class UserController : ControllerBase {
         } else {
             return Ok(false);
         }
+    }
+
+    [HttpPost("automatic-update")]
+    public async Task<IActionResult> AutomaticUserUpdate(AutomaticExtensionUpdate info) {
+        // if chronicle with name does not exist, create a copy of it with only the name initalized, return guid of chronicle
+        ErrorOr<Guid> chronicleId = await chronicleID(info.title, info.entertainment_category, info.url);
+
+        if (chronicleId.error.Description == "internal server error") {
+            return StatusCode(500, "internal server error");
+        }
         
+        if (chronicleId.error.Description != "No Error") {
+            return BadRequest(chronicleId.error);
+        }
+
+        UserHistory history = new UserHistory(
+            User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+            info.title,
+            info.chapter,
+            info.url
+        );
+
+        _user.addUserHistory(history); 
+
+
+        UserChronicles newUserChronicle = new UserChronicles(
+            UserId: User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
+            BookID: chronicleId.value,
+            Episode: info.chapter,
+            EntertainmentCategory: info.entertainment_category,
+            Status: "Reading"
+        );
+
+        _user.updateAutomaticUserchronicle(newUserChronicle);
+
+        return Ok("Successfully added");
     }
 
     private bool invalidEmail(string email) {
@@ -171,6 +210,46 @@ public class UserController : ControllerBase {
             return false;
         } else {
             return true;
+        }
+    }
+
+    // if a chronicle with the title exists return the ID
+    // otherwise create one and return the newly generated ID
+    // if there are dupes compare with url, if not successful just use first dupe
+    private async Task<ErrorOr<Guid>> chronicleID(string title, string entertainment_category, string url) {
+        ErrorOr<AlternativeTitles> alt_title_exists = await _chronicles.existingChronicle(title, entertainment_category);
+
+        if (alt_title_exists.error.Description == "alternative title does not exist") {
+            // create a model that accepts a chronicle with only the name
+            var newChronicle = Chronicles.CreateAutomatic(
+                title
+            );
+
+            if (newChronicle.error.Description == "No Error") {
+                ErrorOr<string> successfullyAdded = await _chronicles.addChronicle(newChronicle.value);
+
+                if (successfullyAdded.error.Description == "something went wrong with the server") {
+                    return ErrorOr<Guid>.Failure(new Error("", "internal server error"));
+                }
+
+                return ErrorOr<Guid>.Success(newChronicle.value.chronicle_id);
+            } else {
+                // not a valid entry
+                return ErrorOr<Guid>.Failure(newChronicle.error);
+            }
+        } else {
+            AlternativeTitles alt_title = alt_title_exists.value;
+
+            // check if there are other chronicles with this name
+            // if there are, then the chronicle_id of this title might not be accurate
+            // therefore must check if there is a corresponding url
+            if (alt_title.isUnique == false) {
+                ErrorOr<Guid> matching_url = await _chronicles.matchUrls(url);
+
+                return matching_url;
+            }
+
+            return ErrorOr<Guid>.Success(alt_title.chronicle_id);
         }
     }
 

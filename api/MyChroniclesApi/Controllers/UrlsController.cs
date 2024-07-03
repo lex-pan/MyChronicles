@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Cors;
 using MyChroniclesApi.Contracts.Urls;
-using MyChroniclesApi.Models;
+using MyChroniclesApi.Models.Urls;
 using MyChroniclesApi.ServiceErrors;
 using MyChroniclesApi.Services;
 namespace MyChroniclesApi.Controllers;
@@ -28,15 +28,15 @@ public class UrlsController : ControllerBase {
         ErrorOr<List<DecipherUrlSteps>> instructions = ErrorOr<List<DecipherUrlSteps>>.Success(new List<DecipherUrlSteps>());
 
         instructions = instructionDbConversion(instructions, request.domain, "title" , request.title_start_end);
-        if (instructions.error != null) {
+        if (instructions.error.Description != "No Error") {
             return BadRequest(instructions.error);
         }
         instructions = instructionDbConversion(instructions, request.domain, "chapter" , request.chapter_start_end);
-        if (instructions.error != null) {
+        if (instructions.error.Description != "No Error") {
             return BadRequest(instructions.error);
         }
         instructions = instructionDbConversion(instructions, request.domain, "entertainment" , request.entertainment_category);
-        if (instructions.error != null) {
+        if (instructions.error.Description != "No Error") {
             return BadRequest(instructions.error);
         }
 
@@ -45,7 +45,7 @@ public class UrlsController : ControllerBase {
             request.decipher_method
         );
 
-        if (urlDecipher.error == null) {
+        if (urlDecipher.error.Description == "No Error") {
             await _MyChroniclesDb.AddUrlDecipher(urlDecipher.value, instructions.value);
         } else {
             return BadRequest(urlDecipher.error);
@@ -58,7 +58,7 @@ public class UrlsController : ControllerBase {
     public async Task<IActionResult> GetUrlDecipher(string domain) {
         ErrorOr<UrlsResult> response = await _MyChroniclesDb.GetUrlDecipher(domain);
 
-        if (response == null) {
+        if (response.value == null) {
             return Ok();
         }
 
@@ -83,15 +83,15 @@ public class UrlsController : ControllerBase {
         ErrorOr<List<DecipherUrlSteps>> instructions = ErrorOr<List<DecipherUrlSteps>>.Success(new List<DecipherUrlSteps>());        
 
         instructions = instructionDbConversion(instructions, request.domain, "title" , request.title_start_end);
-        if (instructions.error != null) {
+        if (instructions.error.Description != "No Error") {
             return BadRequest(instructions.error);
         }
         instructions = instructionDbConversion(instructions, request.domain, "chapter" , request.chapter_start_end);
-        if (instructions.error != null) {
+        if (instructions.error.Description != "No Error") {
             return BadRequest(instructions.error);
         }
         instructions = instructionDbConversion(instructions, request.domain, "entertainment" , request.entertainment_category);
-        if (instructions.error != null) {
+        if (instructions.error.Description != "No Error") {
             return BadRequest(instructions.error);
         }
 
@@ -100,7 +100,7 @@ public class UrlsController : ControllerBase {
             request.decipher_method
         );
 
-        if (urlDecipher.error == null) {
+        if (urlDecipher.error.Description == "No Error") {
             await _MyChroniclesDb.UpdateUrlDecipher(urlDecipher.value, instructions.value);
         } else {
             return BadRequest(urlDecipher.error);
@@ -136,7 +136,7 @@ public class UrlsController : ControllerBase {
                 Convert.ToInt32(wordEndAdjustment)
             );
             
-            if (instruction.error == null) {
+            if (instruction.error.Description == "No Error") {
                 instructionsList.value.Add(instruction.value);
             } else {
                 return ErrorOr<List<DecipherUrlSteps>>.Failure(instruction.error);

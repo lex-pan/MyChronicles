@@ -1,4 +1,4 @@
-namespace MyChroniclesApi.Models;
+namespace MyChroniclesApi.Models.Urls;
 using MyChroniclesApi.ServiceErrors;
 
 public class UrlsResult {
