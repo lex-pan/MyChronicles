@@ -201,7 +201,7 @@ async function addToDecipherTable(methods) {
     }   
 }
 
-await addToDecipherTable();
+(async () => {await addToDecipherTable(listOfMethods)})();
 
 console.log(pageInfo(wuxiaworld, "https://wuxiaworld.site/novel/archean-eon-art-complete-novel/chapter-761/", "Archean Eon Art - Chapter 761 - WuxiaWorld", "Archean Eon Art", 761, "Novel"));
 console.log(pageInfo(wuxiaworld, "https://wuxiaworld.site/novel/the-great-genetic-era-wuxia-dao-novel/chapter-1663/", "The Great Genetic Era - Chapter 1663 - Chapter 1663: The True Value of the Blue Star Force (1) - WuxiaWorld" , "The Great Genetic Era", 1663, "Novel"));

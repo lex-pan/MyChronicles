@@ -53,11 +53,11 @@ public class Chronicles {
         synopsis = Synopsis;
     }
 
-    public static ErrorOr<Chronicles> CreateAutomatic(string title) {
+    public static ErrorOr<Chronicles> CreateAutomatic(string title, string entertainment_category) {
         if (title.Length < 1) {
             return ErrorOr<Chronicles>.Failure(Error.InvalidInput("", "Title can't be empty"));
         } 
 
-        return ErrorOr<Chronicles>.Success(new Chronicles(Title: title));
+        return ErrorOr<Chronicles>.Success(new Chronicles(Title: title, EntertainmentCategory: entertainment_category));
     }
 }

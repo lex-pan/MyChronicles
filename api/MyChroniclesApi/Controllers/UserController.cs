@@ -151,8 +151,7 @@ public class UserController : ControllerBase {
             info.url
         );
 
-        _user.addUserHistory(history); 
-
+        await _user.addUserHistory(history); 
 
         UserChronicles newUserChronicle = new UserChronicles(
             UserId: User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
@@ -162,9 +161,13 @@ public class UserController : ControllerBase {
             Status: "Reading"
         );
 
-        _user.updateAutomaticUserchronicle(newUserChronicle);
+        ErrorOr<UserChronicles> updatedUC = await _user.updateAutomaticUserchronicle(newUserChronicle);
 
-        return Ok("Successfully added");
+        if (updatedUC.error.Description == "No Error") {
+            return Ok(new {updatedUC.value.user_id, updatedUC.value.book_id, updatedUC.value.status, updatedUC.value.rating, updatedUC.value.review, updatedUC.value.notes});
+        } else {
+            return StatusCode(500, updatedUC.error);
+        }
     }
 
     private bool invalidEmail(string email) {
@@ -222,16 +225,24 @@ public class UserController : ControllerBase {
         if (alt_title_exists.error.Description == "alternative title does not exist") {
             // create a model that accepts a chronicle with only the name
             var newChronicle = Chronicles.CreateAutomatic(
-                title
+                title,
+                entertainment_category
             );
 
             if (newChronicle.error.Description == "No Error") {
-                ErrorOr<string> successfullyAdded = await _chronicles.addChronicle(newChronicle.value);
+                
+                var new_alt_title = new AlternativeTitles(
+                    newChronicle.value.title,
+                    newChronicle.value.chronicle_id,
+                    newChronicle.value.entertainment_category
+                );
+
+                ErrorOr<string> successfullyAdded = await _chronicles.addChronicle(newChronicle.value, new_alt_title);
 
                 if (successfullyAdded.error.Description == "something went wrong with the server") {
                     return ErrorOr<Guid>.Failure(new Error("", "internal server error"));
                 }
-
+                
                 return ErrorOr<Guid>.Success(newChronicle.value.chronicle_id);
             } else {
                 // not a valid entry

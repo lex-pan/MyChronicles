@@ -26,7 +26,7 @@ public class UsersService : MyChroniclesDbContext {
         }
     }
 
-    public async Task<ErrorOr<string>> updateAutomaticUserchronicle(UserChronicles automaticUC) {
+    public async Task<ErrorOr<UserChronicles>> updateAutomaticUserchronicle(UserChronicles automaticUC) {
         try {
             // find if the user chronicle first exists
             // if it does, update
@@ -37,13 +37,14 @@ public class UsersService : MyChroniclesDbContext {
                 await this.Set<UserChronicles>().AddAsync(automaticUC);
             } else {
                 userChronicleExists.episode = automaticUC.episode;
+                userChronicleExists.last_read = DateTime.UtcNow;
             }
 
             await this.SaveChangesAsync();
-            return ErrorOr<string>.Success("successfully updated");
+            return ErrorOr<UserChronicles>.Success(userChronicleExists);
 
         } catch {
-            return ErrorOr<string>.Failure(Error.InternalServerError("", "internal server error"));
+            return ErrorOr<UserChronicles>.Failure(Error.InternalServerError("", "internal server error"));
         }
     }
 }

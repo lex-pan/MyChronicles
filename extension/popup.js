@@ -1,4 +1,5 @@
 // when setting innherHTML use document.addeventlistener if you want to add functions to elements
+const apiLink = 'http://localhost:5172';
 
 async function getActiveTabURL() {
   const tabs = await chrome.tabs.query({
@@ -10,7 +11,7 @@ async function getActiveTabURL() {
 }
 
 async function isLoggedIn() {
-  const request = await fetch('http://localhost:5172/user/login-status', {
+  const request = await fetch(`${apiLink}/user/login-status`, {
     method: 'GET',
     credentials: 'include', // Include cookies with the request
   });
@@ -20,7 +21,7 @@ async function isLoggedIn() {
 }
 
 async function logout() {
-  const logoutResult = await fetch('http://localhost:5172/user/logout', {
+  const logoutResult = await fetch(`${apiLink}/user/logout`, {
       method: 'GET',
       credentials: 'include', // Include cookies with the request
   });
@@ -35,7 +36,7 @@ async function login(event) {
   const usernameOrEmail =  loginForm.childNodes[3].value;
   const password = loginForm.childNodes[5].value;
 
-  const loginUserResult = await fetch('http://localhost:5172/user/login', {
+  const loginUserResult = await fetch(`${apiLink}/user/login`, {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json',
@@ -71,7 +72,7 @@ async function register(event) {
   const email = registerForm.childNodes[5].value;
   const password = registerForm.childNodes[7].value;
   console.log(username);
-  const registerUserResult = await fetch('http://localhost:5172/user/register', {
+  const registerUserResult = await fetch(`${apiLink}/user/register`, {
       method: 'POST',
       headers: {
           'Content-Type': 'application/json'
@@ -91,34 +92,36 @@ async function register(event) {
 
 function setUpExtension(tabData) {
     let extensionHtml = document.getElementById("extension-popup");
+    let urlInfo = tabData.message;
+    let userChronicleInfo = tabData.userChronicleId;
     console.log(tabData);
     // add stars to rating
     extensionHtml.innerHTML = 
     `
     <h3 class="grid-website">MyChronicles</h3>
     <div class="grid-info">
-        <p class="grid-info-item">Title: ${tabData?.[1] ?? "Not Found"}</p>
+        <p class="grid-info-item">Title: ${urlInfo?.[1] ?? "Not Found"}</p>
         <div class="status-div">
             <p class="grid-info-item">Status:</p>
-            <select class="status-options">
-              <option value="reading">Reading</option>
-              <option value="completed">Completed</option>
-              <option value="paused">Paused</option>
-              <option value="dropped">Dropped</option>
-              <option value="plan to read">Plan to Read</option>
-              <option value="rereading">Rereading</option>
+            <select class="status-options" value=${userChronicleInfo.status ?? "Reading"}>
+              <option value="Reading">Reading</option>
+              <option value="Completed">Completed</option>
+              <option value="Paused">Paused</option>
+              <option value="Dropped">Dropped</option>
+              <option value="Plan to Read">Plan to Read</option>
+              <option value="Rereading">Rereading</option>
             </select>
         </div>
-        <p class="grid-info-item">Episode: ${tabData?.[2] ?? "Not Found"}</p>
+        <p class="grid-info-item">Episode: ${urlInfo?.[2] ?? "Not Found"}</p>
         <div class="rating-div">
             <p class="grid-info-item">Rating:</p>
-            <input class="rating-div-input" type="number" step="0.5" min="1.0" max="5.0">
+            <input class="rating-div-input" type="number" step="0.5" min="1.0" max="5.0" value=${userChronicleInfo.rating ?? null}>
             <div class="grid-info-stars-outer"><div class="grid-info-stars-inner"></div></div>
         </div>
         <p class="grid-info-item">Review:</p> 
-        <textarea class="grid-info-textarea" placeholder="Write your review here"></textarea>
+        <textarea class="grid-info-textarea" placeholder="Write your review here">${userChronicleInfo.review ?? null}</textarea>
         <p class="grid-info-item">Notes:</p>
-        <textarea class="grid-info-textarea" placeholder="Write your notes here"></textarea>
+        <textarea class="grid-info-textarea" placeholder="Write your notes here">${userChronicleInfo.notes ?? null}</textarea>
     </div>
     <div class="extension-options">
       <button class="extension-button">Log Out</button>
@@ -128,8 +131,28 @@ function setUpExtension(tabData) {
     <a class="extension-attribution" href="https://www.freepik.com/icon/book_13960454#fromView=search&page=1&position=0&uuid=e497bb06-528d-4a63-9e3d-9a09fdb42d7d">Image Attribution: Icon by HideMaru</a>
     `;
     document.getElementsByClassName("extension-button")[0].addEventListener('click', logout);
+    document.getElementsByClassName("extension-button")[2].addEventListener('click', () => {update(userChronicleInfo)});
     document.getElementsByClassName("rating-div-input")[0].addEventListener('blur', valueCheck);
     document.getElementsByClassName("rating-div-input")[0].addEventListener('input', typeStars);
+}
+
+async function update(e, urlInfo, userChronicleInfo) {
+  const extensionInfo = document.getElementsByClassName("grid-info")[0];
+  console.log(extensionInfo.childNodes);
+  /*
+  const updateUserChronicle = await fetch(`${apiLink}/user/manual-extension-update`, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+        "user_id" : userChronicleInfo.user_id,
+        "book_id" : userChronicleInfo.book_id,
+        "username": username,
+        "password": password
+    })
+  });
+*/
 }
 
 function valueCheck() {
@@ -215,7 +238,7 @@ async function retrieveDataSetUpExtension() {
           extensionHtml.innerHTML = `
             <h3 class="grid-website">MyChronicles</h3>
             <div class="grid-info">
-                <p class="invalid-message">Not a valid page</p>
+                <p class="invalid-message">Not a valid page or wait a second because the data might not have loaded</p>
             </div>
             <div class="invalid-options">
               <button class="extension-button">Log Out</button>

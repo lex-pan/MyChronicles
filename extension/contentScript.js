@@ -10,10 +10,11 @@ console.log(window.location.href);
     chrome.runtime.sendMessage({type: "decipherUrlMethod", message: tabURL}, (response) => {
         const result = pageInfo(response, tabURL);
         console.log(result);
-        // send to background worker to save in session storage (this way our extension can save it in case the user wants to review it later)
-        chrome.runtime.sendMessage({ type: "saveToSessionStorage", message: result});
         // if user is logged in send to db
-        chrome.runtime.sendMessage({type: "sendToDb", message: result})
+        chrome.runtime.sendMessage({type: "sendToDb", tabURL: result[0], title: result[1], chapter: result[2], entertainment_category: result[3]}, (response) => {
+            // send to background worker to save in session storage (this way our extension can save it in case the user wants to review it later)
+            chrome.runtime.sendMessage({ type: "saveToSessionStorage", message: result, userChronicleId: response});  
+        })
     });
 })();
 

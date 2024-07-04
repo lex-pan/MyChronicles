@@ -3,6 +3,5 @@ public record AutomaticExtensionUpdate(
     string title,
     int chapter,
     string url,
-    string entertainment_category,
-    DateTime timeRead
+    string entertainment_category
 );

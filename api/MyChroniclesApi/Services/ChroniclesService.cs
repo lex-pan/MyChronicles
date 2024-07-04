@@ -21,9 +21,10 @@ public class ChroniclesService : MyChroniclesDbContext {
         }
     }   
 
-    public async Task<ErrorOr<string>> addChronicle(Chronicles chronicle) {
+    public async Task<ErrorOr<string>> addChronicle(Chronicles chronicle, AlternativeTitles alt_chronicle) {
         try {
             await this.Set<Chronicles>().AddAsync(chronicle);   
+            await this.Set<AlternativeTitles>().AddAsync(alt_chronicle);
             await this.SaveChangesAsync();
             return ErrorOr<string>.Success("chronicle successfully added");
         } catch {
