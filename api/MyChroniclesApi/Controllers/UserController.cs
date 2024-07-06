@@ -133,6 +133,11 @@ public class UserController : ControllerBase {
 
     [HttpPost("automatic-update")]
     public async Task<IActionResult> AutomaticUserUpdate(AutomaticExtensionUpdate info) {
+        bool isSignedIn = _signInManager.IsSignedIn(User);
+        if (!isSignedIn) {
+            return StatusCode(300, "User must be logged in for automatic updates");
+        }
+
         // if chronicle with name does not exist, create a copy of it with only the name initalized, return guid of chronicle
         ErrorOr<Guid> chronicleId = await chronicleID(info.title, info.entertainment_category, info.url);
 
@@ -167,6 +172,34 @@ public class UserController : ControllerBase {
             return Ok(new {updatedUC.value.user_id, updatedUC.value.book_id, updatedUC.value.status, updatedUC.value.rating, updatedUC.value.review, updatedUC.value.notes});
         } else {
             return StatusCode(500, updatedUC.error);
+        }
+    }
+
+    [HttpPost("manual-extension-update")]
+    public async Task<IActionResult> ManualExtensionUpdate(ManualExtensionUpdate info) {
+        bool isSignedIn = _signInManager.IsSignedIn(User);
+        if (!isSignedIn) {
+            return StatusCode(300, "User must be logged in for automatic updates");
+        }
+
+        UCChange changes = new UCChange(
+            Status: info.status,
+            Rating: info.rating,
+            Review: info.review,
+            Notes: info.notes            
+        );
+
+        var chroniclesToUpdate = new Dictionary<Guid, UCChange>
+        {
+            { info.book_id, changes }
+        };
+
+        ErrorOr<string> updateChronicleAttributes = await _user.updateFlexibleUserChronicles(chroniclesToUpdate, User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+        if (updateChronicleAttributes.error.Description == "No Error") {
+            return Ok("successfully added");
+        } else {
+            return StatusCode(500, "internal server error");
         }
     }
 

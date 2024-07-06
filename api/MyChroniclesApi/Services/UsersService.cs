@@ -10,6 +10,7 @@ using MyChroniclesApi.ServiceErrors;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.HttpResults;
+using System.Reflection;
 
 public class UsersService : MyChroniclesDbContext {
     public UsersService(DbContextOptions<MyChroniclesDbContext> options) : base(options) {
@@ -35,16 +36,52 @@ public class UsersService : MyChroniclesDbContext {
 
             if (userChronicleExists is null) {
                 await this.Set<UserChronicles>().AddAsync(automaticUC);
+                await this.SaveChangesAsync();
+                return ErrorOr<UserChronicles>.Success(automaticUC);
             } else {
                 userChronicleExists.episode = automaticUC.episode;
                 userChronicleExists.last_read = DateTime.UtcNow;
-            }
+                await this.SaveChangesAsync();
+                return ErrorOr<UserChronicles>.Success(userChronicleExists);
 
-            await this.SaveChangesAsync();
-            return ErrorOr<UserChronicles>.Success(userChronicleExists);
+            }
 
         } catch {
             return ErrorOr<UserChronicles>.Failure(Error.InternalServerError("", "internal server error"));
         }
+    }
+
+    // goes through each chronicle by finding the chronicle in db by combining user id and book id
+    // for each chronicle, check the attributes it has and if it does, change the current one
+    public async Task<ErrorOr<string>> updateFlexibleUserChronicles(Dictionary<Guid, UCChange> chroniclesToUpdate, string userId) {
+        try {
+            foreach (KeyValuePair<Guid, UCChange> chronicle in chroniclesToUpdate) {
+                // search user chronicle based on user id and book id
+                // change attributes 
+                UCChange propertiesToChange = chronicle.Value;
+
+                UserChronicles matchingChronicle = await this.Set<UserChronicles>().FindAsync(userId, chronicle.Key);
+
+                if (matchingChronicle is null) {
+                    return ErrorOr<string>.Failure(Error.InvalidInput("","no user with this chronicle was found"));
+                } else {
+                    PropertyInfo[] userChronicleAttributes = typeof(UCChange).GetProperties();
+                    foreach (PropertyInfo attribute in userChronicleAttributes) {
+                        if (attribute.Name != "user_id" && attribute.GetValue(propertiesToChange) != null) {
+                            
+                            typeof(UserChronicles).GetProperty(attribute.Name).SetValue(matchingChronicle, attribute.GetValue(propertiesToChange));
+                        }
+                    }
+
+                    await this.SaveChangesAsync();
+                }
+            }
+
+            return ErrorOr<string>.Success("all successfully modified");
+        } catch {
+            return ErrorOr<string>.Failure(Error.InternalServerError("", "internal server error"));
+        }
+        
+        
     }
 }

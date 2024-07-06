@@ -26,7 +26,6 @@ async function logout() {
       credentials: 'include', // Include cookies with the request
   });
   
-  console.log(logoutResult);
   setupLoginPage();
 }
 
@@ -52,7 +51,6 @@ async function login(event) {
   const result = await loginUserResult.text();
   // instead of redirecting to user-profile we want to redirect to user-profile/[username] if they came after clicking login
   // otherwise we want to send them to about page for now change to homepage in future
-  console.log(result);
 
   if (result == "false") {
     let extensionHtml = document.getElementById("extension-popup");
@@ -67,11 +65,9 @@ async function login(event) {
 async function register(event) {
   event.preventDefault();
   const registerForm = document.getElementsByClassName("login-page")[0];
-  console.log(registerForm.childNodes);
   const username = registerForm.childNodes[3].value;
   const email = registerForm.childNodes[5].value;
   const password = registerForm.childNodes[7].value;
-  console.log(username);
   const registerUserResult = await fetch(`${apiLink}/user/register`, {
       method: 'POST',
       headers: {
@@ -85,8 +81,6 @@ async function register(event) {
   });
 
   const payload = await registerUserResult.text();
-
-  console.log(payload);
 }
 
 
@@ -115,13 +109,13 @@ function setUpExtension(tabData) {
         <p class="grid-info-item">Episode: ${urlInfo?.[2] ?? "Not Found"}</p>
         <div class="rating-div">
             <p class="grid-info-item">Rating:</p>
-            <input class="rating-div-input" type="number" step="0.5" min="1.0" max="5.0" value=${userChronicleInfo.rating ?? null}>
+            <input class="rating-div-input" type="number" step="0.5" min="1.0" max="5.0" value=${userChronicleInfo.rating ?? ""}>
             <div class="grid-info-stars-outer"><div class="grid-info-stars-inner"></div></div>
         </div>
         <p class="grid-info-item">Review:</p> 
-        <textarea class="grid-info-textarea" placeholder="Write your review here">${userChronicleInfo.review ?? null}</textarea>
+        <textarea class="grid-info-textarea" placeholder="Write your review here">${userChronicleInfo.review ?? ""}</textarea>
         <p class="grid-info-item">Notes:</p>
-        <textarea class="grid-info-textarea" placeholder="Write your notes here">${userChronicleInfo.notes ?? null}</textarea>
+        <textarea class="grid-info-textarea" placeholder="Write your notes here">${userChronicleInfo.notes ?? ""}</textarea>
     </div>
     <div class="extension-options">
       <button class="extension-button">Log Out</button>
@@ -130,29 +124,51 @@ function setUpExtension(tabData) {
     </div>
     <a class="extension-attribution" href="https://www.freepik.com/icon/book_13960454#fromView=search&page=1&position=0&uuid=e497bb06-528d-4a63-9e3d-9a09fdb42d7d">Image Attribution: Icon by HideMaru</a>
     `;
+
+    if (userChronicleInfo.rating != null) {
+      fillStars(userChronicleInfo.rating/5 * 100);
+    }
+
     document.getElementsByClassName("extension-button")[0].addEventListener('click', logout);
-    document.getElementsByClassName("extension-button")[2].addEventListener('click', () => {update(userChronicleInfo)});
+    document.getElementsByClassName("extension-button")[2].addEventListener('click', () => {update(tabData)});
     document.getElementsByClassName("rating-div-input")[0].addEventListener('blur', valueCheck);
     document.getElementsByClassName("rating-div-input")[0].addEventListener('input', typeStars);
 }
 
-async function update(e, urlInfo, userChronicleInfo) {
+async function update(tabData) {
+  let userChronicleInfo = tabData.userChronicleId;
   const extensionInfo = document.getElementsByClassName("grid-info")[0];
-  console.log(extensionInfo.childNodes);
-  /*
+  const status = extensionInfo.childNodes[3].childNodes[3].value;
+  const rating = extensionInfo.childNodes[7].childNodes[3].value;
+  const review = extensionInfo.childNodes[11].value;
+  const notes = extensionInfo.childNodes[15].value;
+  console.log(rating);
   const updateUserChronicle = await fetch(`${apiLink}/user/manual-extension-update`, {
     method: 'POST',
     headers: {
         'Content-Type': 'application/json'
     },
+    credentials: 'include',
     body: JSON.stringify({
         "user_id" : userChronicleInfo.user_id,
         "book_id" : userChronicleInfo.book_id,
-        "username": username,
-        "password": password
+        "status": status,
+        "rating": rating,
+        "review": review,
+        "notes": notes
     })
   });
-*/
+
+  tabData.userChronicleId.status = status;
+  tabData.userChronicleId.rating = rating;
+  tabData.userChronicleId.review = review;
+  tabData.userChronicleId.notes = notes;
+
+  const activeTabId = await getActiveTabURL();
+  chrome.storage.session.set({ [activeTabId.toString()]: {message: tabData.message, userChronicleId: tabData.userChronicleId} }).then(() => {
+    console.log("Value was set");
+  });
+
 }
 
 function valueCheck() {
@@ -165,7 +181,7 @@ function valueCheck() {
   if (this.value > 5) {
     this.value = 5
   }
-  ratingValue = this.value;
+
   let starWidth = this.value/5 * 100;
 
   if (((starWidth - 10) % 20) == 0) {
@@ -259,7 +275,6 @@ async function retrieveDataSetUpExtension() {
 document.addEventListener("DOMContentLoaded", async () => {
   let loginStatus = await isLoggedIn();
 
-  console.log(loginStatus);
   if (loginStatus == "false") {
     setupLoginPage();
   } else {
