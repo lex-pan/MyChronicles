@@ -81,7 +81,27 @@ public class UsersService : MyChroniclesDbContext {
         } catch {
             return ErrorOr<string>.Failure(Error.InternalServerError("", "internal server error"));
         }
-        
+    }
+
+    public async Task<ErrorOr<List<RetrievedUserChronicle>>> retrieveUCByName(string userID) {
+        try {
+            List<RetrievedUserChronicle> retrievedUserChronicles = await this.Set<UserChronicles>()
+            .Where(uc => uc.user_id == userID)
+            .Select(uc => new RetrievedUserChronicle(
+                uc.chronicles.title,
+                uc.book_id,
+                uc.episode,
+                uc.status,
+                uc.rating,
+                uc.last_read,
+                uc.entertainment_category
+            ))
+            .ToListAsync();
+
+            return ErrorOr<List<RetrievedUserChronicle>>.Success(retrievedUserChronicles);
+        } catch {
+            return ErrorOr<List<RetrievedUserChronicle>>.Failure(Error.InternalServerError("", "internal server error"));
+        }
         
     }
 }

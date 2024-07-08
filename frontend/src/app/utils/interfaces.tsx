@@ -1,20 +1,21 @@
 export interface UserChronicleData {
-    userChronicleId: number,
-    bookId: number,
-    title: string;
-    rating: number;
-    start_date: string;
-    last_read: string;
+    username: string;
+    user_chronicles: Array<UserChronicle>;
+    viewers_username: string;
+}
+
+export interface UserChronicle {
+    book_id: string;
+    book_name: string;
+    entertainment_category: string;
     episode: number;
-    img_src: string;
-    notes: string;
-    review: string; 
-    category: string;
+    last_read: string;
+    rating: number;
     status: string;
 }
 
 export interface UserChronicleProps {
-    item: UserChronicleData;
+    item: UserChronicle;
     confirmDelete: (userChronicleId : number) => void;
     listOfChanges : Record<number, any>;
 }
@@ -62,5 +63,11 @@ export interface UserReview {
 }
 
 export interface ReviewProps {
-    review_data: UserReview
+    review_data: UserReview;
+}
+
+export interface UserchronicleFetch {
+    value: Array<UserChronicle>;
+    viewers_username: string;
+    userName: string;
 }

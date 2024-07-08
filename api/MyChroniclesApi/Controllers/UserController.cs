@@ -203,6 +203,23 @@ public class UserController : ControllerBase {
         }
     }
 
+    [HttpGet("{username}/chronicles")]
+    public async Task<IActionResult> retrieveUserChronicles(string username) {
+        var userExists = await _userManager.FindByNameAsync(username);
+
+        if (userExists != null) {
+            // retrieve all user chronicles with listed username
+            // on retrieval exlude username, review, notes, start_date
+            string user_id = userExists.Id;
+            ErrorOr<List<RetrievedUserChronicle>> retrievedChronicles = await _user.retrieveUCByName(user_id);
+            string viewers_username = User.FindFirst(ClaimTypes.Name)?.Value;
+
+            return Ok(new {retrievedChronicles.value, viewers_username, userExists.UserName});
+        } else {
+            return NotFound("username does not exist");
+        }    
+    }
+
     private bool invalidEmail(string email) {
         var emailAttribute = new EmailAddressAttribute();
         if (emailAttribute.IsValid(email)) {
