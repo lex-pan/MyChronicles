@@ -8,38 +8,32 @@ Future ToDo's for this section
 */
 
 "use client";
-import { InputHTMLAttributes, useEffect, useState } from 'react';
+import { InputHTMLAttributes, useEffect, useRef, useState } from 'react';
 import { MouseEvent } from 'react';
 import StatusContainer from './StatusContainer';
 import AddChronicle from './AddChroniclesPage';
 import { UserChronicle, UserChronicleData } from '@/app/utils/interfaces';
 import AddChroniclesPage from './AddChroniclesPage';
+import { stat } from 'fs';
 export default function UserChroniclesLayout({user_chronicles, viewers_username, username} : UserChronicleData) {
-    console.log(viewers_username);
-
-    let listOfChanges : Record<number, any> = {};
+    let listOfChanges : Record<string, any> = useRef({});
     // call function to get user's entries 
     // retrieve data from session storage
-    const [chronicleStatus, setChronicleStatus] = useState(["Reading", "Completed", "Rereading", "Plan To Read", "Paused", "Dropped"]);
+    const [chronicleStatus, setChronicleStatus] = useState(["Reading", "Completed", "Rereading", "Plan to Read", "Paused", "Dropped"]);
     const [categorizedChronicles, setCategorizedChronicles] = useState<Array<Array<UserChronicle>>>(() => sortByStatus(user_chronicles));
-    const [deleteChronicleName, setDeleteChronicleName] = useState<[string, number]>(["", 0]);
+    const [deleteChronicleName, setDeleteChronicleName] = useState<UserChronicle | null>(null);
     const [toggleConfirmDelete, setToggleConfirmDelete] = useState(false);
     const [toggleAddChronicles, setToggleAddChronicles] = useState(false);
 
     useEffect(() => {
-        
-        window.onbeforeunload = function(event)
-        {
-            console.log(listOfChanges);
-        };
-
         return () => {
-            // send to db and cached for change
+            console.log("Api called");
             console.log(listOfChanges);
+            
         }
-    });
+    }, []);
     
-    function sortByStatus(filteredChronicles: Record<string, UserChronicle>) {
+    function sortByStatus(filteredChronicles: Array<UserChronicle>) {
         let newArray : any[] = [];
         let statusMap: {[key: string]: number} = {};
         for (let i = 0; i < chronicleStatus.length; i++) {
@@ -47,8 +41,8 @@ export default function UserChroniclesLayout({user_chronicles, viewers_username,
             statusMap[chronicleStatus[i]] = i;
         }
 
-        for (const key in filteredChronicles) {
-            const chronicle = filteredChronicles[key];
+        for (let i = 0; i < filteredChronicles.length; i++) {
+            const chronicle = filteredChronicles[i];
             const status = chronicle.status;
             const index = statusMap[status];
             newArray[index].push(chronicle);
@@ -73,34 +67,33 @@ export default function UserChroniclesLayout({user_chronicles, viewers_username,
     }
 
     function filterUserChronicles(entertainment_category : string) {
-        let desiredMedium : Record<number, UserChronicleData> = {};
+        let desiredMedium : Array<UserChronicle> = new Array<UserChronicle>();
 
-        Object.keys(UserChronicles).forEach(key => {
-            const numericKey = parseInt(key, 10); // Parse key to integer
-            if (UserChronicles[numericKey].category == entertainment_category) {
-                desiredMedium[numericKey] = UserChronicles[numericKey];
+        for (let i=0; i < user_chronicles.length; i++) {
+            if (user_chronicles[i].entertainment_category == entertainment_category) {
+                desiredMedium.push(user_chronicles[i]);
             }
-        });
+        }
 
-        return desiredMedium
+        return desiredMedium;
     }
 
     function filterChroniclesByMedium(mediumType: string) {
         switch(mediumType){
             case 'Novels':
-                const novelsOnly : Record<number, UserChronicleData> = filterUserChronicles("Novel");
+                const novelsOnly : Array<UserChronicle> = filterUserChronicles("Novel");
                 return novelsOnly;
             case 'Graphic Novels':
-                const graphicNovelsOnly : Record<number, UserChronicleData> = filterUserChronicles("Graphic Novel");
+                const graphicNovelsOnly : Array<UserChronicle> = filterUserChronicles("Graphic Novel");
                 return graphicNovelsOnly;
             case 'Films':
-                const filmsOnly : Record<number, UserChronicleData> = filterUserChronicles("Film");
+                const filmsOnly : Array<UserChronicle> = filterUserChronicles("Film");
                 return filmsOnly;
             case 'Shows':
-                const showsOnly : Record<number, UserChronicleData> = filterUserChronicles("Show");
+                const showsOnly : Array<UserChronicle> = filterUserChronicles("Show");
                 return showsOnly;
             default: 
-                return UserChronicles;
+                return user_chronicles;
         }
     }
 
@@ -112,17 +105,16 @@ export default function UserChroniclesLayout({user_chronicles, viewers_username,
     }
 
     function searchChronicleTitles(e : React.ChangeEvent<HTMLInputElement>) {
-        let searchResults : Record<number, UserChronicleData> = {};
+        let searchResults : Array<UserChronicle> = new Array<UserChronicle>;
 
         console.log(e.target.value);
         let searchText = e.target.value;
         
-        Object.keys(UserChronicles).forEach(key => {
-            const numericKey = parseInt(key);
-            if (UserChronicles[numericKey].title.toLowerCase().includes(searchText.toLowerCase())) {
-                searchResults[numericKey] = UserChronicles[numericKey];
+        for (let i = 0; i < user_chronicles.length; i++) {
+            if (user_chronicles[i].book_name.toLowerCase().includes(searchText.toLowerCase())) {
+                searchResults.push(user_chronicles[i]);
             }
-        })
+        }
 
         let sortedChronicles = sortByStatus(searchResults);
         setCategorizedChronicles(sortedChronicles);
@@ -132,33 +124,34 @@ export default function UserChroniclesLayout({user_chronicles, viewers_username,
         setToggleAddChronicles(value => !value);
     }
 
-    function toggleDelete(userChronicleId : number) {
-        if (!isNaN(userChronicleId)) {
-            setDeleteChronicleName(value => [UserChronicles[userChronicleId].title, userChronicleId]);
+    function toggleDelete(userChronicleForDelete : UserChronicle | null) {
+        if (userChronicleForDelete) {
+            setDeleteChronicleName(value => userChronicleForDelete);
         }
         setToggleConfirmDelete(value => !value);
     }
 
     function deleteChronicle() {
         let index = 0;
-
+        
         for (let i = 0; i < chronicleStatus.length; i++) {
             // will need a way to dynamically switch based on how it's categorized
-            console.log(UserChronicles[deleteChronicleName[1]].category);
-            if (chronicleStatus[i] == UserChronicles[deleteChronicleName[1]].status) {
+            // we retrieve the index of the categorized array that we want to remove from
+            if (chronicleStatus[i] == deleteChronicleName?.entertainment_category) {
                 index = i;
             }
         }   
 
-        const filtered = categorizedChronicles[index].filter(chronicle => chronicle.userChronicleId !== deleteChronicleName[1]);
+        const filtered = categorizedChronicles[index].filter(chronicle => chronicle.book_id !== deleteChronicleName?.book_id);
         const updatedCategorizedChronicles = categorizedChronicles.map((categoryChronicles, i) => {
             if (i === index) {
                 return filtered;
             }
             return categoryChronicles;
         });
+
         setCategorizedChronicles(updatedCategorizedChronicles);
-        toggleDelete(NaN);
+        toggleDelete(null);
 
         // send call to db notifying it that user has deleted item 
     }
@@ -233,9 +226,9 @@ export default function UserChroniclesLayout({user_chronicles, viewers_username,
             {toggleConfirmDelete &&
             <div className='overlay'>
                 <div className='confirm-delete'>
-                    <h1>Delete {deleteChronicleName[0]}?</h1>
+                    <h1>Delete {deleteChronicleName?.book_name}?</h1>
                     <div className='confirm-delete-button-container'>
-                        <button onClick={() => toggleDelete(NaN)} className='no'>No</button>
+                        <button onClick={() => toggleDelete(null)} className='no'>No</button>
                         <button onClick={deleteChronicle} className='yes'>Yes</button>
                     </div>
                 </div>
@@ -244,7 +237,7 @@ export default function UserChroniclesLayout({user_chronicles, viewers_username,
             {toggleAddChronicles && <AddChroniclesPage toggle={toggleSearch}/>} 
             {chronicleStatus.map((title, index) => (
                 <StatusContainer status={title} key={index} chroniclesStatus={categorizedChronicles[index]} 
-                                 listOfChanges={listOfChanges} confirmDelete={toggleDelete} />
+                                 listOfChanges={listOfChanges} confirmDelete={toggleDelete} username={username}/>
             ))}
         </div>
     </div>

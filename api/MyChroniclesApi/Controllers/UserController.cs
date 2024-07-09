@@ -220,6 +220,58 @@ public class UserController : ControllerBase {
         }    
     }
 
+    [HttpGet("{username}/chronicles/additional/{book_id}")]
+    public async Task<IActionResult> userChronicleAdditionalInfo(string username, string book_id) {
+        var user = await _userManager.FindByNameAsync(username);
+        if (user is null) {
+            return NotFound("user not found");
+        }
+
+        Guid bookID = new Guid(book_id);
+        ErrorOr<UCAdditonal> additional_info = await _user.retrieveUCAdditional(user.Id, bookID);
+
+        if (additional_info.error.Description == "No Error") {
+            return Ok(additional_info.value);
+        } else {
+            return StatusCode(300, additional_info.error);
+        }
+    }
+
+    [HttpPost("{username}/chronicles/update")]
+    public async Task<IActionResult> updateUserChronicles(List<KeyValuePair<string, Dictionary<string, object>>> changes) {
+        Dictionary<Guid, UCChange> chroniclesToUpdate = new Dictionary<Guid, UCChange>();
+
+        // loops through each user chronicle changed
+        // we map the change in each user chronicle changed to UCChange
+        // this is completed by looping through the properties of the object we pass in
+        // it checks if UCChange has the property and if it does we will replace it
+        // then we will add it to the list of user chronicles we changed
+        foreach (KeyValuePair<string, Dictionary<string, object>> userChronicleToChange in changes) {
+            UCChange UCAttributesChange = new UCChange();
+            var UCAttributesChangeType = UCAttributesChange.GetType();
+
+            // loops through all properties of user chronicle we pass in 
+            foreach (var UserChronicleProperty in userChronicleToChange.Value) {
+                var propertyName = UserChronicleProperty.Key;
+                var mappedProperty = UCAttributesChangeType.GetProperty(propertyName);
+
+                if (mappedProperty != null && mappedProperty.CanWrite) {
+                    mappedProperty.SetValue(UCAttributesChange, UserChronicleProperty.Value);
+                }
+            }
+
+            Guid book_id = new Guid(userChronicleToChange.Key);
+            chroniclesToUpdate.Add(book_id, UCAttributesChange);
+        }   
+
+        ErrorOr<string> updateChronicleAttributes = await _user.updateFlexibleUserChronicles(chroniclesToUpdate, User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        if (updateChronicleAttributes.error.Description == "No Error") {
+            return Ok();
+        } else {
+            return StatusCode(300, updateChronicleAttributes.error);
+        }
+    }
+
     private bool invalidEmail(string email) {
         var emailAttribute = new EmailAddressAttribute();
         if (emailAttribute.IsValid(email)) {

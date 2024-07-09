@@ -10,21 +10,23 @@ export interface UserChronicle {
     entertainment_category: string;
     episode: number;
     last_read: string;
-    rating: number;
+    rating: number;userChronicleForDelete: UserChronicle | null
     status: string;
 }
 
 export interface UserChronicleProps {
     item: UserChronicle;
-    confirmDelete: (userChronicleId : number) => void;
-    listOfChanges : Record<number, any>;
+    confirmDelete: (userChronicleForDelete: UserChronicle | null) => void;
+    listOfChanges : Record<string, any>;
+    username: string;
 }
 
 export interface StatusContainerProps {
     status: string;
-    chroniclesStatus: Array<UserChronicleData>;
-    listOfChanges : Record<number, any>;
-    confirmDelete: (userChronicleId : number) => void;
+    chroniclesStatus: Array<UserChronicle>;
+    listOfChanges : Record<string, any>;
+    confirmDelete: (userChronicleForDelete: UserChronicle | null) => void;
+    username : string;
 }
 
 export interface AddChronicleInfo {
@@ -70,4 +72,10 @@ export interface UserchronicleFetch {
     value: Array<UserChronicle>;
     viewers_username: string;
     userName: string;
+}
+
+export interface AdditionalInfoUC {
+    review: string;
+    start_date: string;
+    notes: string;
 }

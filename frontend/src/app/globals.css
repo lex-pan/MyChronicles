@@ -622,6 +622,7 @@
     display: grid;
     margin-top: 1em;
     grid-template-columns: 6.5em 24em 12em;
+    margin-bottom: 1em;
 }
 
 .user-chronicle-date {
@@ -637,7 +638,7 @@
     font-size: 18px;
     margin: 0.5em;
     margin-right: -0.5em;
-
+    width: 17em;
 }
 
 .user-chronicle-textarea {

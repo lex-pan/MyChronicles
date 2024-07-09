@@ -104,4 +104,19 @@ public class UsersService : MyChroniclesDbContext {
         }
         
     }
+
+    public async Task<ErrorOr<UCAdditonal>> retrieveUCAdditional(string user_id, Guid book_id) {
+        var userChronicleExists = await this.Set<UserChronicles>().FindAsync(user_id, book_id);
+
+        if (userChronicleExists is null) {
+            return ErrorOr<UCAdditonal>.Failure(Error.NotFound("", "User Chronicle does not exist"));
+        } else {
+            UCAdditonal additional_info = new UCAdditonal(
+                Review: userChronicleExists.review,
+                StartDate: userChronicleExists.start_date,
+                Notes: userChronicleExists.notes
+            );
+            return ErrorOr<UCAdditonal>.Success(additional_info);
+        }
+    }
 }
