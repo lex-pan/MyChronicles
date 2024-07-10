@@ -25,14 +25,36 @@ export default function UserChroniclesLayout({user_chronicles, viewers_username,
     const [toggleConfirmDelete, setToggleConfirmDelete] = useState(false);
     const [toggleAddChronicles, setToggleAddChronicles] = useState(false);
 
-    useEffect(() => {
-        return () => {
-            console.log("Api called");
-            console.log(listOfChanges);
-            
+        useEffect(() => {
+            window.addEventListener("beforeunload",  () => {
+                changesToDb(listOfChanges);
+            });
+
+            return () => {
+                changesToDb(listOfChanges);
+            }
+        }, []);
+
+    async function changesToDb(changes : Record<string, any>) {
+        if (Object.keys(changes.current).length == 0) {
+            return 
         }
-    }, []);
-    
+
+        let jsonified = JSON.stringify(changes.current);
+        console.log(jsonified);
+        console.log(JSON.parse(jsonified));
+        const response = await fetch(`http://localhost:5172/user/${username}/chronicles/update`, {
+            method: 'POST',
+            credentials: 'include', // Include cookies with the request
+            headers : { 
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "listOfChanges": changes.current
+            })
+        });
+    }
+
     function sortByStatus(filteredChronicles: Array<UserChronicle>) {
         let newArray : any[] = [];
         let statusMap: {[key: string]: number} = {};
@@ -42,7 +64,14 @@ export default function UserChroniclesLayout({user_chronicles, viewers_username,
         }
 
         for (let i = 0; i < filteredChronicles.length; i++) {
-            const chronicle = filteredChronicles[i];
+            let chronicle = filteredChronicles[i];
+            if (listOfChanges.current[chronicle.book_id] !== undefined) {
+                for (const key in listOfChanges.current[chronicle.book_id]) {
+                    if (Object.prototype.hasOwnProperty.call(chronicle, key)) {
+                        (chronicle as any)[key] = listOfChanges.current[chronicle.book_id][key];
+                    }
+                }
+            }
             const status = chronicle.status;
             const index = statusMap[status];
             newArray[index].push(chronicle);

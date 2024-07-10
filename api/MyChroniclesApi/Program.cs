@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 {
     builder.Services.AddControllers();
     var configuration = builder.Configuration;
+    builder.Services.AddControllers().AddNewtonsoftJson();
     builder.Services.AddDbContext<MyChroniclesDbContext>(options => options.UseNpgsql(configuration.GetConnectionString("DefaultConnection")));
     builder.Services.AddAuthorization();
     builder.Services.AddIdentity<User, IdentityRole>()

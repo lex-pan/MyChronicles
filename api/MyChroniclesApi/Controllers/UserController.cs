@@ -11,6 +11,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Security.Claims; // Ensure this using directive is included
 using MyChroniclesApi.Models.Chronicles;
 using MyChroniclesApi.ServiceErrors;
+using Newtonsoft.Json;
 
 /*
 User Registration Flow
@@ -183,10 +184,10 @@ public class UserController : ControllerBase {
         }
 
         UCChange changes = new UCChange(
-            Status: info.status,
-            Rating: info.rating,
-            Review: info.review,
-            Notes: info.notes            
+            status: info.status,
+            rating: info.rating,
+            review: info.review,
+            notes: info.notes            
         );
 
         var chroniclesToUpdate = new Dictionary<Guid, UCChange>
@@ -233,12 +234,18 @@ public class UserController : ControllerBase {
         if (additional_info.error.Description == "No Error") {
             return Ok(additional_info.value);
         } else {
-            return StatusCode(300, additional_info.error);
+            return StatusCode(300, additional_info.error.Description);
         }
     }
 
     [HttpPost("{username}/chronicles/update")]
-    public async Task<IActionResult> updateUserChronicles(List<KeyValuePair<string, Dictionary<string, object>>> changes) {
+    public async Task<IActionResult> updateUserChronicles(string username, UpdateUserChronicles changes) {
+        var user = await _userManager.FindByNameAsync(username);
+
+        if (user is null) {
+            return NotFound("user not found");
+        }
+
         Dictionary<Guid, UCChange> chroniclesToUpdate = new Dictionary<Guid, UCChange>();
 
         // loops through each user chronicle changed
@@ -246,29 +253,41 @@ public class UserController : ControllerBase {
         // this is completed by looping through the properties of the object we pass in
         // it checks if UCChange has the property and if it does we will replace it
         // then we will add it to the list of user chronicles we changed
-        foreach (KeyValuePair<string, Dictionary<string, object>> userChronicleToChange in changes) {
+    
+        foreach (string UserChronicleBookID in changes.listOfChanges.Keys) {
             UCChange UCAttributesChange = new UCChange();
             var UCAttributesChangeType = UCAttributesChange.GetType();
 
             // loops through all properties of user chronicle we pass in 
-            foreach (var UserChronicleProperty in userChronicleToChange.Value) {
-                var propertyName = UserChronicleProperty.Key;
-                var mappedProperty = UCAttributesChangeType.GetProperty(propertyName);
+            foreach (string UCproperty in changes.listOfChanges[UserChronicleBookID].Keys) {
+                var mappedProperty = UCAttributesChangeType.GetProperty(UCproperty);
 
                 if (mappedProperty != null && mappedProperty.CanWrite) {
-                    mappedProperty.SetValue(UCAttributesChange, UserChronicleProperty.Value);
+                    var type = mappedProperty.PropertyType;
+                    if (Nullable.GetUnderlyingType(mappedProperty.PropertyType) != null) {
+                        type = Nullable.GetUnderlyingType(mappedProperty.PropertyType);
+                    }   
+                    
+                    if (UCproperty == "last_read" || UCproperty == "start_date") {
+                        DateTime castValue = DateTime.Parse(changes.listOfChanges[UserChronicleBookID][UCproperty]).ToUniversalTime();
+                        mappedProperty.SetValue(UCAttributesChange, castValue);
+
+                    } else {
+                        var castValue = Convert.ChangeType(changes.listOfChanges[UserChronicleBookID][UCproperty], type);
+                        mappedProperty.SetValue(UCAttributesChange, castValue);
+                    }
                 }
             }
 
-            Guid book_id = new Guid(userChronicleToChange.Key);
+            Guid book_id = new Guid(UserChronicleBookID);
             chroniclesToUpdate.Add(book_id, UCAttributesChange);
         }   
 
-        ErrorOr<string> updateChronicleAttributes = await _user.updateFlexibleUserChronicles(chroniclesToUpdate, User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        ErrorOr<string> updateChronicleAttributes = await _user.updateFlexibleUserChronicles(chroniclesToUpdate, user.Id);
         if (updateChronicleAttributes.error.Description == "No Error") {
-            return Ok();
+            return Ok(chroniclesToUpdate);
         } else {
-            return StatusCode(300, updateChronicleAttributes.error);
+            return StatusCode(300, chroniclesToUpdate);
         }
     }
 

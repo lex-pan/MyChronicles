@@ -3,7 +3,7 @@ namespace MyChroniclesApi.Models.Users;
 public class RetrievedUserChronicle {
     public string book_name { get; set; }
     public Guid book_id { get; set; } 
-    public int? episode { get; set; }
+    public float? episode { get; set; }
     public string? status { get; set; }
     public float? rating { get; set; }
     public DateTime? last_read { get; set; }
@@ -12,7 +12,7 @@ public class RetrievedUserChronicle {
     public RetrievedUserChronicle(
         string BookName,
         Guid BookID,
-        int? Episode,
+        float? Episode,
         string? Status,
         float? Rating,
         DateTime? LastRead,

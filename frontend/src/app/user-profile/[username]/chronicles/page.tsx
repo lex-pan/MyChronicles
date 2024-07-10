@@ -12,8 +12,7 @@ Future ToDo's for this section
 */
 import { UserchronicleFetch } from "@/app/utils/interfaces";
 import UserChroniclesLayout from "./UserChroniclesContainer";
-import { useState } from "react";
-
+import { revalidatePath } from 'next/cache'
 // https://nextjs.org/docs/app/building-your-application/routing/dynamic-routes 
 
 async function retrieveUserChronicleData(username : string) {
@@ -30,6 +29,8 @@ async function retrieveUserChronicleData(username : string) {
 }
 
 export default async function SSUserChronicleData({params} : {params : { username : string}}) {
+    revalidatePath(`/username/[username]/chronicles`, 'page');
+
     const data : UserchronicleFetch = await retrieveUserChronicleData(params.username);
     return (
        <UserChroniclesLayout user_chronicles={data.value} viewers_username={data.viewers_username} username={params.username}/>

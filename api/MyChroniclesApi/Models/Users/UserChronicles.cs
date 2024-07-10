@@ -8,7 +8,7 @@ public class UserChronicles {
     public string user_id { get; set; } 
     [ForeignKey("book_id")]
     public Guid book_id { get; set; } 
-    public int episode { get; set; }
+    public float? episode { get; set; }
     public string? status { get; set; }
     public float? rating { get; set; }
     public string? review { get; set; }
@@ -26,12 +26,12 @@ public class UserChronicles {
     public UserChronicles(
             string UserId, 
             Guid BookID, 
-            int Episode, 
+            float? Episode, 
             string EntertainmentCategory,
-            string Status = null,
+            string? Status = null,
             float? Rating = null,
-            string Review = null,
-            string Notes = null
+            string? Review = null,
+            string? Notes = null
         )
     {
         user_id = UserId;
