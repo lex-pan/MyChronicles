@@ -8,13 +8,12 @@ Future ToDo's for this section
 */
 
 "use client";
-import { InputHTMLAttributes, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { MouseEvent } from 'react';
 import StatusContainer from './StatusContainer';
-import AddChronicle from './AddChroniclesPage';
 import { UserChronicle, UserChronicleData } from '@/app/utils/interfaces';
 import AddChroniclesPage from './AddChroniclesPage';
-import { stat } from 'fs';
+
 export default function UserChroniclesLayout({user_chronicles, viewers_username, username} : UserChronicleData) {
     let listOfChanges : Record<string, any> = useRef({});
     // call function to get user's entries 
@@ -41,8 +40,6 @@ export default function UserChroniclesLayout({user_chronicles, viewers_username,
         }
 
         let jsonified = JSON.stringify(changes.current);
-        console.log(jsonified);
-        console.log(JSON.parse(jsonified));
         const response = await fetch(`http://localhost:5172/user/${username}/chronicles/update`, {
             method: 'POST',
             credentials: 'include', // Include cookies with the request
@@ -53,6 +50,8 @@ export default function UserChroniclesLayout({user_chronicles, viewers_username,
                 "listOfChanges": changes.current
             })
         });
+
+        console.log("api was called");
     }
 
     function sortByStatus(filteredChronicles: Array<UserChronicle>) {

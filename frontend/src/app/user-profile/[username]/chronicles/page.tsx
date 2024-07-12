@@ -10,6 +10,7 @@ Future ToDo's for this section
     - QOL filter actions on chronicles
     - different ways to categorize chronicles 
 */
+
 import { UserchronicleFetch } from "@/app/utils/interfaces";
 import UserChroniclesLayout from "./UserChroniclesContainer";
 import { revalidatePath } from 'next/cache'
@@ -29,7 +30,7 @@ async function retrieveUserChronicleData(username : string) {
 }
 
 export default async function SSUserChronicleData({params} : {params : { username : string}}) {
-    revalidatePath(`/username/[username]/chronicles`, 'page');
+    revalidatePath(`/user-profile/[username]/chronicles`, 'page');
 
     const data : UserchronicleFetch = await retrieveUserChronicleData(params.username);
     return (

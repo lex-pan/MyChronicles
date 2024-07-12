@@ -86,6 +86,7 @@ export default function UserChronicle({item, confirmDelete, listOfChanges, usern
                 return "A non existing chronicle info section was given";
         }
 
+        console.log(listOfChanges);
     }
 
     async function toggleInfo() {

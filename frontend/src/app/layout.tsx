@@ -4,7 +4,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Link from 'next/link';
+import { Providers } from "./globalRedux/provider";
 import RootNavBar from "./RootNavBar";
 const inter = Inter({ subsets: ["latin"] });
 
@@ -22,7 +22,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <RootNavBar/>
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );
