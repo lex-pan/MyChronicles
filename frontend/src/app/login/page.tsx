@@ -1,9 +1,11 @@
 'use client';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
+import { useAppSelector, useAppDispatch, useAppStore } from '../../globalRedux/hooks';
+import { setLoginStatus } from '@/globalRedux/features/User/UserLoginSlice';
 
 export default function Login() {
   const router = useRouter();
-  const searchParam = useSearchParams();
+  const dispatch = useAppDispatch();
 
   // in this function when you send a fetch request, if login is successful
   // the response will contain a set-cookie header that the browser will automatically set for you
@@ -27,19 +29,13 @@ export default function Login() {
             "password": password
         })
     });
-    const result = await loginUserResult.text();
-    // instead of redirecting to user-profile we want to redirect to user-profile/[username] if they came after clicking login
-    // otherwise we want to send them to about page for now change to homepage in future
-    console.log(result);
+    const username = await loginUserResult.text();
+
     if (loginUserResult.status == 200) {
-      const toProfile = searchParam.get("toProfile");
-      console.log(toProfile);
-      if (toProfile) {
-        router.push('/user-profile');
-      } else {
-        router.push('/about');
-      }
+      router.back();
     }     
+
+    dispatch(setLoginStatus({username: username, loggedIn: true}));
   }
 
   return ( 

@@ -13,9 +13,11 @@ import { MouseEvent } from 'react';
 import StatusContainer from './StatusContainer';
 import { UserChronicle, UserChronicleData } from '@/app/utils/interfaces';
 import AddChroniclesPage from './AddChroniclesPage';
+import { useAppSelector, useAppDispatch, useAppStore } from '../../../../globalRedux/hooks';
 
 export default function UserChroniclesLayout({user_chronicles, viewers_username, username} : UserChronicleData) {
     let listOfChanges : Record<string, any> = useRef({});
+    
     // call function to get user's entries 
     // retrieve data from session storage
     const [chronicleStatus, setChronicleStatus] = useState(["Reading", "Completed", "Rereading", "Plan to Read", "Paused", "Dropped"]);

@@ -79,3 +79,8 @@ export interface AdditionalInfoUC {
     start_date: string;
     notes: string;
 }
+
+export interface loginStatus {
+    loggedIn: boolean;
+    username: string;
+}

@@ -126,7 +126,7 @@ public class UserController : ControllerBase {
         string Username = User.FindFirst(ClaimTypes.Name)?.Value;
 
         if (isSignedIn) {
-            return Ok(new {username = Username});
+            return Ok(Username);
         } else {
             return Ok(false);
         }
@@ -204,8 +204,29 @@ public class UserController : ControllerBase {
         }
     }
 
+    // gets chronicles based on credentials
+    [HttpGet("chronicles")]
+    public async Task<IActionResult> retrieveUserChroniclesByCredentials(string username) {
+        bool isSignedIn = _signInManager.IsSignedIn(User);
+        
+        if (!isSignedIn) {
+            return StatusCode(300, "User must be logged in to initialize user chronicle store");
+        }
+
+        string user_id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        ErrorOr<List<RetrievedUserChronicle>> retrievedChronicles = await _user.retrieveUCByName(user_id);
+
+        if (retrievedChronicles.error.Description == "No Error") {
+            return Ok(retrievedChronicles.value);
+        } else {
+            return StatusCode(500, retrievedChronicles.error);
+        }
+            
+    }
+
+    // gets chronicles based on username
     [HttpGet("{username}/chronicles")]
-    public async Task<IActionResult> retrieveUserChronicles(string username) {
+    public async Task<IActionResult> retrieveUserChroniclesByRoute(string username) {
         var userExists = await _userManager.FindByNameAsync(username);
 
         if (userExists != null) {
