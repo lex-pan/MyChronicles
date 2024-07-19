@@ -3,7 +3,7 @@
 import { useRef } from 'react'
 import { Provider } from "react-redux";
 import { makeStore, AppStore } from "../globalRedux/store";
-import { initializeLogin } from '@/globalRedux/features/User/UserLoginSlice';
+import { initializeUserChronicles } from '@/globalRedux/features/User/UserChroniclesSlice';
 
 export default function StoreProvider({ children } : Readonly<{
     children: React.ReactNode;
@@ -12,7 +12,7 @@ export default function StoreProvider({ children } : Readonly<{
     if (!storeRef.current) {
       // Create the store instance the first time this renders
       storeRef.current = makeStore();
-      storeRef.current.dispatch(initializeLogin())
+      storeRef.current.dispatch(initializeUserChronicles());
     }
 
     return (

@@ -15,34 +15,37 @@ import { UserChronicle, UserChronicleData } from '@/app/utils/interfaces';
 import AddChroniclesPage from './AddChroniclesPage';
 import { useAppSelector, useAppDispatch, useAppStore } from '../../../../globalRedux/hooks';
 
-export default function UserChroniclesLayout({user_chronicles, viewers_username, username} : UserChronicleData) {
-    let listOfChanges : Record<string, any> = useRef({});
-    
-    // call function to get user's entries 
-    // retrieve data from session storage
+export default function UserChroniclesLayout({ssProfileUC, profileUsername} : UserChronicleData) {
+    let viewerUCredux = useAppSelector((state) => state.UserChronicles.userChronicles);
     const [chronicleStatus, setChronicleStatus] = useState(["Reading", "Completed", "Rereading", "Plan to Read", "Paused", "Dropped"]);
-    const [categorizedChronicles, setCategorizedChronicles] = useState<Array<Array<UserChronicle>>>(() => sortByStatus(user_chronicles));
+    let viewerUsername = useAppSelector((state) => state.UserChronicles.username); 
+    const [editAllowed, setEditAllowed] = useState(false);
+    let listOfChanges = useRef<Record<string, any>>({});
+    const [categorizedChronicles, setCategorizedChronicles] = useState<Array<Record<string, UserChronicle>>>();
+    let profileUC = useRef<Record<string, UserChronicle>>();
+    profileViewSetup();
+    
+    // page interactivity
     const [deleteChronicleName, setDeleteChronicleName] = useState<UserChronicle | null>(null);
     const [toggleConfirmDelete, setToggleConfirmDelete] = useState(false);
     const [toggleAddChronicles, setToggleAddChronicles] = useState(false);
 
-        useEffect(() => {
-            window.addEventListener("beforeunload",  () => {
-                changesToDb(listOfChanges);
-            });
+    useEffect(() => {
+        window.addEventListener("beforeunload",  () => {
+            changesToDb(listOfChanges);
+        });
 
-            return () => {
-                changesToDb(listOfChanges);
-            }
-        }, []);
+        return () => {
+            changesToDb(listOfChanges);
+        }
+    }, []);
 
     async function changesToDb(changes : Record<string, any>) {
         if (Object.keys(changes.current).length == 0) {
             return 
         }
 
-        let jsonified = JSON.stringify(changes.current);
-        const response = await fetch(`http://localhost:5172/user/${username}/chronicles/update`, {
+        const response = await fetch(`http://localhost:5172/user/${viewerUsername}/chronicles/update`, {
             method: 'POST',
             credentials: 'include', // Include cookies with the request
             headers : { 
@@ -56,7 +59,39 @@ export default function UserChroniclesLayout({user_chronicles, viewers_username,
         console.log("api was called");
     }
 
-    function sortByStatus(filteredChronicles: Array<UserChronicle>) {
+    function profileViewSetup() {
+        if ((viewerUsername == profileUsername && (profileUC.current == undefined || "!!!UninitializedReduxStore!!!" in profileUC.current))) {
+            setEditAllowed(true);
+            profileUC.current = structuredClone(viewerUCredux);
+            setCategorizedChronicles(sortByStatus(profileUC.current));
+        } 
+        if (profileUC.current == undefined) {
+            setEditAllowed(false);
+            setCategorizedChronicles(sortByStatus(ssProfileUC));
+            if (ssProfileUC == undefined) {
+                profileUC.current = {"!!!UninitializedReduxStore!!!": {book_id: "", book_name: "", entertainment_category: "", episode: -1, last_read: "", rating: 0, userChronicleForDelete: null, status:""}};
+            } else {
+                profileUC.current = ssProfileUC;
+            }
+        }
+        
+        console.log("profile setup called");
+    }
+    /*
+        book_id: string;
+    book_name: string;
+    entertainment_category: string;
+    episode: number;
+    last_read: string;
+    rating: number;
+    userChronicleForDelete: UserChronicle | null;
+    status: string;
+    */
+    
+    function sortByStatus(filteredChronicles: Record<string, UserChronicle>) {
+        console.log(filteredChronicles);
+
+        console.log("sort by status called");
         let newArray : any[] = [];
         let statusMap: {[key: string]: number} = {};
         for (let i = 0; i < chronicleStatus.length; i++) {
@@ -64,20 +99,30 @@ export default function UserChroniclesLayout({user_chronicles, viewers_username,
             statusMap[chronicleStatus[i]] = i;
         }
 
-        for (let i = 0; i < filteredChronicles.length; i++) {
-            let chronicle = filteredChronicles[i];
-            if (listOfChanges.current[chronicle.book_id] !== undefined) {
-                for (const key in listOfChanges.current[chronicle.book_id]) {
-                    if (Object.prototype.hasOwnProperty.call(chronicle, key)) {
-                        (chronicle as any)[key] = listOfChanges.current[chronicle.book_id][key];
+        if (filteredChronicles != undefined && Object.keys(filteredChronicles).length > 0) {
+            Object.values(filteredChronicles).forEach(chronicle => {
+                if (listOfChanges.current[chronicle.book_id] !== undefined) {
+                    for (const key in listOfChanges.current[chronicle.book_id]) {
+                        if (Object.prototype.hasOwnProperty.call(chronicle, key)) {
+                            (chronicle as any)[key] = listOfChanges.current[chronicle.book_id][key];
+                        }
                     }
                 }
-            }
-            const status = chronicle.status;
-            const index = statusMap[status];
-            newArray[index].push(chronicle);
+                
+                const status = chronicle.status;
+                const index = statusMap[status];
+                newArray[index].push(chronicle);
+            });
         }
-
+        /*
+        let reduxListOfChanges = structuredClone(useAppSelector((state) => state.UserChronicles.listOfChanges));
+        Object.entries(listOfChanges.current).forEach(([chronicleId, chronicleChange]) => {
+            for (const key in chronicleChange) {
+                reduxListOfChanges[chronicleId][chronicleChange] = 
+            } 
+        });
+        */
+       console.log(newArray);
         return newArray;
     }
 
@@ -97,12 +142,10 @@ export default function UserChroniclesLayout({user_chronicles, viewers_username,
     }
 
     function filterUserChronicles(entertainment_category : string) {
-        let desiredMedium : Array<UserChronicle> = new Array<UserChronicle>();
+        let desiredMedium : Record<string, UserChronicle> = {};
 
-        for (let i=0; i < user_chronicles.length; i++) {
-            if (user_chronicles[i].entertainment_category == entertainment_category) {
-                desiredMedium.push(user_chronicles[i]);
-            }
+        for (const [key, value] of Object.entries(profileUC)) {
+            desiredMedium[key] = value;
         }
 
         return desiredMedium;
@@ -111,45 +154,56 @@ export default function UserChroniclesLayout({user_chronicles, viewers_username,
     function filterChroniclesByMedium(mediumType: string) {
         switch(mediumType){
             case 'Novels':
-                const novelsOnly : Array<UserChronicle> = filterUserChronicles("Novel");
+                const novelsOnly : Record<string, UserChronicle> = filterUserChronicles("Novel");
                 return novelsOnly;
             case 'Graphic Novels':
-                const graphicNovelsOnly : Array<UserChronicle> = filterUserChronicles("Graphic Novel");
+                const graphicNovelsOnly : Record<string, UserChronicle> = filterUserChronicles("Graphic Novel");
                 return graphicNovelsOnly;
             case 'Films':
-                const filmsOnly : Array<UserChronicle> = filterUserChronicles("Film");
+                const filmsOnly : Record<string, UserChronicle> = filterUserChronicles("Film");
                 return filmsOnly;
             case 'Shows':
-                const showsOnly : Array<UserChronicle> = filterUserChronicles("Show");
+                const showsOnly : Record<string, UserChronicle> = filterUserChronicles("Show");
                 return showsOnly;
             default: 
-                return user_chronicles;
+                return profileUC.current;
         }
     }
 
     function mediumChange(e: MouseEvent<HTMLDivElement, Event>, index: number, medium: string) {
         cssFolderEffect(e, index);
         let filteredChronicles = filterChroniclesByMedium(medium);
-        let sortedChronicles = sortByStatus(filteredChronicles);
-        setCategorizedChronicles(sortedChronicles);
+        if (filteredChronicles !=  undefined) {
+            let sortedChronicles = sortByStatus(filteredChronicles);
+            setCategorizedChronicles(sortedChronicles);
+        }
     }
 
+    // current algo time complexity for searching items is shit
+    // create generalized suffix tree using Ukkonens algo O(n*m) where n is the number of chronicles and m is the avg length
+    // can return results for each query in O(n) where n is length of query string
+    // can consider implementing my own client side typescript version, or using api call for trienet https://github.com/gmamaladze/trienet
+    // maybe implement if performance is really bad  
+    
     function searchChronicleTitles(e : React.ChangeEvent<HTMLInputElement>) {
-        let searchResults : Array<UserChronicle> = new Array<UserChronicle>;
+        let searchResults : Record<string, UserChronicle> = {};
 
         console.log(e.target.value);
         let searchText = e.target.value;
         
-        for (let i = 0; i < user_chronicles.length; i++) {
-            if (user_chronicles[i].book_name.toLowerCase().includes(searchText.toLowerCase())) {
-                searchResults.push(user_chronicles[i]);
+        for (const key in profileUC.current) {
+            if (profileUC.current.hasOwnProperty(key)) {
+                const chronicle : UserChronicle = profileUC.current[key];
+                if (chronicle.book_name.toLowerCase().includes(searchText.toLowerCase())) {
+                    searchResults[chronicle.book_id] = chronicle;            
+                } 
             }
         }
 
         let sortedChronicles = sortByStatus(searchResults);
         setCategorizedChronicles(sortedChronicles);
     }
-
+    
     function toggleSearch() {
         setToggleAddChronicles(value => !value);
     }
@@ -162,6 +216,10 @@ export default function UserChroniclesLayout({user_chronicles, viewers_username,
     }
 
     function deleteChronicle() {
+        if (categorizedChronicles == undefined) {
+            return
+        }
+
         let index = 0;
         
         for (let i = 0; i < chronicleStatus.length; i++) {
@@ -172,10 +230,20 @@ export default function UserChroniclesLayout({user_chronicles, viewers_username,
             }
         }   
 
-        const filtered = categorizedChronicles[index].filter(chronicle => chronicle.book_id !== deleteChronicleName?.book_id);
+        const UCbyStatus : Record<string, UserChronicle> = categorizedChronicles[index]; 
+        let UCafterRemoval : Record<string, UserChronicle> = {};
+
+        for (const key in UCbyStatus) {
+            if (UCbyStatus.hasOwnProperty(key)) {
+                if (UCbyStatus[key].book_id !== deleteChronicleName?.book_id) {
+                    UCafterRemoval[key] = UCbyStatus[key];
+                }
+            }
+        }
+
         const updatedCategorizedChronicles = categorizedChronicles.map((categoryChronicles, i) => {
             if (i === index) {
-                return filtered;
+                return UCafterRemoval;
             }
             return categoryChronicles;
         });
@@ -265,9 +333,9 @@ export default function UserChroniclesLayout({user_chronicles, viewers_username,
             </div>
             }
             {toggleAddChronicles && <AddChroniclesPage toggle={toggleSearch}/>} 
-            {chronicleStatus.map((title, index) => (
+            {categorizedChronicles && chronicleStatus.map((title, index) => (
                 <StatusContainer status={title} key={index} chroniclesStatus={categorizedChronicles[index]} 
-                                 listOfChanges={listOfChanges} confirmDelete={toggleDelete} username={username}/>
+                                 listOfChanges={listOfChanges} confirmDelete={toggleDelete} profileUsername={profileUsername}/>
             ))}
         </div>
     </div>

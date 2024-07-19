@@ -2,7 +2,7 @@ import UserChronicle from "./UserChronicle"
 import { useState, useEffect } from "react"
 import { StatusContainerProps, UserChronicleData } from "@/app/utils/interfaces";
 
-export default function({status, chroniclesStatus, listOfChanges, confirmDelete, username} : StatusContainerProps) {
+export default function({status, chroniclesStatus, listOfChanges, confirmDelete, profileUsername} : StatusContainerProps) {
     return (
         <div className='user-container-section'>
             <h1 className='user-section-title'>{status}</h1>
@@ -12,8 +12,8 @@ export default function({status, chroniclesStatus, listOfChanges, confirmDelete,
             <p className='user-container-category'>Status</p>
             <p className='user-container-category'>Last Read</p>
             <ul className='chronicle-list'>
-            {chroniclesStatus.length > 0 && chroniclesStatus.map(item => (
-                <UserChronicle key={item.book_id} item={item} confirmDelete={confirmDelete} listOfChanges={listOfChanges} username={username}/>
+            {Object.keys(chroniclesStatus).length > 0 && Object.values(chroniclesStatus).map(item => (
+                <UserChronicle key={item.book_id} item={item} confirmDelete={confirmDelete} listOfChanges={listOfChanges} profileUsername={profileUsername}/>
             ))}
             </ul>
         </div>

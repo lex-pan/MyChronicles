@@ -1,7 +1,6 @@
 export interface UserChronicleData {
-    username: string;
-    user_chronicles: Array<UserChronicle>;
-    viewers_username: string;
+    profileUsername: string;
+    ssProfileUC: Record<string, UserChronicle>;
 }
 
 export interface UserChronicle {
@@ -10,7 +9,8 @@ export interface UserChronicle {
     entertainment_category: string;
     episode: number;
     last_read: string;
-    rating: number;userChronicleForDelete: UserChronicle | null
+    rating: number;
+    userChronicleForDelete: UserChronicle | null;
     status: string;
 }
 
@@ -18,15 +18,15 @@ export interface UserChronicleProps {
     item: UserChronicle;
     confirmDelete: (userChronicleForDelete: UserChronicle | null) => void;
     listOfChanges : Record<string, any>;
-    username: string;
+    profileUsername: string;
 }
 
 export interface StatusContainerProps {
     status: string;
-    chroniclesStatus: Array<UserChronicle>;
+    chroniclesStatus: Record<string, UserChronicle>;
     listOfChanges : Record<string, any>;
     confirmDelete: (userChronicleForDelete: UserChronicle | null) => void;
-    username : string;
+    profileUsername : string;
 }
 
 export interface AddChronicleInfo {
@@ -69,7 +69,7 @@ export interface ReviewProps {
 }
 
 export interface UserchronicleFetch {
-    value: Array<UserChronicle>;
+    value: Record<string, UserChronicle>;
     viewers_username: string;
     userName: string;
 }

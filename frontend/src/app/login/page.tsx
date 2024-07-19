@@ -1,7 +1,8 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import { useAppSelector, useAppDispatch, useAppStore } from '../../globalRedux/hooks';
-import { setLoginStatus } from '@/globalRedux/features/User/UserLoginSlice';
+import { login } from '@/globalRedux/features/User/UserChroniclesSlice';
+
 
 export default function Login() {
   const router = useRouter();
@@ -29,13 +30,15 @@ export default function Login() {
             "password": password
         })
     });
-    const username = await loginUserResult.text();
+    
+    const userInfo = await loginUserResult.json();
+    console.log(userInfo);
+
+    dispatch(login({username: userInfo.username, userChronicles: userInfo.userChronicles}));
 
     if (loginUserResult.status == 200) {
       router.back();
     }     
-
-    dispatch(setLoginStatus({username: username, loggedIn: true}));
   }
 
   return ( 

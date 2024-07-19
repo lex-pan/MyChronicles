@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { UserChronicleProps, AdditionalInfoUC } from "@/app/utils/interfaces";
 
-export default function UserChronicle({item, confirmDelete, listOfChanges, username} : UserChronicleProps) {
+export default function UserChronicle({item, confirmDelete, listOfChanges, profileUsername} : UserChronicleProps) {
     const [detailedInfo, setDetailedInfo] = useState(false);
     const [additional_info, set_additional_info] = useState<AdditionalInfoUC | null>(null);
     // get the id
@@ -99,7 +99,7 @@ export default function UserChronicle({item, confirmDelete, listOfChanges, usern
     }
 
     async function retrieveAdditionalInfo() {
-        const response = await fetch(`http://localhost:5172/user/${username}/chronicles/additional/${item.book_id}`, {
+        const response = await fetch(`http://localhost:5172/user/${profileUsername}/chronicles/additional/${item.book_id}`, {
             method: 'GET',
             credentials: 'include', // Include cookies with the request
           });

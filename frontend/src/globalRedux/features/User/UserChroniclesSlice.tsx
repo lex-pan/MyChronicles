@@ -3,31 +3,67 @@
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { UserChronicle, UserchronicleFetch } from "@/app/utils/interfaces";
 
-interface UserChronicleValue {
-  value: Array<UserChronicle>;
+interface UserChronicleReduxInterface {
+  userChronicles: Record<string, UserChronicle>;
+  loggedIn: boolean;
+  username: string;
+  listOfChanges: Record<string, any>;
 }
 
-const initialState : UserChronicleValue = {
-    value: [],
-    //loggedIn: false,
-    //username: ""
+const initialState : UserChronicleReduxInterface = {
+    userChronicles: {},
+    loggedIn: false,
+    username: "",
+    listOfChanges: {}
 }
 
 export const UserChroniclesSlice = createSlice({
   name: "user-chronicles",
   initialState,
   reducers: {
-    setUC: (state, action: PayloadAction<Array<UserChronicle>>) => {
-        state.value = action.payload;
+    setUCchanges: (state, action: PayloadAction<Record<string, any>>) => {
+        state.listOfChanges = action.payload;
     },
-    applyUCchanges: (state, action) => {
-        state.value = action.payload;
+    applyUCchanges: (state, action: PayloadAction<Record<string, UserChronicle>>) => {
+        state.userChronicles = action.payload;
+        state.listOfChanges = {};
     },
-  }  
+    logout: (state) => {
+      state.loggedIn = false;
+      state.username = "";
+      state.userChronicles = {};
+      state.listOfChanges = {};
+    },
+    login: (state, action: PayloadAction<{username: string, userChronicles: Record<string, UserChronicle>}>) => {
+      state.loggedIn = true;
+      state.username = action.payload.username;
+      state.userChronicles = action.payload.userChronicles;
+      state.listOfChanges = {};
+    }
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(initializeUserChronicles.fulfilled, 
+        (state : UserChronicleReduxInterface, action: PayloadAction<{username: string, userChronicles: Record<string, UserChronicle>}>) => {
+            state.loggedIn = true;
+            state.username = action.payload.username;
+            state.userChronicles = action.payload.userChronicles;
+        }
+      )
+      .addMatcher(
+      (action) => action.type === initializeUserChronicles.fulfilled.type && typeof action.payload === 'string',
+      (state) => {
+        // Handle unexpected payload type here
+        state.loggedIn = false;
+        state.username = "";
+        state.userChronicles = {};
+      }
+    );
+  }
 })
 
 export const initializeUserChronicles = createAsyncThunk(
-  "UserChronicles/retrieve",
+  "UserChronicles/loginStatusAndRetrieve",
   async () => {
     const response = await fetch(`http://localhost:5172/user/chronicles`, {
       method: 'GET',
@@ -42,19 +78,6 @@ export const initializeUserChronicles = createAsyncThunk(
   }
 );
 
-export const initializeLogin = createAsyncThunk(
-  "userLogin/userStatus",
-  async () => {
-    const request = await fetch('http://localhost:5172/user/login-status', {
-      method: 'GET',
-      credentials: 'include', // Include cookies with the request
-    });
-    
-    const isLoggedIn = await request.text();
-    return isLoggedIn;
-  }
-);
-
-export const { setUC, applyUCchanges } = UserChroniclesSlice.actions;
+export const { setUCchanges, applyUCchanges, logout, login } = UserChroniclesSlice.actions;
 
 export default UserChroniclesSlice.reducer;

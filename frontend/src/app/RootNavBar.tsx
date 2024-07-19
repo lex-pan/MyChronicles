@@ -1,21 +1,23 @@
-  'use client';
+'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { useAppSelector, useAppDispatch, useAppStore } from '../globalRedux/hooks';
-import { setLoginStatus } from '@/globalRedux/features/User/UserLoginSlice';
+import { logout } from '@/globalRedux/features/User/UserChroniclesSlice';
 
 export default function RootNavBar() {
   const pathname = usePathname();
   const [navBarColor, setNavBarColor] = useState(pathname === '/' ? 'rgb(232, 116, 255)' : 'rgb(0, 153, 255)');
-  let isLoggedIn = useAppSelector((state) => state.UserLoginStatus.loggedIn);
-  let username = useAppSelector((state) => state.UserLoginStatus.username);
+  let isLoggedIn = useAppSelector((state) => state.UserChronicles.loggedIn);
+  let username = useAppSelector((state) => state.UserChronicles.username);
+  let userChronicles = useAppSelector((state) => state.UserChronicles.userChronicles);
   const dispatch = useAppDispatch();
-
+  
   useEffect(() => {
     setNavBarColor(pathname === '/' ? 'rgb(232, 116, 255)' : 'rgb(0, 153, 255)');
-}, [pathname]);
+    console.log("pathname changed");
+  }, [pathname]);
 
   // in this function when you send a fetch request, you need to send the user cookie
   // this way the api can identify which user you are using the credentials: include
@@ -27,7 +29,7 @@ export default function RootNavBar() {
       
       console.log(logoutResult);
       
-      dispatch(setLoginStatus({username: "", loggedIn: false}));
+      dispatch(logout());
   }
 
   return (

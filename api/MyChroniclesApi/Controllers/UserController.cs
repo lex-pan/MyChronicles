@@ -103,7 +103,14 @@ public class UserController : ControllerBase {
         if (validPassword) {
             try {
                 await _signInManager.PasswordSignInAsync(user, request.password, isPersistent: true, lockoutOnFailure: false);
-                return Ok(user.UserName);
+                ErrorOr<List<RetrievedUserChronicle>> retrievedChronicles = await _user.retrieveUCByName(user.Id);
+                Dictionary<Guid, RetrievedUserChronicle> convertedUC = UCarrayToDictionary(retrievedChronicles.value);
+
+                if (retrievedChronicles.error.Description == "No Error") {
+                    return Ok(new {userChronicles = convertedUC, username = user.UserName });
+                } else {
+                    return Ok("logged in successfully but error retrieving chronicles");
+                }
             } catch {
                 return StatusCode(500, "internal server error");
             }
@@ -206,7 +213,7 @@ public class UserController : ControllerBase {
 
     // gets chronicles based on credentials
     [HttpGet("chronicles")]
-    public async Task<IActionResult> retrieveUserChroniclesByCredentials(string username) {
+    public async Task<IActionResult> retrieveUserChroniclesByCredentials() {
         bool isSignedIn = _signInManager.IsSignedIn(User);
         
         if (!isSignedIn) {
@@ -215,9 +222,10 @@ public class UserController : ControllerBase {
 
         string user_id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         ErrorOr<List<RetrievedUserChronicle>> retrievedChronicles = await _user.retrieveUCByName(user_id);
+        Dictionary<Guid, RetrievedUserChronicle> convertedUC = UCarrayToDictionary(retrievedChronicles.value);
 
         if (retrievedChronicles.error.Description == "No Error") {
-            return Ok(retrievedChronicles.value);
+            return Ok(new {username = User.FindFirst(ClaimTypes.Name)?.Value,  userChronicles = convertedUC});
         } else {
             return StatusCode(500, retrievedChronicles.error);
         }
@@ -230,13 +238,19 @@ public class UserController : ControllerBase {
         var userExists = await _userManager.FindByNameAsync(username);
 
         if (userExists != null) {
+
+            bool isSignedIn = _signInManager.IsSignedIn(User);
+            if (isSignedIn && username == User.FindFirst(ClaimTypes.Name)?.Value) {
+                return Ok("data loaded on login/initialization");
+            }
+
             // retrieve all user chronicles with listed username
             // on retrieval exlude username, review, notes, start_date
             string user_id = userExists.Id;
             ErrorOr<List<RetrievedUserChronicle>> retrievedChronicles = await _user.retrieveUCByName(user_id);
-            string viewers_username = User.FindFirst(ClaimTypes.Name)?.Value;
+            Dictionary<Guid, RetrievedUserChronicle> convertedUC = UCarrayToDictionary(retrievedChronicles.value);
 
-            return Ok(new {retrievedChronicles.value, viewers_username, userExists.UserName});
+            return Ok(new {convertedUC, userExists.UserName});
         } else {
             return NotFound("username does not exist");
         }    
@@ -356,6 +370,16 @@ public class UserController : ControllerBase {
         } else {
             return true;
         }
+    }
+
+    public Dictionary<Guid, RetrievedUserChronicle> UCarrayToDictionary(List<RetrievedUserChronicle> userChronicles) {
+        Dictionary<Guid, RetrievedUserChronicle> converted = new Dictionary<Guid, RetrievedUserChronicle>();
+
+        for (int i = 0; i < userChronicles.Count; i++) {
+            converted.Add(userChronicles[i].book_id, userChronicles[i]);
+        }
+
+        return converted;
     }
 
     // if a chronicle with the title exists return the ID

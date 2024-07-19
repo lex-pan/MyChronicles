@@ -32,8 +32,16 @@ async function retrieveUserChronicleData(username : string) {
 export default async function SSUserChronicleData({params} : {params : { username : string}}) {
     revalidatePath(`/user-profile/[username]/chronicles`, 'page');
 
-    const data : UserchronicleFetch = await retrieveUserChronicleData(params.username);
-    return (
-       <UserChroniclesLayout user_chronicles={data.value} viewers_username={data.viewers_username} username={params.username}/>
-  );
+    const response : UserchronicleFetch = await retrieveUserChronicleData(params.username);
+
+    if (response == null || typeof response == 'string') {
+        return (
+            <UserChroniclesLayout ssProfileUC={{}} profileUsername={params.username}/>
+        );
+    } else {
+        const data : UserchronicleFetch = response;
+        return (
+            <UserChroniclesLayout ssProfileUC={data.value} profileUsername={params.username}/>
+        );
+    }
 }

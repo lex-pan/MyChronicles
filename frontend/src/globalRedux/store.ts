@@ -1,12 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import UserChronicles from './features/User/UserChroniclesSlice';
-import UserLoginStatus from './features/User/UserLoginSlice';
 
 export const makeStore = () => {
     return configureStore({
         reducer: {
             UserChronicles: UserChronicles,
-            UserLoginStatus: UserLoginStatus,
         }
     }) 
 }
