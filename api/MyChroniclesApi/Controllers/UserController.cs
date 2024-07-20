@@ -304,12 +304,20 @@ public class UserController : ControllerBase {
                     }   
                     
                     if (UCproperty == "last_read" || UCproperty == "start_date") {
-                        DateTime castValue = DateTime.Parse(changes.listOfChanges[UserChronicleBookID][UCproperty]).ToUniversalTime();
-                        mappedProperty.SetValue(UCAttributesChange, castValue);
+                        if (changes.listOfChanges[UserChronicleBookID][UCproperty] == "") {
+                            mappedProperty.SetValue(UCAttributesChange, null);
+                        } else {
+                            DateTime castValue = DateTime.Parse(changes.listOfChanges[UserChronicleBookID][UCproperty]).ToUniversalTime();
+                            mappedProperty.SetValue(UCAttributesChange, castValue);
 
+                        }
                     } else {
-                        var castValue = Convert.ChangeType(changes.listOfChanges[UserChronicleBookID][UCproperty], type);
-                        mappedProperty.SetValue(UCAttributesChange, castValue);
+                        if (changes.listOfChanges[UserChronicleBookID][UCproperty] is null) {
+                            mappedProperty.SetValue(UCAttributesChange, null);
+                        } else {
+                            var castValue = Convert.ChangeType(changes.listOfChanges[UserChronicleBookID][UCproperty], type);
+                            mappedProperty.SetValue(UCAttributesChange, castValue);
+                        }
                     }
                 }
             }

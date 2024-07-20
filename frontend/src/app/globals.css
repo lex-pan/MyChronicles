@@ -185,6 +185,7 @@
     border-left: 1px solid rgb(216, 216, 216);
     border-right: 1px solid rgb(216, 216, 216);
     width: 76em;
+    min-height: 45em;
     height: auto;
     margin-top: -12px;
     /*background-color: rgb(109, 186, 207);*/
@@ -497,7 +498,7 @@
 .user-container-section {
     display: grid;
     grid-template-rows: auto auto auto;
-    grid-template-columns: 379px 115px 122px 168px;
+    grid-template-columns: 372px 114px 112px 178px;
     width: 85%;
     margin-left: 5%;
     margin: 2em;
@@ -514,7 +515,7 @@
 
 .user-container-category {
     margin-top: 1em;
-    margin-left: 34px;
+    margin-left: 35px;
     font-size: 18px;
 }
 
@@ -548,7 +549,7 @@
     outline: 1px solid rgb(172, 172, 172);
     margin-top: 1px;
     margin-left: 1px;
-    width: 18%;
+    width: 19%;
     background-color: white;
     border: 1px solid transparent;
 }

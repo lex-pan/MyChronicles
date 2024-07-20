@@ -34,9 +34,8 @@ export default function Login() {
     const userInfo = await loginUserResult.json();
     console.log(userInfo);
 
-    dispatch(login({username: userInfo.username, userChronicles: userInfo.userChronicles}));
-
     if (loginUserResult.status == 200) {
+      dispatch(login({username: userInfo.username, userChronicles: userInfo.userChronicles}));
       router.back();
     }     
   }

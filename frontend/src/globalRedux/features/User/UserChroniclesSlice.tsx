@@ -2,43 +2,51 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { UserChronicle, UserchronicleFetch } from "@/app/utils/interfaces";
+import { act } from "react-dom/test-utils";
 
 interface UserChronicleReduxInterface {
   userChronicles: Record<string, UserChronicle>;
   loggedIn: boolean;
   username: string;
-  listOfChanges: Record<string, any>;
+  unappliedChanges: Record<string, any>;
+  changesToDb: Record<string, any>;
 }
 
 const initialState : UserChronicleReduxInterface = {
     userChronicles: {},
     loggedIn: false,
     username: "",
-    listOfChanges: {}
+    unappliedChanges: {},
+    changesToDb: {}
 }
 
 export const UserChroniclesSlice = createSlice({
   name: "user-chronicles",
   initialState,
   reducers: {
-    setUCchanges: (state, action: PayloadAction<Record<string, any>>) => {
-        state.listOfChanges = action.payload;
+    updateExistingId: (state, action: PayloadAction<{id: string, chronicleDetail: string, changedAttributeValue: string | null}>) => {
+      state.unappliedChanges[action.payload.id] = { ...state.unappliedChanges[action.payload.id], [action.payload.chronicleDetail]: action.payload.changedAttributeValue } 
     },
-    applyUCchanges: (state, action: PayloadAction<Record<string, UserChronicle>>) => {
-        state.userChronicles = action.payload;
-        state.listOfChanges = {};
+    updateNewId: (state, action: PayloadAction<{id: string, chronicleDetail: string, changedAttributeValue: string | null}>) => {
+      state.unappliedChanges[action.payload.id] = { [action.payload.chronicleDetail]: action.payload.changedAttributeValue } 
+    },
+    deleteRedundantEdit: (state, action: PayloadAction<{id: string, chronicleDetail: string}>) => {
+      delete state.unappliedChanges[action.payload.id][action.payload.chronicleDetail];
+      if (Object.keys(state.unappliedChanges[action.payload.id]).length == 0) {
+        delete state.unappliedChanges[action.payload.id];
+      }
     },
     logout: (state) => {
       state.loggedIn = false;
       state.username = "";
       state.userChronicles = {};
-      state.listOfChanges = {};
+      state.unappliedChanges = {};
+      state.changesToDb = {}; 
     },
     login: (state, action: PayloadAction<{username: string, userChronicles: Record<string, UserChronicle>}>) => {
       state.loggedIn = true;
       state.username = action.payload.username;
       state.userChronicles = action.payload.userChronicles;
-      state.listOfChanges = {};
     }
   },
   extraReducers: (builder) => {
@@ -78,6 +86,6 @@ export const initializeUserChronicles = createAsyncThunk(
   }
 );
 
-export const { setUCchanges, applyUCchanges, logout, login } = UserChroniclesSlice.actions;
+export const { updateExistingId, updateNewId, deleteRedundantEdit, logout, login } = UserChroniclesSlice.actions;
 
 export default UserChroniclesSlice.reducer;

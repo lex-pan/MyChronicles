@@ -16,15 +16,15 @@ import AddChroniclesPage from './AddChroniclesPage';
 import { useAppSelector, useAppDispatch, useAppStore } from '../../../../globalRedux/hooks';
 
 export default function UserChroniclesLayout({ssProfileUC, profileUsername} : UserChronicleData) {
-    let viewerUCredux = useAppSelector((state) => state.UserChronicles.userChronicles);
-    const [chronicleStatus, setChronicleStatus] = useState(["Reading", "Completed", "Rereading", "Plan to Read", "Paused", "Dropped"]);
+    let viewerUCredux = useAppStore();
+    let unappliedChanges = useAppSelector((state) => state.UserChronicles.unappliedChanges);
+    const [chronicleStatus, setChronicleStatus] = useState(["Reading", "Completed", "Rereading", "Plan to Read", "Paused", "Dropped", "-"]);
     let viewerUsername = useAppSelector((state) => state.UserChronicles.username); 
     const [editAllowed, setEditAllowed] = useState(false);
-    let listOfChanges = useRef<Record<string, any>>({});
     const [categorizedChronicles, setCategorizedChronicles] = useState<Array<Record<string, UserChronicle>>>();
     let profileUC = useRef<Record<string, UserChronicle>>();
     profileViewSetup();
-    
+
     // page interactivity
     const [deleteChronicleName, setDeleteChronicleName] = useState<UserChronicle | null>(null);
     const [toggleConfirmDelete, setToggleConfirmDelete] = useState(false);
@@ -32,16 +32,16 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername} : Us
 
     useEffect(() => {
         window.addEventListener("beforeunload",  () => {
-            changesToDb(listOfChanges);
+            changesToDb(unappliedChanges);
         });
 
         return () => {
-            changesToDb(listOfChanges);
+            changesToDb(unappliedChanges);
         }
     }, []);
 
     async function changesToDb(changes : Record<string, any>) {
-        if (Object.keys(changes.current).length == 0) {
+        if (unappliedChanges == undefined || Object.keys(changes).length == 0) {
             return 
         }
 
@@ -52,17 +52,15 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername} : Us
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                "listOfChanges": changes.current
+                "listOfChanges": changes
             })
         });
-
-        console.log("api was called");
     }
 
     function profileViewSetup() {
         if ((viewerUsername == profileUsername && (profileUC.current == undefined || "!!!UninitializedReduxStore!!!" in profileUC.current))) {
             setEditAllowed(true);
-            profileUC.current = structuredClone(viewerUCredux);
+            profileUC.current = structuredClone(viewerUCredux.getState().UserChronicles.userChronicles);
             setCategorizedChronicles(sortByStatus(profileUC.current));
         } 
         if (profileUC.current == undefined) {
@@ -75,23 +73,9 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername} : Us
             }
         }
         
-        console.log("profile setup called");
     }
-    /*
-        book_id: string;
-    book_name: string;
-    entertainment_category: string;
-    episode: number;
-    last_read: string;
-    rating: number;
-    userChronicleForDelete: UserChronicle | null;
-    status: string;
-    */
     
     function sortByStatus(filteredChronicles: Record<string, UserChronicle>) {
-        console.log(filteredChronicles);
-
-        console.log("sort by status called");
         let newArray : any[] = [];
         let statusMap: {[key: string]: number} = {};
         for (let i = 0; i < chronicleStatus.length; i++) {
@@ -101,10 +85,10 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername} : Us
 
         if (filteredChronicles != undefined && Object.keys(filteredChronicles).length > 0) {
             Object.values(filteredChronicles).forEach(chronicle => {
-                if (listOfChanges.current[chronicle.book_id] !== undefined) {
-                    for (const key in listOfChanges.current[chronicle.book_id]) {
+                if (unappliedChanges[chronicle.book_id] !== undefined) {
+                    for (const key in unappliedChanges[chronicle.book_id]) {
                         if (Object.prototype.hasOwnProperty.call(chronicle, key)) {
-                            (chronicle as any)[key] = listOfChanges.current[chronicle.book_id][key];
+                            (chronicle as any)[key] = unappliedChanges[chronicle.book_id][key];
                         }
                     }
                 }
@@ -122,7 +106,6 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername} : Us
             } 
         });
         */
-       console.log(newArray);
         return newArray;
     }
 
@@ -144,8 +127,14 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername} : Us
     function filterUserChronicles(entertainment_category : string) {
         let desiredMedium : Record<string, UserChronicle> = {};
 
-        for (const [key, value] of Object.entries(profileUC)) {
-            desiredMedium[key] = value;
+        if (profileUC.current == undefined) {
+            return {}
+        }
+
+        for (const key in profileUC.current) {
+            if (profileUC.current[key].entertainment_category == entertainment_category) {
+                desiredMedium[key] = profileUC.current[key];
+            }
         }
 
         return desiredMedium;
@@ -187,8 +176,6 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername} : Us
     
     function searchChronicleTitles(e : React.ChangeEvent<HTMLInputElement>) {
         let searchResults : Record<string, UserChronicle> = {};
-
-        console.log(e.target.value);
         let searchText = e.target.value;
         
         for (const key in profileUC.current) {
@@ -334,8 +321,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername} : Us
             }
             {toggleAddChronicles && <AddChroniclesPage toggle={toggleSearch}/>} 
             {categorizedChronicles && chronicleStatus.map((title, index) => (
-                <StatusContainer status={title} key={index} chroniclesStatus={categorizedChronicles[index]} 
-                                 listOfChanges={listOfChanges} confirmDelete={toggleDelete} profileUsername={profileUsername}/>
+                <StatusContainer status={title} key={index} chroniclesStatus={categorizedChronicles[index]} confirmDelete={toggleDelete} profileUsername={profileUsername}/>
             ))}
         </div>
     </div>

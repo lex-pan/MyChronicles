@@ -1,15 +1,21 @@
 import { useState, useEffect } from "react"
 import { UserChronicleProps, AdditionalInfoUC } from "@/app/utils/interfaces";
+import { useAppDispatch, useAppStore, useAppSelector } from '../../../../globalRedux/hooks';
+import { deleteRedundantEdit, updateExistingId, updateNewId } from "@/globalRedux/features/User/UserChroniclesSlice";
 
-export default function UserChronicle({item, confirmDelete, listOfChanges, profileUsername} : UserChronicleProps) {
+export default function UserChronicle({item, confirmDelete, profileUsername} : UserChronicleProps) {
+    let listOfChanges = useAppSelector((state) => state.UserChronicles.unappliedChanges);
     const [detailedInfo, setDetailedInfo] = useState(false);
     const [additional_info, set_additional_info] = useState<AdditionalInfoUC | null>(null);
+    let viewerUCredux = useAppStore();
+    let dispatch = useAppDispatch();
+
     // get the id
     // check out what has been changed
     // add it to listOfChanges 
     function updateChronicle(e: React.ChangeEvent<any>, chronicleDetail : string) {
         let inputValue = e.target.value;
-        let inputNumber = 0;
+        let inputNumber : number | null = 0;
 
         if (!isNaN(parseFloat(inputValue))) {
             inputNumber = parseFloat(inputValue);
@@ -18,9 +24,11 @@ export default function UserChronicle({item, confirmDelete, listOfChanges, profi
         }
 
         if (chronicleDetail == "rating") {
-            if (isNaN(inputValue) || inputValue == "") {
+            if (isNaN(inputValue) && inputValue != "") {
                 e.target.value = "";
                 return
+            } else if (inputValue == "") {
+                inputNumber = null;
             } else if (inputNumber < 1) {
                 inputNumber = 1;
                 e.target.value = "1";
@@ -30,6 +38,10 @@ export default function UserChronicle({item, confirmDelete, listOfChanges, profi
             }
         }
 
+        if (chronicleDetail == "episode" && inputValue == "") {
+            inputNumber = null;
+        }
+        
         if (chronicleDetail == "status") {
             e.target.value = inputValue;
         }
@@ -37,49 +49,51 @@ export default function UserChronicle({item, confirmDelete, listOfChanges, profi
         if (chronicleDetail == "last_read" || chronicleDetail == "start_date") {
             e.target.value = inputValue;
         }
-
+        console.log(inputValue);
         switch(chronicleDetail){
             case 'rating':
             case 'episode':
                 if (inputNumber != item[chronicleDetail]) {
-                    if (item.book_id in listOfChanges.current) {
-                        listOfChanges.current[item.book_id] = {...listOfChanges.current[item.book_id], [chronicleDetail]: inputNumber};
+                    if (item.book_id in listOfChanges) {
+                        dispatch(updateExistingId({id: item.book_id, chronicleDetail: chronicleDetail, changedAttributeValue: (inputNumber == null ? inputNumber : inputNumber.toString())}));
                     } else {
-                        listOfChanges.current[item.book_id] = {[chronicleDetail]: inputNumber};
+                        dispatch(updateNewId({id: item.book_id, chronicleDetail: chronicleDetail, changedAttributeValue: (inputNumber == null ? inputNumber : inputNumber.toString())}));
                     }
                 }
 
-                if (inputNumber == item[chronicleDetail] && item.book_id in listOfChanges.current && chronicleDetail in listOfChanges.current[item.book_id]) {
-                    delete listOfChanges.current[item.book_id][chronicleDetail];
+                if (inputNumber == item[chronicleDetail] && item.book_id in listOfChanges && chronicleDetail in listOfChanges[item.book_id]) {
+                    dispatch(deleteRedundantEdit({id: item.book_id, chronicleDetail: chronicleDetail}));
                 }
                 break;
             case 'status':
             case 'last_read':
                 if (inputValue != item[chronicleDetail]) {
-                    if (item.book_id in listOfChanges.current) {
-                        listOfChanges.current[item.book_id] = {...listOfChanges.current[item.book_id], [chronicleDetail]: inputValue};
+                    if (item.book_id in listOfChanges) {
+                        dispatch(updateExistingId({id: item.book_id, chronicleDetail: chronicleDetail, changedAttributeValue: inputValue}));
                     } else {
-                        listOfChanges.current[item.book_id] = {[chronicleDetail]: inputValue};
+                        dispatch(updateNewId({id: item.book_id, chronicleDetail: chronicleDetail, changedAttributeValue: inputValue}));
                     }
                 }
                 
-                if (inputValue == item[chronicleDetail] && item.book_id in listOfChanges.current && chronicleDetail in listOfChanges.current[item.book_id]) {
-                    delete listOfChanges.current[item.book_id][chronicleDetail];
+                if (inputValue == item[chronicleDetail] && item.book_id in listOfChanges && chronicleDetail in listOfChanges[item.book_id]) {
+                    dispatch(deleteRedundantEdit({id: item.book_id, chronicleDetail: chronicleDetail}));
                 }
                 break;
             case 'start_date':
             case 'review':
             case 'notes':
                 if (inputValue != additional_info?.[chronicleDetail]) {
-                    if (item.book_id in listOfChanges.current) {
-                        listOfChanges.current[item.book_id] = {...listOfChanges.current[item.book_id], [chronicleDetail]: inputValue};
+                    if (item.book_id in listOfChanges) {
+                        listOfChanges[item.book_id] = {...listOfChanges[item.book_id], [chronicleDetail]: inputValue};
+                        dispatch(updateExistingId({id: item.book_id, chronicleDetail: chronicleDetail, changedAttributeValue: inputValue}));
                     } else {
-                        listOfChanges.current[item.book_id] = {[chronicleDetail]: inputValue};
+                        listOfChanges[item.book_id] = {[chronicleDetail]: inputValue};
+                        dispatch(updateNewId({id: item.book_id, chronicleDetail: chronicleDetail, changedAttributeValue: inputValue}));
                     }
                 }
                 
                 if (inputValue == additional_info?.[chronicleDetail] && item.book_id in listOfChanges.current && chronicleDetail in listOfChanges.current[item.book_id]) {
-                    delete listOfChanges.current[item.book_id][chronicleDetail];
+                    dispatch(deleteRedundantEdit({id: item.book_id, chronicleDetail: chronicleDetail}));
                 }
                 break;
             default: 
@@ -121,15 +135,16 @@ export default function UserChronicle({item, confirmDelete, listOfChanges, profi
                     <option value="Dropped">Dropped</option>
                     <option value="Plan to Read">Plan to Read</option>
                     <option value="Rereading">Rereading</option>
+                    <option value="-">-</option>
                 </select>
-                <input type="date" className="user-chronicle-info" onBlur={(e) => updateChronicle(e, "last_read")} defaultValue={new Date(item.last_read).toISOString().split('T')[0] ?? undefined} />
+                <input type="date" className="user-chronicle-info" onBlur={(e) => updateChronicle(e, "last_read")} defaultValue={item.last_read != "" ? new Date(item.last_read).toISOString().split('T')[0] : undefined} />
                 <button onClick={toggleInfo} className='chronicle-list-more-info-button'>v</button>
             </div>
             {detailedInfo && 
                 <div className='chronicle-list-more-info'>
                     <div className="more-info-first-line">
                         <p className='user-chronicle-text'>Start Date:</p>
-                        <input type="date" className="user-chronicle-date" onBlur={(e) => updateChronicle(e, "start_date")} defaultValue={additional_info?.start_date ? new Date(additional_info?.start_date).toISOString().split('T')[0] : undefined} />
+                        <input type="date" className="user-chronicle-date" onBlur={(e) => updateChronicle(e, "start_date")} defaultValue={additional_info?.start_date && additional_info.start_date != "" ? new Date(additional_info?.start_date).toISOString().split('T')[0] : undefined} />
                         <p className='user-chronicle-text'>Category: {item.entertainment_category}</p>
                     </div>
                     <p className='user-chronicle-text'>Review</p>

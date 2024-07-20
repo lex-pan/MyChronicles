@@ -17,14 +17,12 @@ export interface UserChronicle {
 export interface UserChronicleProps {
     item: UserChronicle;
     confirmDelete: (userChronicleForDelete: UserChronicle | null) => void;
-    listOfChanges : Record<string, any>;
     profileUsername: string;
 }
 
 export interface StatusContainerProps {
     status: string;
     chroniclesStatus: Record<string, UserChronicle>;
-    listOfChanges : Record<string, any>;
     confirmDelete: (userChronicleForDelete: UserChronicle | null) => void;
     profileUsername : string;
 }

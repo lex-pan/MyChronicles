@@ -16,7 +16,6 @@ export default function RootNavBar() {
   
   useEffect(() => {
     setNavBarColor(pathname === '/' ? 'rgb(232, 116, 255)' : 'rgb(0, 153, 255)');
-    console.log("pathname changed");
   }, [pathname]);
 
   // in this function when you send a fetch request, you need to send the user cookie
