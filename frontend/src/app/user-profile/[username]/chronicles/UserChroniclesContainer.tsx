@@ -14,10 +14,11 @@ import StatusContainer from './StatusContainer';
 import { UserChronicle, UserChronicleData } from '@/app/utils/interfaces';
 import AddChroniclesPage from './AddChroniclesPage';
 import { useAppSelector, useAppDispatch, useAppStore } from '../../../../globalRedux/hooks';
+import { clearChanges } from '@/globalRedux/features/User/UserChroniclesSlice';
 
 export default function UserChroniclesLayout({ssProfileUC, profileUsername} : UserChronicleData) {
     let viewerUCredux = useAppStore();
-    let unappliedChanges = useAppSelector((state) => state.UserChronicles.unappliedChanges);
+    const dispatch = useAppDispatch();
     const [chronicleStatus, setChronicleStatus] = useState(["Reading", "Completed", "Rereading", "Plan to Read", "Paused", "Dropped", "-"]);
     let viewerUsername = useAppSelector((state) => state.UserChronicles.username); 
     const [editAllowed, setEditAllowed] = useState(false);
@@ -32,19 +33,21 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername} : Us
 
     useEffect(() => {
         window.addEventListener("beforeunload",  () => {
-            changesToDb(unappliedChanges);
+            changesToDb();
         });
 
         return () => {
-            changesToDb(unappliedChanges);
+            changesToDb();
         }
     }, []);
 
-    async function changesToDb(changes : Record<string, any>) {
-        if (unappliedChanges == undefined || Object.keys(changes).length == 0) {
+    async function changesToDb() {
+        let listOfChangesToDb = viewerUCredux.getState().UserChronicles.listOfChanges;
+
+        if (listOfChangesToDb == undefined || Object.keys(listOfChangesToDb).length == 0 || viewerUsername == "") {
             return 
         }
-
+        console.log(listOfChangesToDb);
         const response = await fetch(`http://localhost:5172/user/${viewerUsername}/chronicles/update`, {
             method: 'POST',
             credentials: 'include', // Include cookies with the request
@@ -52,16 +55,18 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername} : Us
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                "listOfChanges": changes
+                "listOfChanges": listOfChangesToDb
             })
         });
+        
+        dispatch(clearChanges());
     }
 
     function profileViewSetup() {
-        if ((viewerUsername == profileUsername && (profileUC.current == undefined || "!!!UninitializedReduxStore!!!" in profileUC.current))) {
+        if ((viewerUsername == profileUsername && profileUC.current != undefined && "!!!UninitializedReduxStore!!!" in profileUC.current)) {
             setEditAllowed(true);
             profileUC.current = structuredClone(viewerUCredux.getState().UserChronicles.userChronicles);
-            setCategorizedChronicles(sortByStatus(profileUC.current));
+            setCategorizedChronicles(sortByStatus(profileUC.current ? profileUC.current : {}));
         } 
         if (profileUC.current == undefined) {
             setEditAllowed(false);
@@ -72,7 +77,6 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername} : Us
                 profileUC.current = ssProfileUC;
             }
         }
-        
     }
     
     function sortByStatus(filteredChronicles: Record<string, UserChronicle>) {
@@ -84,28 +88,13 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername} : Us
         }
 
         if (filteredChronicles != undefined && Object.keys(filteredChronicles).length > 0) {
-            Object.values(filteredChronicles).forEach(chronicle => {
-                if (unappliedChanges[chronicle.book_id] !== undefined) {
-                    for (const key in unappliedChanges[chronicle.book_id]) {
-                        if (Object.prototype.hasOwnProperty.call(chronicle, key)) {
-                            (chronicle as any)[key] = unappliedChanges[chronicle.book_id][key];
-                        }
-                    }
-                }
-                
+            Object.values(filteredChronicles).forEach(chronicle => {                
                 const status = chronicle.status;
                 const index = statusMap[status];
                 newArray[index].push(chronicle);
             });
-        }
-        /*
-        let reduxListOfChanges = structuredClone(useAppSelector((state) => state.UserChronicles.listOfChanges));
-        Object.entries(listOfChanges.current).forEach(([chronicleId, chronicleChange]) => {
-            for (const key in chronicleChange) {
-                reduxListOfChanges[chronicleId][chronicleChange] = 
-            } 
-        });
-        */
+        }        
+        console.log(newArray);
         return newArray;
     }
 
@@ -321,7 +310,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername} : Us
             }
             {toggleAddChronicles && <AddChroniclesPage toggle={toggleSearch}/>} 
             {categorizedChronicles && chronicleStatus.map((title, index) => (
-                <StatusContainer status={title} key={index} chroniclesStatus={categorizedChronicles[index]} confirmDelete={toggleDelete} profileUsername={profileUsername}/>
+                <StatusContainer status={title} key={index} chroniclesStatus={categorizedChronicles[index]} confirmDelete={toggleDelete} profileUsername={profileUsername} profileUC={profileUC.current}/>
             ))}
         </div>
     </div>

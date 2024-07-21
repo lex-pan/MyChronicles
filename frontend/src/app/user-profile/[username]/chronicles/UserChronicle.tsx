@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react"
 import { UserChronicleProps, AdditionalInfoUC } from "@/app/utils/interfaces";
 import { useAppDispatch, useAppStore, useAppSelector } from '../../../../globalRedux/hooks';
-import { deleteRedundantEdit, updateExistingId, updateNewId } from "@/globalRedux/features/User/UserChroniclesSlice";
+import { updateExistingId, updateNewId } from "@/globalRedux/features/User/UserChroniclesSlice";
 
-export default function UserChronicle({item, confirmDelete, profileUsername} : UserChronicleProps) {
+export default function UserChronicle({item, confirmDelete, profileUsername, profileUC} : UserChronicleProps) {
     let listOfChanges = useAppSelector((state) => state.UserChronicles.unappliedChanges);
     const [detailedInfo, setDetailedInfo] = useState(false);
     const [additional_info, set_additional_info] = useState<AdditionalInfoUC | null>(null);
@@ -49,42 +49,47 @@ export default function UserChronicle({item, confirmDelete, profileUsername} : U
         if (chronicleDetail == "last_read" || chronicleDetail == "start_date") {
             e.target.value = inputValue;
         }
-        console.log(inputValue);
+
         switch(chronicleDetail){
             case 'rating':
             case 'episode':
                 if (inputNumber != item[chronicleDetail]) {
                     if (item.book_id in listOfChanges) {
                         dispatch(updateExistingId({id: item.book_id, chronicleDetail: chronicleDetail, changedAttributeValue: (inputNumber == null ? inputNumber : inputNumber.toString())}));
+                        if (profileUC != undefined) {
+                            profileUC[item.book_id][chronicleDetail] = inputNumber; 
+                        }
                     } else {
                         dispatch(updateNewId({id: item.book_id, chronicleDetail: chronicleDetail, changedAttributeValue: (inputNumber == null ? inputNumber : inputNumber.toString())}));
+                        if (profileUC != undefined) {
+                            profileUC[item.book_id][chronicleDetail] = inputNumber; 
+                        }
                     }
                 }
 
-                if (inputNumber == item[chronicleDetail] && item.book_id in listOfChanges && chronicleDetail in listOfChanges[item.book_id]) {
-                    dispatch(deleteRedundantEdit({id: item.book_id, chronicleDetail: chronicleDetail}));
-                }
                 break;
             case 'status':
             case 'last_read':
                 if (inputValue != item[chronicleDetail]) {
                     if (item.book_id in listOfChanges) {
                         dispatch(updateExistingId({id: item.book_id, chronicleDetail: chronicleDetail, changedAttributeValue: inputValue}));
+                        if (profileUC != undefined) {
+                            profileUC[item.book_id][chronicleDetail] = inputValue; 
+                        }
                     } else {
                         dispatch(updateNewId({id: item.book_id, chronicleDetail: chronicleDetail, changedAttributeValue: inputValue}));
+                        if (profileUC != undefined) {
+                            profileUC[item.book_id][chronicleDetail] = inputValue; 
+                        }
                     }
                 }
                 
-                if (inputValue == item[chronicleDetail] && item.book_id in listOfChanges && chronicleDetail in listOfChanges[item.book_id]) {
-                    dispatch(deleteRedundantEdit({id: item.book_id, chronicleDetail: chronicleDetail}));
-                }
                 break;
             case 'start_date':
             case 'review':
             case 'notes':
                 if (inputValue != additional_info?.[chronicleDetail]) {
                     if (item.book_id in listOfChanges) {
-                        listOfChanges[item.book_id] = {...listOfChanges[item.book_id], [chronicleDetail]: inputValue};
                         dispatch(updateExistingId({id: item.book_id, chronicleDetail: chronicleDetail, changedAttributeValue: inputValue}));
                     } else {
                         listOfChanges[item.book_id] = {[chronicleDetail]: inputValue};
@@ -92,15 +97,11 @@ export default function UserChronicle({item, confirmDelete, profileUsername} : U
                     }
                 }
                 
-                if (inputValue == additional_info?.[chronicleDetail] && item.book_id in listOfChanges.current && chronicleDetail in listOfChanges.current[item.book_id]) {
-                    dispatch(deleteRedundantEdit({id: item.book_id, chronicleDetail: chronicleDetail}));
-                }
                 break;
             default: 
                 return "A non existing chronicle info section was given";
         }
 
-        console.log(listOfChanges);
     }
 
     async function toggleInfo() {

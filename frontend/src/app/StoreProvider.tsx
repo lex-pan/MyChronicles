@@ -4,6 +4,7 @@ import { useRef } from 'react'
 import { Provider } from "react-redux";
 import { makeStore, AppStore } from "../globalRedux/store";
 import { initializeUserChronicles } from '@/globalRedux/features/User/UserChroniclesSlice';
+import { PersistGate } from 'redux-persist/integration/react'
 
 export default function StoreProvider({ children } : Readonly<{
     children: React.ReactNode;
@@ -12,12 +13,16 @@ export default function StoreProvider({ children } : Readonly<{
     if (!storeRef.current) {
       // Create the store instance the first time this renders
       storeRef.current = makeStore();
-      storeRef.current.dispatch(initializeUserChronicles());
+      if (!storeRef.current.getState().UserChronicles.loggedIn) {
+        storeRef.current.dispatch(initializeUserChronicles());
+      }
     }
 
     return (
         <Provider store={storeRef.current}>
-            {children}
+            <PersistGate loading={null} persistor={storeRef.current.___persistor}>
+                {children}
+            </PersistGate>
         </Provider>
     )
 }

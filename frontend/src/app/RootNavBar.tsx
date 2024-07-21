@@ -39,8 +39,8 @@ export default function RootNavBar() {
           <Link href="/search" className="nav-link">Search</Link>
           <Link href="/add" className="nav-link">Add</Link> 
           <Link href={`/user-profile/${username}`} className="nav-link">Profile</Link> 
-          <Link href={`/user-profile/${username}`}><img className="nav-profile" src="images/default-profile-image.png"/></Link>
-          <img onClick={handleLogOut} className="nav-logout" src="images/logout.png"/>
+          <Link href={`/user-profile/${username}`}><img className="nav-profile" src="/images/default-profile-image.png"/></Link>
+          <img onClick={handleLogOut} className="nav-logout" src="/images/logout.png"/>
         </nav>
       }
       { !isLoggedIn &&
@@ -49,8 +49,8 @@ export default function RootNavBar() {
           <Link href="/search" className="nav-link">Search</Link>
           <Link href="/add" className="nav-link">Add</Link> 
           <Link href="/login" className="nav-link">Profile</Link> 
-          <Link href="/login"><img className="nav-profile" src="images/default-profile-image.png"/></Link>
-          <img onClick={handleLogOut} className="nav-logout" src="images/logout.png"/>
+          <Link href="/login"><img className="nav-profile" src="/images/default-profile-image.png"/></Link>
+          <img onClick={handleLogOut} className="nav-logout" src="/images/logout.png"/>
         </nav>
       }
     </>

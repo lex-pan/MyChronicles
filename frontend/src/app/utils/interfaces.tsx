@@ -4,12 +4,13 @@ export interface UserChronicleData {
 }
 
 export interface UserChronicle {
+    [key: string]: string | number | boolean | null | UserChronicle; // Allow additional properties
     book_id: string;
     book_name: string;
     entertainment_category: string;
-    episode: number;
+    episode: number | null;
     last_read: string;
-    rating: number;
+    rating: number | null;
     userChronicleForDelete: UserChronicle | null;
     status: string;
 }
@@ -18,6 +19,7 @@ export interface UserChronicleProps {
     item: UserChronicle;
     confirmDelete: (userChronicleForDelete: UserChronicle | null) => void;
     profileUsername: string;
+    profileUC: Record<string, UserChronicle> | undefined;
 }
 
 export interface StatusContainerProps {
@@ -25,6 +27,7 @@ export interface StatusContainerProps {
     chroniclesStatus: Record<string, UserChronicle>;
     confirmDelete: (userChronicleForDelete: UserChronicle | null) => void;
     profileUsername : string;
+    profileUC: Record<string, UserChronicle> | undefined;
 }
 
 export interface AddChronicleInfo {
