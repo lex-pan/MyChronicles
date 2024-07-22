@@ -16,7 +16,7 @@ import AddChroniclesPage from './AddChroniclesPage';
 import { useAppSelector, useAppDispatch, useAppStore } from '../../../../globalRedux/hooks';
 import { clearChanges } from '@/globalRedux/features/User/UserChroniclesSlice';
 
-export default function UserChroniclesLayout({ssProfileUC, profileUsername} : UserChronicleData) {
+export default function UserChroniclesLayout({ssProfileUC, profileUsername, profileExists} : UserChronicleData) {
     let viewerUCredux = useAppStore();
     const dispatch = useAppDispatch();
     const [chronicleStatus, setChronicleStatus] = useState(["Reading", "Completed", "Rereading", "Plan to Read", "Paused", "Dropped", "-"]);
@@ -68,14 +68,17 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername} : Us
             profileUC.current = structuredClone(viewerUCredux.getState().UserChronicles.userChronicles);
             setCategorizedChronicles(sortByStatus(profileUC.current ? profileUC.current : {}));
         } 
+
         if (profileUC.current == undefined) {
             setEditAllowed(false);
-            setCategorizedChronicles(sortByStatus(ssProfileUC));
             if (ssProfileUC == undefined) {
                 profileUC.current = {"!!!UninitializedReduxStore!!!": {book_id: "", book_name: "", entertainment_category: "", episode: -1, last_read: "", rating: 0, userChronicleForDelete: null, status:""}};
+                setCategorizedChronicles([]);
             } else {
                 profileUC.current = ssProfileUC;
+                setCategorizedChronicles(sortByStatus(profileUC.current));
             }
+
         }
     }
     
@@ -86,7 +89,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername} : Us
             newArray.push([]);
             statusMap[chronicleStatus[i]] = i;
         }
-
+        console.log(filteredChronicles);
         if (filteredChronicles != undefined && Object.keys(filteredChronicles).length > 0) {
             Object.values(filteredChronicles).forEach(chronicle => {                
                 const status = chronicle.status;
@@ -233,6 +236,8 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername} : Us
   // when users edit, save changes to session storage
   // when the user closes the browser/reloads the browser update the database 
   return (
+    <>
+    {profileExists && 
     <div className='chronicles-section'>
         <div className='chronicle-category-options'>
             <div className='chronicle-category-option selected-chronicle-category' onClick={(e) => mediumChange(e, 0, "")}>
@@ -314,5 +319,10 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername} : Us
             ))}
         </div>
     </div>
+    }
+    {!profileExists &&
+        <div>404: Profile does not exist</div>
+    }
+    </>
   );
 }

@@ -135,7 +135,111 @@
 
 /* Nav Category End */
 
-/* Chronicles Section */
+/* User profile Section */
+
+.about-section {
+    display: grid;
+    grid-template-columns: 22em 1fr;
+    grid-template-rows: 5.5vh 16vh 11.5vh 30vh; 
+    border:  1px solid rgb(216, 216, 216);
+    width: 76em;
+    margin-top: 0.5em;
+    padding: 2em;
+}
+
+.about-username {
+    font-size: 18px;
+    color: rgb(0, 153, 255);
+    border: 1px solid rgb(0, 153, 255);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 17.7em;
+    margin-bottom: 0.9em;
+}
+
+.about-section img {
+    grid-row: 2/4;
+    grid-column: 1/2;
+    width: 20em;
+    height: 17em;
+    object-fit: cover;
+}
+
+.about-section textarea {
+    grid-row: 1/3;
+    grid-column: 2;
+    padding: 1em;
+    font-size: 18px;
+    resize: none;
+    border: 1px solid rgb(172, 172, 172);
+    outline: none;
+}
+
+.about-history {
+    margin-top: 2em;
+    grid-row: 3/5;
+    border: 1px solid rgb(172, 172, 172);
+    padding: 1.4em;
+}
+
+.about-history-title {
+    font-size: 22px;
+    border-bottom: 1px solid rgb(172, 172, 172)
+}
+
+.about-history-subcategories {
+    display: grid;
+    grid-template-columns: 21em 10em 10em 5em;
+    margin-top: 0.8em;
+}
+
+.about-history-subcategories p {
+    font-size: 18px;
+}
+
+.about-history-item {
+    display: grid;
+    grid-template-columns: 21em 10em 10em 5em;
+}
+
+.about-history-item p {
+    font-size: 16.5px;
+    border: 1px solid rgb(172, 172, 172);
+    margin-left: -1px;
+    margin-bottom: -1px;
+    padding: 0.5em;
+}
+
+.about-stats {
+    width: 92.2%;
+    margin-top: 1em;
+    display: flex;
+    flex-direction: column;
+}
+
+.about-stats p {
+    font-size: 22px;
+    border-bottom: 1px solid rgb(172, 172, 172);
+    margin-bottom: 0.8em;
+}
+
+.about-section-stats {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.about-stats li {
+    font-size: 17px;
+    border: 1px solid rgb(172, 172, 172);
+    padding: 0.5em;
+    margin-bottom: -1px;
+}
+
+.about-stats-extra {
+    flex-grow: 1;
+}
 
 .chronicle-category-options {
     display: flex;
@@ -185,7 +289,7 @@
     border-left: 1px solid rgb(216, 216, 216);
     border-right: 1px solid rgb(216, 216, 216);
     width: 76em;
-    min-height: 48em;
+    min-height: 56em;
     height: auto;
     margin-top: -12px;
     /*background-color: rgb(109, 186, 207);*/
@@ -542,6 +646,7 @@
 }
 
 .user-chronicle-info {
+    color: black;
     overflow-x: scroll;
     white-space: nowrap; 
     padding: 0.5em;
@@ -555,6 +660,7 @@
 }
 
 .user-chronicle-info-small {
+    color: black;
     padding: 0.5em;
     font-size: 18px;
     outline: 1px solid rgb(172, 172, 172);
@@ -614,8 +720,8 @@
 }
 
 .chronicle-list-more-info {
-    width: 92.2%;
-    margin-left: 1.95em;
+    width: 95.2%;
+    margin-left: 0.02em;
     padding-left: 1em;
     padding-right: 1em;
     padding-top: 0.2em;
@@ -648,6 +754,7 @@
 }
 
 .user-chronicle-textarea {
+    color: black;
     height: 7em;
     width: 98%;
     margin-left: 0.5em;

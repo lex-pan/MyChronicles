@@ -13,7 +13,7 @@ export default function RootNavBar() {
   let username = useAppSelector((state) => state.UserChronicles.username);
   let userChronicles = useAppSelector((state) => state.UserChronicles.userChronicles);
   const dispatch = useAppDispatch();
-  
+  console.log(username);
   useEffect(() => {
     setNavBarColor(pathname === '/' ? 'rgb(232, 116, 255)' : 'rgb(0, 153, 255)');
   }, [pathname]);

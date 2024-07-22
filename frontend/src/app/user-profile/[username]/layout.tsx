@@ -1,14 +1,21 @@
 import NavOptions from './navOptions';
+import ValidPage from './ValidPage';
 
 export default function RootLayout({
-  children,
+  children, params
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode, params : {username: string};
 }>) {
   return (
     <div className='user-profile-container'>
-        < NavOptions />
-        {children}
+      < NavOptions />
+      {children}
     </div>
   );
 }
+/*
+      <ValidPage params={params}>
+        < NavOptions />
+        {children}
+      </ValidPage>
+*/

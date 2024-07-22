@@ -1,6 +1,7 @@
 export interface UserChronicleData {
     profileUsername: string;
-    ssProfileUC: Record<string, UserChronicle>;
+    ssProfileUC: Record<string, UserChronicle> | undefined;
+    profileExists: boolean
 }
 
 export interface UserChronicle {

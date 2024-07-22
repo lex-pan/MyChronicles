@@ -5,9 +5,9 @@ import { updateExistingId, updateNewId } from "@/globalRedux/features/User/UserC
 
 export default function UserChronicle({item, confirmDelete, profileUsername, profileUC} : UserChronicleProps) {
     let listOfChanges = useAppSelector((state) => state.UserChronicles.unappliedChanges);
+    let viewersUsername = useAppSelector((state) => state.UserChronicles.username);
     const [detailedInfo, setDetailedInfo] = useState(false);
     const [additional_info, set_additional_info] = useState<AdditionalInfoUC | null>(null);
-    let viewerUCredux = useAppStore();
     let dispatch = useAppDispatch();
 
     // get the id
@@ -123,6 +123,8 @@ export default function UserChronicle({item, confirmDelete, profileUsername, pro
     }
 
     return (
+        <>
+        {viewersUsername == profileUsername &&
         <li className='user-container-item'>
             <div className='user-container-overview'>
                 <button onClick={() => confirmDelete(item)} className='chronicle-list-broader'></button>
@@ -155,5 +157,40 @@ export default function UserChronicle({item, confirmDelete, profileUsername, pro
                 </div>
             }
         </li>
+        }
+        {viewersUsername != profileUsername &&
+        <li className='user-container-item'>
+            <div className='user-container-overview'>
+                <p className='chronicle-title user-chronicle-info'>{item.book_name}</p>
+                <input className="user-chronicle-info-small" defaultValue={item.rating ?? ""} placeholder="-" disabled/>
+                <input className="user-chronicle-info-small" defaultValue={item.episode ?? ""} placeholder="-" disabled/>
+                <select className="user-chronicle-info" defaultValue={item.status} disabled>
+                    <option value="Reading">Reading</option>
+                    <option value="Completed">Completed</option>
+                    <option value="Paused">Paused</option>
+                    <option value="Dropped">Dropped</option>
+                    <option value="Plan to Read">Plan to Read</option>
+                    <option value="Rereading">Rereading</option>
+                    <option value="-">-</option>
+                </select>
+                <input type="date" className="user-chronicle-info" defaultValue={item.last_read != "" ? new Date(item.last_read).toISOString().split('T')[0] : undefined} disabled/>
+                <button onClick={toggleInfo} className='chronicle-list-more-info-button'>v</button>
+            </div>
+            {detailedInfo && 
+                <div className='chronicle-list-more-info'>
+                    <div className="more-info-first-line">
+                        <p className='user-chronicle-text'>Start Date:</p>
+                        <input type="date" className="user-chronicle-date" defaultValue={additional_info?.start_date && additional_info.start_date != "" ? new Date(additional_info?.start_date).toISOString().split('T')[0] : undefined} disabled/>
+                        <p className='user-chronicle-text'>Category: {item.entertainment_category}</p>
+                    </div>
+                    <p className='user-chronicle-text'>Review</p>
+                    <textarea className="user-chronicle-textarea" placeholder="Write your review here" defaultValue={additional_info?.review} disabled></textarea>
+                    <p className='user-chronicle-text'>Notes</p>
+                    <textarea className="user-chronicle-textarea" placeholder="Write your notes here" defaultValue={additional_info?.notes} disabled></textarea>
+                </div>
+            }
+        </li>
+        }
+        </>
     )
 }

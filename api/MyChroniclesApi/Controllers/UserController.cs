@@ -273,6 +273,35 @@ public class UserController : ControllerBase {
         }
     }
 
+    /*
+    async function initializeUserProfile(username : string) {
+    const response = await fetch(`http://localhost:5172/user/${username}/profile`, {
+        method: 'GET',
+        credentials: 'include', // Include cookies with the request
+        headers : { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    });
+    
+    return response.json();
+    }
+    */
+
+    [HttpGet("{username}/profile")]
+    public async Task<IActionResult> initializeUserProfile(string username) {
+        // check if user exists
+        // if they do retrieve their about section
+        var userExists = await _userManager.FindByNameAsync(username);
+
+        if (userExists == null) {
+            return Ok("username does not exist");
+        } else {    
+            
+        }
+
+    }
+
     [HttpPost("{username}/chronicles/update")]
     public async Task<IActionResult> updateUserChronicles(string username, UpdateUserChronicles changes) {
         var user = await _userManager.FindByNameAsync(username);

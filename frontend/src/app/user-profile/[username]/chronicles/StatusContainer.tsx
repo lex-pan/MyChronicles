@@ -5,7 +5,7 @@ import { StatusContainerProps, UserChronicleData } from "@/app/utils/interfaces"
 export default function({status, chroniclesStatus, confirmDelete, profileUsername, profileUC} : StatusContainerProps) {
     return (
         <>
-        {Object.keys(chroniclesStatus).length > 0 &&
+        {chroniclesStatus != undefined && Object.keys(chroniclesStatus).length > 0 &&
             <div className='user-container-section'>
                 <h1 className='user-section-title'>{status}</h1>
                 <p className='user-container-category'>Title</p>
