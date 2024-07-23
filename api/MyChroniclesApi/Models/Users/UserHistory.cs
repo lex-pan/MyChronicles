@@ -9,21 +9,24 @@ public class UserHistory {
     public string user_id { get; set; } 
     public string title { get; set; }
     public int chapter { get; set; }
+    public string action { get; set; }
     public string url { get; set; }
-    public DateTime date_read { get; set; }
+    public DateTime date_of_action { get; set; }
     public User users { get; set; }
 
     public UserHistory() {
         // Initialize fields with default values, if needed
         id = Guid.NewGuid();
-        date_read = DateTime.UtcNow;
+        date_of_action = DateTime.UtcNow;
+
     }
-    public UserHistory(string UserId, string Title, int Chapter, string Url)  {
+    public UserHistory(string UserId, string Title, int Chapter, string Url, string Action)  {
         id = Guid.NewGuid();
         user_id = UserId;
         title = Title;
         chapter = Chapter;
         url = Url;
-        date_read = DateTime.UtcNow;
+        action = Action;
+        date_of_action = DateTime.UtcNow;
     }
 }

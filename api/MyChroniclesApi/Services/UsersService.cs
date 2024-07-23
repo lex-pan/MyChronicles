@@ -71,6 +71,10 @@ public class UsersService : MyChroniclesDbContext {
                             
                             typeof(UserChronicles).GetProperty(attribute.Name).SetValue(matchingChronicle, attribute.GetValue(propertiesToChange));
                         }
+
+                        if ((attribute.Name == "start_date" || attribute.Name == "last_read") && attribute.GetValue(propertiesToChange) == null) {
+                            typeof(UserChronicles).GetProperty(attribute.Name).SetValue(matchingChronicle, "");
+                        }
                     }
 
                     await this.SaveChangesAsync();
@@ -119,4 +123,49 @@ public class UsersService : MyChroniclesDbContext {
             return ErrorOr<UCAdditonal>.Success(additional_info);
         }
     }
+
+    public async Task<ErrorOr<RetrievedUserProfile>> retrieveUserProfile(string userID) {
+        try {
+            var retrieveUserInformation = await this.Set<User>().FindAsync(userID);
+            List<UserProfileHistory> retrieveUserProfileHistory = await this.Set<UserHistory>()
+                .Where(e => e.user_id == userID)
+                .OrderByDescending(e => e.date_of_action)
+                .Select(e => new UserProfileHistory(e.title, e.action, e.date_of_action, e.chapter))
+                .Take(7)
+                .ToListAsync();
+            
+            RetrievedUserProfile profileData = new RetrievedUserProfile(
+                retrieveUserInformation.last_online,
+                retrieveUserInformation.account_creation_time,
+                retrieveUserInformation.num_watched_read,
+                retrieveUserInformation.avg_rating,
+                retrieveUserInformation.bio,
+                retrieveUserProfileHistory
+            );
+
+            return ErrorOr<RetrievedUserProfile>.Success(profileData);
+        } catch {
+            return ErrorOr<RetrievedUserProfile>.Failure(Error.InternalServerError("", "error retrieving items"));
+        }
+
+        
+    }
 }
+
+/*
+    public string title { get; set; }
+    public string action { get; set; }
+    public DateTime occurence { get; set; }
+    public float episode { get; set; }
+*/
+
+/*
+    public Guid id { get; set; }
+    [ForeignKey("user_id")] // points to user id
+    public string user_id { get; set; } 
+    public string title { get; set; }
+    public int chapter { get; set; }
+    public string action { get; set; }
+    public string url { get; set; }
+    public DateTime date_read { get; set; }
+*/

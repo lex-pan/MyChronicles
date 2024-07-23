@@ -33,7 +33,6 @@ export default async function SSUserChronicleData({params} : {params : { usernam
     revalidatePath(`/user-profile/[username]/chronicles`, 'page');
 
     const response : UserchronicleFetch | string = await retrieveUserChronicleData(params.username);
-    const isUserChronicleFetch = (response : any) => response.value !== undefined;
 
     if (response == null || response == 'username does not exist') {
         return (

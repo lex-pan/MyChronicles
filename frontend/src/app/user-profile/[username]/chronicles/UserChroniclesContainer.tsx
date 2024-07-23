@@ -47,6 +47,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         if (listOfChangesToDb == undefined || Object.keys(listOfChangesToDb).length == 0 || viewerUsername == "") {
             return 
         }
+
         console.log(listOfChangesToDb);
         const response = await fetch(`http://localhost:5172/user/${viewerUsername}/chronicles/update`, {
             method: 'POST',
@@ -89,7 +90,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
             newArray.push([]);
             statusMap[chronicleStatus[i]] = i;
         }
-        console.log(filteredChronicles);
+
         if (filteredChronicles != undefined && Object.keys(filteredChronicles).length > 0) {
             Object.values(filteredChronicles).forEach(chronicle => {                
                 const status = chronicle.status;
@@ -97,7 +98,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
                 newArray[index].push(chronicle);
             });
         }        
-        console.log(newArray);
+
         return newArray;
     }
 

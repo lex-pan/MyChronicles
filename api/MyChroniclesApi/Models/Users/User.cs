@@ -27,21 +27,25 @@ Custom Class Inheritance: For your own classes that inherit from other custom cl
 public class User : IdentityUser {
     public DateTime account_creation_time { get; }
     public string? bio { get; set; }
-    public DateTime last_login { get; set; }
+    public DateTime last_online { get; set; }
     public string preferred_language { get; set; }
+    public int num_watched_read { get; set; }
+    public float? avg_rating { get; set; }
 
     // Parameterless constructor
     public User() 
     {
         account_creation_time = DateTime.UtcNow;
-        last_login = DateTime.UtcNow;
+        last_online = DateTime.UtcNow;
         preferred_language = "English";
     }
     public User(string username, string email) {
         UserName = username;
         Email = email;
         account_creation_time = DateTime.UtcNow;
-        last_login = DateTime.UtcNow; // Assuming initial last login time as now for new user
+        last_online = DateTime.UtcNow; // Assuming initial last login time as now for new user
         preferred_language = "English"; // Default language can be set as needed
+        num_watched_read = 0;
+        avg_rating = null;
     }
 }

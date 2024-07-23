@@ -86,3 +86,19 @@ export interface loginStatus {
     loggedIn: boolean;
     username: string;
 }
+
+export interface UserProfileHistoryItem {
+    title: string;
+    action: string;
+    occurence: string;
+    episode: number;
+}
+
+export interface UserProfileFetch {
+    last_online: string;
+    date_joined: string;
+    watched_or_read: number;
+    avg_rating: number | null;
+    bio: string;
+    user_history: Array<UserProfileHistoryItem>;
+}

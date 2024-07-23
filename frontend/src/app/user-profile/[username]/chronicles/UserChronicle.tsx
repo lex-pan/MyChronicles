@@ -92,7 +92,6 @@ export default function UserChronicle({item, confirmDelete, profileUsername, pro
                     if (item.book_id in listOfChanges) {
                         dispatch(updateExistingId({id: item.book_id, chronicleDetail: chronicleDetail, changedAttributeValue: inputValue}));
                     } else {
-                        listOfChanges[item.book_id] = {[chronicleDetail]: inputValue};
                         dispatch(updateNewId({id: item.book_id, chronicleDetail: chronicleDetail, changedAttributeValue: inputValue}));
                     }
                 }
@@ -140,7 +139,7 @@ export default function UserChronicle({item, confirmDelete, profileUsername, pro
                     <option value="Rereading">Rereading</option>
                     <option value="-">-</option>
                 </select>
-                <input type="date" className="user-chronicle-info" onBlur={(e) => updateChronicle(e, "last_read")} defaultValue={item.last_read != "" ? new Date(item.last_read).toISOString().split('T')[0] : undefined} />
+                <input type="date" className="user-chronicle-info" onBlur={(e) => updateChronicle(e, "last_read")} defaultValue={item.last_read != "" && item.last_read != "0001-01-01T00:00:00" ? new Date(item.last_read).toISOString().split('T')[0] : undefined} />
                 <button onClick={toggleInfo} className='chronicle-list-more-info-button'>v</button>
             </div>
             {detailedInfo && 

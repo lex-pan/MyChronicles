@@ -1,71 +1,25 @@
-export default function UserProfile() {
-    return ( 
-      <div className="about-section">
-        <h1 className="about-username">lexus</h1>
-        <img src="/about/sakura-3.jpg"/>
-        <textarea placeholder="write your bio here">Hello, this is Lex, the creator of MyChronicles. This account is currently used for testing purposes.</textarea>
-        <div className="about-history">
-          <p className="about-history-title">History</p>
-          <div className="about-history-subcategories">
-            <p>Title</p>
-            <p>Status</p>
-            <p>Time</p>
-            <p>Episode</p>
-          </div>
-          <div className="about-history-item">
-            <p>Sun Zhu - The Art of Testing</p>
-            <p>Reading</p>
-            <p>1 hour ago</p>
-            <p>34</p>
-          </div>
-          <div className="about-history-item">
-            <p>Sun Zhu - The Art of Testing</p>
-            <p>Reading</p>
-            <p>1 hour ago</p>
-            <p>34</p>
-          </div>
-          <div className="about-history-item">
-            <p>Sun Zhu - The Art of Testing</p>
-            <p>Reading</p>
-            <p>1 hour ago</p>
-            <p>34</p>
-          </div>
-          <div className="about-history-item">
-            <p>Sun Zhu - The Art of Testing</p>
-            <p>Reading</p>
-            <p>1 hour ago</p>
-            <p>34</p>
-          </div>
-          <div className="about-history-item">
-            <p>Sun Zhu - The Art of Testing</p>
-            <p>Reading</p>
-            <p>1 hour ago</p>
-            <p>34</p>
-          </div>
-          <div className="about-history-item">
-            <p>Sun Zhu - The Art of Testing</p>
-            <p>Reading</p>
-            <p>1 hour ago</p>
-            <p>34</p>
-          </div>
-          <div className="about-history-item">
-            <p>Sun Zhu - The Art of Testing</p>
-            <p>Reading</p>
-            <p>1 hour ago</p>
-            <p>34</p>
-          </div>
-        </div>
-        <div className="about-stats">
-          <p>Statistics</p>
-          <ul className="about-section-stats">
-            <li>Last Online: </li>
-            <li>Date Joined: </li>
-            <li>Watched/Read: </li>
-            <li>Average Rating: </li>
-            <li className="about-stats-extra">Genres Read/Watched:</li>
-          </ul>
-        </div>
-      </div>
+import { UserProfileFetch } from "@/app/utils/interfaces";
+import UserProfileAbout from "./About";
+import { revalidatePath } from 'next/cache'
+
+async function retrieveUserChronicleData(username : string) {
+    const response = await fetch(`http://localhost:5172/user/${username}/profile`, {
+        method: 'GET',
+        credentials: 'include', // Include cookies with the request
+        headers : { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    });
+    
+    return response.json();
+}
+
+export default async function SSUserChronicleData({params} : {params : { username : string}}) {
+    revalidatePath(`/user-profile/[username]/`, 'page');
+
+    const data : UserProfileFetch = await retrieveUserChronicleData(params.username);
+    return (
+        <UserProfileAbout data={data} username={params.username}/>
     );
 }
-  

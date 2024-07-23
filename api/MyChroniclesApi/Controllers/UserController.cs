@@ -161,7 +161,8 @@ public class UserController : ControllerBase {
             User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
             info.title,
             info.chapter,
-            info.url
+            info.url,
+            "Reading"
         );
 
         await _user.addUserHistory(history); 
@@ -194,7 +195,8 @@ public class UserController : ControllerBase {
             status: info.status,
             rating: info.rating,
             review: info.review,
-            notes: info.notes            
+            notes: info.notes,
+            action: "Update"
         );
 
         var chroniclesToUpdate = new Dictionary<Guid, UCChange>
@@ -273,21 +275,6 @@ public class UserController : ControllerBase {
         }
     }
 
-    /*
-    async function initializeUserProfile(username : string) {
-    const response = await fetch(`http://localhost:5172/user/${username}/profile`, {
-        method: 'GET',
-        credentials: 'include', // Include cookies with the request
-        headers : { 
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-    });
-    
-    return response.json();
-    }
-    */
-
     [HttpGet("{username}/profile")]
     public async Task<IActionResult> initializeUserProfile(string username) {
         // check if user exists
@@ -297,9 +284,24 @@ public class UserController : ControllerBase {
         if (userExists == null) {
             return Ok("username does not exist");
         } else {    
-            
-        }
+            ErrorOr<RetrievedUserProfile> userProfileData = await _user.retrieveUserProfile(userExists.Id);
 
+            if (userProfileData.error.Description == "No Error") {
+                return Ok(userProfileData.value);
+            } else {
+                return StatusCode(500, userProfileData.error);
+            }
+        }
+    }
+
+    [HttpGet("{username}/exists")]
+    public async Task<IActionResult> checkUserExists(string username) {
+        var userExists = await _userManager.FindByNameAsync(username);
+        if (userExists == null) {
+            return Ok("username does not exist");
+        } else {    
+            return Ok("username exists");
+        }
     }
 
     [HttpPost("{username}/chronicles/update")]

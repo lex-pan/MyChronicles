@@ -7,12 +7,15 @@ export default function RootLayout({
   children: React.ReactNode, params : {username: string};
 }>) {
   return (
-    <div className='user-profile-container'>
-      < NavOptions />
-      {children}
-    </div>
+    <ValidPage params={params}>
+      <div className='user-profile-container'>
+        < NavOptions />
+        {children}
+      </div>
+  </ValidPage>
   );
 }
+
 /*
       <ValidPage params={params}>
         < NavOptions />

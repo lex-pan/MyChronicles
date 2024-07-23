@@ -1,7 +1,9 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import UserChronicles from './features/User/UserChroniclesSlice';
+import UserOther from "./features/User/UserOtherSlice";
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
+import { UserChronicle } from "@/app/utils/interfaces";
 
 const persistConfig = {
     key: 'root', // defines the key which the persisted state will be stored in localstorage
@@ -15,10 +17,25 @@ const userChroniclesPersistConfig = {
     whitelist: ['unappliedChanges', 'changesToDb'], // Only persist the specified fields
 };
 
+interface UserChronicleReduxInterface {
+    userChronicles: Record<string, UserChronicle>;
+    loggedIn: boolean;
+    username: string;
+    listOfChanges: Record<string, any>;
+  }
+  
+  const initialState : UserChronicleReduxInterface = {
+      userChronicles: {},
+      loggedIn: false,
+      username: "",
+      listOfChanges: {},
+  }
+
 export const makeStore = () => {
     let store: any =  configureStore({
         reducer: {
-            UserChronicles: persistReducer(userChroniclesPersistConfig, UserChronicles)
+            UserOther: UserOther,
+            UserChronicles: persistReducer<UserChronicleReduxInterface>(userChroniclesPersistConfig, UserChronicles)
         },
         middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: false}),
     }) 

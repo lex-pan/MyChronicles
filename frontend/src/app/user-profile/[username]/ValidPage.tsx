@@ -1,7 +1,7 @@
 import { revalidatePath } from 'next/cache'
 
 async function initializeUserProfile(username : string) {
-    const response = await fetch(`http://localhost:5172/user/${username}/profile`, {
+    const response = await fetch(`http://localhost:5172/user/${username}/exists`, {
         method: 'GET',
         credentials: 'include', // Include cookies with the request
         headers : { 

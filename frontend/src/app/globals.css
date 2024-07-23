@@ -200,14 +200,14 @@
 
 .about-history-item {
     display: grid;
-    grid-template-columns: 21em 10em 10em 5em;
+    grid-template-columns: 20.5em 10em 10em 5em;
+    border: 1px solid rgb(172, 172, 172);
+    margin-bottom: -1px;
 }
 
 .about-history-item p {
     font-size: 16.5px;
-    border: 1px solid rgb(172, 172, 172);
     margin-left: -1px;
-    margin-bottom: -1px;
     padding: 0.5em;
 }
 
@@ -720,8 +720,8 @@
 }
 
 .chronicle-list-more-info {
-    width: 95.2%;
-    margin-left: 0.02em;
+    width: 92.3%;
+    margin-left: 1.94em;
     padding-left: 1em;
     padding-right: 1em;
     padding-top: 0.2em;
