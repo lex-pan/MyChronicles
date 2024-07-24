@@ -38,9 +38,9 @@ export default async function SSUserChronicleData({params} : {params : { usernam
         return (
             <UserChroniclesLayout ssProfileUC={undefined} profileUsername={params.username} profileExists={false}/>
         );
-    } else if (typeof response != 'string' && 'value' in response) {
+    } else if (typeof response != 'string' && 'convertedUC' in response) {
         return (
-            <UserChroniclesLayout ssProfileUC={response.value} profileUsername={params.username} profileExists={true}/>
+            <UserChroniclesLayout ssProfileUC={response.convertedUC} profileUsername={params.username} profileExists={true}/>
         );
     } else {
         return (

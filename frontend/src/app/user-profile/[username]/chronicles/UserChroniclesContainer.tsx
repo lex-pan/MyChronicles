@@ -32,41 +32,29 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
     const [toggleAddChronicles, setToggleAddChronicles] = useState(false);
 
     useEffect(() => {
-        window.addEventListener("beforeunload",  () => {
-            changesToDb();
-        });
+        document.addEventListener('visibilitychange', function() {
+            let listOfChangesToDb = viewerUCredux.getState().UserChronicles.listOfChanges;
+            let viewers_username = viewerUCredux.getState().UserChronicles.username;
 
-        return () => {
-            changesToDb();
-        }
-    }, []);
-
-    async function changesToDb() {
-        let listOfChangesToDb = viewerUCredux.getState().UserChronicles.listOfChanges;
-
-        if (listOfChangesToDb == undefined || Object.keys(listOfChangesToDb).length == 0 || viewerUsername == "") {
-            return 
-        }
-
-        console.log(listOfChangesToDb);
-        const response = await fetch(`http://localhost:5172/user/${viewerUsername}/chronicles/update`, {
-            method: 'POST',
-            credentials: 'include', // Include cookies with the request
-            headers : { 
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
+            if (document.visibilityState === "hidden" && Object.keys(listOfChangesToDb).length > 0 && viewers_username != "") {
+              var url = `http://localhost:5172/user/${viewers_username}/chronicles/update`;
+              var data = JSON.stringify({
                 "listOfChanges": listOfChangesToDb
-            })
-        });
-        
-        dispatch(clearChanges());
-    }
+              });
+              const blob = new Blob([data], { type: 'application/json' });
+
+              dispatch(clearChanges());
+              navigator.sendBeacon(url, blob);
+
+            }
+          });
+    }, []);
 
     function profileViewSetup() {
         if ((viewerUsername == profileUsername && profileUC.current != undefined && "!!!UninitializedReduxStore!!!" in profileUC.current)) {
             setEditAllowed(true);
             profileUC.current = structuredClone(viewerUCredux.getState().UserChronicles.userChronicles);
+            console.log(profileUC.current);
             setCategorizedChronicles(sortByStatus(profileUC.current ? profileUC.current : {}));
         } 
 

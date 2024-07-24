@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Reflection;
+using System.Diagnostics;
 
 public class UsersService : MyChroniclesDbContext {
     public UsersService(DbContextOptions<MyChroniclesDbContext> options) : base(options) {
@@ -54,8 +55,7 @@ public class UsersService : MyChroniclesDbContext {
     // goes through each chronicle by finding the chronicle in db by combining user id and book id
     // for each chronicle, check the attributes it has and if it does, change the current one
     public async Task<ErrorOr<string>> updateFlexibleUserChronicles(Dictionary<Guid, UCChange> chroniclesToUpdate, string userId) {
-        try {
-            foreach (KeyValuePair<Guid, UCChange> chronicle in chroniclesToUpdate) {
+                    foreach (KeyValuePair<Guid, UCChange> chronicle in chroniclesToUpdate) {
                 // search user chronicle based on user id and book id
                 // change attributes 
                 UCChange propertiesToChange = chronicle.Value;
@@ -66,14 +66,10 @@ public class UsersService : MyChroniclesDbContext {
                     return ErrorOr<string>.Failure(Error.InvalidInput("","no user with this chronicle was found"));
                 } else {
                     PropertyInfo[] userChronicleAttributes = typeof(UCChange).GetProperties();
+
                     foreach (PropertyInfo attribute in userChronicleAttributes) {
                         if (attribute.Name != "user_id" && attribute.GetValue(propertiesToChange) != null) {
-                            
                             typeof(UserChronicles).GetProperty(attribute.Name).SetValue(matchingChronicle, attribute.GetValue(propertiesToChange));
-                        }
-
-                        if ((attribute.Name == "start_date" || attribute.Name == "last_read") && attribute.GetValue(propertiesToChange) == null) {
-                            typeof(UserChronicles).GetProperty(attribute.Name).SetValue(matchingChronicle, "");
                         }
                     }
 
@@ -82,9 +78,6 @@ public class UsersService : MyChroniclesDbContext {
             }
 
             return ErrorOr<string>.Success("all successfully modified");
-        } catch {
-            return ErrorOr<string>.Failure(Error.InternalServerError("", "internal server error"));
-        }
     }
 
     public async Task<ErrorOr<List<RetrievedUserChronicle>>> retrieveUCByName(string userID) {
@@ -148,24 +141,22 @@ public class UsersService : MyChroniclesDbContext {
             return ErrorOr<RetrievedUserProfile>.Failure(Error.InternalServerError("", "error retrieving items"));
         }
 
-        
+    }
+
+    public async Task<ErrorOr<string>> updateBio(string userID, string updatedBio) {
+        try {
+            var user = await this.Set<User>().FindAsync(userID);
+
+            if (user != null) {
+                user.bio = updatedBio;
+                await this.SaveChangesAsync(); // Save changes asynchronously
+
+                return ErrorOr<string>.Success("successfully updated bio");
+            } else {
+                return ErrorOr<string>.Failure(Error.InternalServerError("", "Error finding user"));
+            }
+        } catch {
+            return ErrorOr<string>.Failure(Error.InternalServerError("", "something went wrong with the server"));
+        }    
     }
 }
-
-/*
-    public string title { get; set; }
-    public string action { get; set; }
-    public DateTime occurence { get; set; }
-    public float episode { get; set; }
-*/
-
-/*
-    public Guid id { get; set; }
-    [ForeignKey("user_id")] // points to user id
-    public string user_id { get; set; } 
-    public string title { get; set; }
-    public int chapter { get; set; }
-    public string action { get; set; }
-    public string url { get; set; }
-    public DateTime date_read { get; set; }
-*/

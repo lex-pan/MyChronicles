@@ -71,8 +71,7 @@ export interface ReviewProps {
 }
 
 export interface UserchronicleFetch {
-    value: Record<string, UserChronicle>;
-    viewers_username: string;
+    convertedUC: Record<string, UserChronicle>;
     userName: string;
 }
 

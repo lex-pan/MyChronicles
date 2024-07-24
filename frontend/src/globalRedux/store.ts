@@ -1,7 +1,16 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import UserChronicles from './features/User/UserChroniclesSlice';
 import UserOther from "./features/User/UserOtherSlice";
-import { persistStore, persistReducer } from 'redux-persist';
+import {
+    persistStore,
+    persistReducer,
+    FLUSH,
+    REHYDRATE,
+    PAUSE,
+    PERSIST,
+    PURGE,
+    REGISTER,
+  } from 'redux-persist'
 import storage from 'redux-persist/lib/storage';
 import { UserChronicle } from "@/app/utils/interfaces";
 
@@ -14,7 +23,7 @@ const persistConfig = {
 const userChroniclesPersistConfig = {
     key: 'userChroniclesChanges',
     storage,
-    whitelist: ['unappliedChanges', 'changesToDb'], // Only persist the specified fields
+    whitelist: ['listOfChanges'], // Only persist the specified fields
 };
 
 interface UserChronicleReduxInterface {
@@ -37,7 +46,11 @@ export const makeStore = () => {
             UserOther: UserOther,
             UserChronicles: persistReducer<UserChronicleReduxInterface>(userChroniclesPersistConfig, UserChronicles)
         },
-        middleware: (getDefaultMiddleware) => getDefaultMiddleware({serializableCheck: false}),
+        middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+            serializableCheck: {
+              ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+            },
+        }),
     }) 
     store.___persistor = persistStore(store);
     return store

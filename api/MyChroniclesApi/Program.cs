@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Identity;
 using MyChroniclesApi.Models.Users;
 using MyChroniclesApi.Controllers;
 
+var MyAllowSpecificOrigins  = "_myAllowSpecificOrigins";
+
 var builder = WebApplication.CreateBuilder(args);
 {
     builder.Services.AddControllers();
@@ -19,11 +21,14 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<ChroniclesService>();
     builder.Services.AddCors(options =>
     {
-        options.AddPolicy("allow-specific-origins",
-            builder => builder.WithOrigins("http://localhost:3000", "chrome-extension://keokakefjhiabclbgfleifjbhhbamnbg")
-                          .AllowAnyMethod()
-                          .AllowAnyHeader()
-                          .AllowCredentials());
+        options.AddPolicy(name: MyAllowSpecificOrigins,
+            policy => 
+            {
+                policy.WithOrigins("http://localhost:3000", "chrome-extension://keokakefjhiabclbgfleifjbhhbamnbg")
+                    .AllowAnyMethod()
+                    .AllowAnyHeader()
+                    .AllowCredentials();
+            });   
     });
 
     builder.Services.ConfigureApplicationCookie(options =>
@@ -48,8 +53,8 @@ var app = builder.Build();
 {
     // app.UseExceptionHandler("/error");
     app.UseCookiePolicy();
-    app.UseCors();
     app.UseHttpsRedirection();
+    app.UseCors(MyAllowSpecificOrigins);
     app.MapControllers();
     app.Run();
 }

@@ -28,7 +28,6 @@ User Registration Flow
         Once the user is saved, SignInManager<User> handles the login process.
         It creates an authentication session (via cookies or tokens) so the user stays logged in while interacting with the website.
 */
-[EnableCors("allow-specific-origins")]  // Apply the CORS policy to the entire controller
 [ApiController]
 [Route("[controller]")]
 public class UserController : ControllerBase {
@@ -304,6 +303,24 @@ public class UserController : ControllerBase {
         }
     }
 
+    //http://localhost:5172/user/${username}/bio
+
+    [HttpPost("{username}/bio")]
+    public async Task<IActionResult> updateUserBio(string username, UpdatedBio bioInfo) {
+        var userExists = await _userManager.FindByNameAsync(username);
+        if (userExists == null) {
+            return BadRequest("User does not exist");
+        } else {
+            ErrorOr<string> update = await _user.updateBio(userExists.Id, bioInfo.bio);
+
+            if (update.error.Description == "No Error") {
+                return Ok(update.value);
+            } else {
+                return StatusCode(500, update.error);
+            }
+        }
+    }
+
     [HttpPost("{username}/chronicles/update")]
     public async Task<IActionResult> updateUserChronicles(string username, UpdateUserChronicles changes) {
         var user = await _userManager.FindByNameAsync(username);
@@ -336,7 +353,7 @@ public class UserController : ControllerBase {
                     
                     if (UCproperty == "last_read" || UCproperty == "start_date") {
                         if (changes.listOfChanges[UserChronicleBookID][UCproperty] == "") {
-                            mappedProperty.SetValue(UCAttributesChange, null);
+                            mappedProperty.SetValue(UCAttributesChange, new DateTime(1, 1, 1));
                         } else {
                             DateTime castValue = DateTime.Parse(changes.listOfChanges[UserChronicleBookID][UCproperty]).ToUniversalTime();
                             mappedProperty.SetValue(UCAttributesChange, castValue);
@@ -361,7 +378,7 @@ public class UserController : ControllerBase {
         if (updateChronicleAttributes.error.Description == "No Error") {
             return Ok(chroniclesToUpdate);
         } else {
-            return StatusCode(300, chroniclesToUpdate);
+            return StatusCode(400, new {chroniclesToUpdate, updateChronicleAttributes.error});
         }
     }
 

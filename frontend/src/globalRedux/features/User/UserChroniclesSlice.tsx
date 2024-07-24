@@ -16,8 +16,7 @@ const initialState : UserChronicleReduxInterface = {
     username: "",
     listOfChanges: {},
 }
-// combineUnappliedAndToDb
-// clearToDbChanges
+
 
 export const UserChroniclesSlice = createSlice({
   name: "user-chronicles",

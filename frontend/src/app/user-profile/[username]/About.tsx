@@ -18,9 +18,18 @@ export default function UserProfileAbout({data, username}: UserAboutProps) {
     let [editAllowed, setEditAllowed] = useState(false);
     
     function editBio(e: ChangeEvent<HTMLTextAreaElement>) {
-        console.log(e.target.value);
         dispatch(updateBio(e.target.value));
     }
+
+    useEffect(() => {
+      window.addEventListener("beforeunload",  () => {
+        bioChanges();
+      });
+
+      return () => {
+        bioChanges();
+      }
+    }, []);
 
     useEffect(() => {
         if (viewers_username == username) {
@@ -29,6 +38,26 @@ export default function UserProfileAbout({data, username}: UserAboutProps) {
             setEditAllowed(false);
         }
     }, [viewers_username])
+
+    async function bioChanges() {
+      if (bio == "") {
+        return
+      }
+      console.log("sending bio changes");
+      const response = await fetch(`http://localhost:5172/user/${username}/bio`, {
+        method: 'POST',
+        credentials: 'include', // Include cookies with the request
+        headers : { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            "bio": bio
+        })
+      });
+
+      return response.json();
+    }
 
     return ( 
       <div className="about-section">

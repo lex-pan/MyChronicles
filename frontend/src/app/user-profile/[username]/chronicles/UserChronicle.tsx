@@ -4,7 +4,7 @@ import { useAppDispatch, useAppStore, useAppSelector } from '../../../../globalR
 import { updateExistingId, updateNewId } from "@/globalRedux/features/User/UserChroniclesSlice";
 
 export default function UserChronicle({item, confirmDelete, profileUsername, profileUC} : UserChronicleProps) {
-    let listOfChanges = useAppSelector((state) => state.UserChronicles.unappliedChanges);
+    let listOfChanges = useAppSelector((state) => state.UserChronicles.listOfChanges);
     let viewersUsername = useAppSelector((state) => state.UserChronicles.username);
     const [detailedInfo, setDetailedInfo] = useState(false);
     const [additional_info, set_additional_info] = useState<AdditionalInfoUC | null>(null);
@@ -172,7 +172,7 @@ export default function UserChronicle({item, confirmDelete, profileUsername, pro
                     <option value="Rereading">Rereading</option>
                     <option value="-">-</option>
                 </select>
-                <input type="date" className="user-chronicle-info" defaultValue={item.last_read != "" ? new Date(item.last_read).toISOString().split('T')[0] : undefined} disabled/>
+                <input type="date" className="user-chronicle-info" defaultValue={item.last_read != "" && item.last_read != "0001-01-01T00:00:00" ? new Date(item.last_read).toISOString().split('T')[0] : undefined} disabled/>
                 <button onClick={toggleInfo} className='chronicle-list-more-info-button'>v</button>
             </div>
             {detailedInfo && 

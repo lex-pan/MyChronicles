@@ -13,7 +13,6 @@ Automatic HTTP 400 responses: ASP.NET Core automatically handles model validatio
 Attribute routing requirement: By default, ASP.NET Core requires attribute routing, meaning you must explicitly define routes using attributes like [HttpGet], [HttpPost], etc.
 Problem details for error responses: ASP.NET Core provides built-in support for returning detailed error responses following the RFC 7807 standard.
 */
-[EnableCors("allow-specific-origins")]  // Apply the CORS policy to the entire controller
 [ApiController]
 [Route("[controller]")]
 public class UrlsController : ControllerBase {
