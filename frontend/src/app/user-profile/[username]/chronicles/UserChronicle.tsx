@@ -17,9 +17,14 @@ export default function UserChronicle({item, confirmDelete, profileUsername, pro
         let inputValue = e.target.value;
         let inputNumber : number | null = 0;
 
-        if (!isNaN(parseFloat(inputValue))) {
+        if (!isNaN(parseFloat(inputValue)) ) {
+            console.log(inputValue);
+            if (inputValue[inputValue.length-1] == ".") {
+                return 
+            }
             inputNumber = parseFloat(inputValue);
             inputNumber = Math.round(inputNumber * 10)/10
+            console.log(inputNumber);
             e.target.value = inputNumber.toString();
         }
 
@@ -128,8 +133,8 @@ export default function UserChronicle({item, confirmDelete, profileUsername, pro
             <div className='user-container-overview'>
                 <button onClick={() => confirmDelete(item)} className='chronicle-list-broader'></button>
                 <p className='chronicle-title user-chronicle-info'>{item.book_name}</p>
-                <input className="user-chronicle-info-small" onBlur={(e) => updateChronicle(e, "rating")} defaultValue={item.rating ?? ""} placeholder="-"/>
-                <input className="user-chronicle-info-small" onBlur={(e) => updateChronicle(e, "episode")} defaultValue={item.episode ?? ""} placeholder="-"/>
+                <input className="user-chronicle-info-small" onChange={(e) => updateChronicle(e, "rating")} defaultValue={item.rating ?? ""} placeholder="-"/>
+                <input className="user-chronicle-info-small" onChange={(e) => updateChronicle(e, "episode")} defaultValue={item.episode ?? ""} placeholder="-"/>
                 <select className="user-chronicle-info" onChange={(e) => updateChronicle(e, "status")} defaultValue={item.status}>
                     <option value="Reading">Reading</option>
                     <option value="Completed">Completed</option>
@@ -146,13 +151,13 @@ export default function UserChronicle({item, confirmDelete, profileUsername, pro
                 <div className='chronicle-list-more-info'>
                     <div className="more-info-first-line">
                         <p className='user-chronicle-text'>Start Date:</p>
-                        <input type="date" className="user-chronicle-date" onBlur={(e) => updateChronicle(e, "start_date")} defaultValue={additional_info?.start_date && additional_info.start_date != "" ? new Date(additional_info?.start_date).toISOString().split('T')[0] : undefined} />
+                        <input type="date" className="user-chronicle-date" onBlur={(e) => updateChronicle(e, "start_date")} defaultValue={listOfChanges[item.book_id] && "start_date" in listOfChanges[item.book_id] ? listOfChanges[item.book_id]["start_date"] : (additional_info?.start_date && additional_info.start_date != "" ? new Date(additional_info?.start_date).toISOString().split('T')[0] : undefined)} />
                         <p className='user-chronicle-text'>Category: {item.entertainment_category}</p>
                     </div>
                     <p className='user-chronicle-text'>Review</p>
-                    <textarea className="user-chronicle-textarea" onBlur={(e) => updateChronicle(e, "review")} placeholder="Write your review here" defaultValue={additional_info?.review}></textarea>
+                    <textarea className="user-chronicle-textarea" onChange={(e) => updateChronicle(e, "review")} placeholder="Write your review here" defaultValue={listOfChanges[item.book_id] && "review" in listOfChanges[item.book_id] ? listOfChanges[item.book_id]["review"] : additional_info?.review}></textarea>
                     <p className='user-chronicle-text'>Notes</p>
-                    <textarea className="user-chronicle-textarea" onBlur={(e) => updateChronicle(e, "notes")} placeholder="Write your notes here" defaultValue={additional_info?.notes}></textarea>
+                    <textarea className="user-chronicle-textarea" onChange={(e) => updateChronicle(e, "notes")} placeholder="Write your notes here" defaultValue={listOfChanges[item.book_id] && "notes" in listOfChanges[item.book_id] ? listOfChanges[item.book_id]["notes"] : additional_info?.notes}></textarea>
                 </div>
             }
         </li>

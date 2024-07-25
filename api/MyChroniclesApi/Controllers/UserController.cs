@@ -251,7 +251,7 @@ public class UserController : ControllerBase {
             ErrorOr<List<RetrievedUserChronicle>> retrievedChronicles = await _user.retrieveUCByName(user_id);
             Dictionary<Guid, RetrievedUserChronicle> convertedUC = UCarrayToDictionary(retrievedChronicles.value);
 
-            return Ok(new {convertedUC, userExists.UserName});
+            return Ok(new {convertedUC, username, isSignedIn, User.FindFirst(ClaimTypes.Name)?.Value});
         } else {
             return NotFound("username does not exist");
         }    
@@ -381,6 +381,12 @@ public class UserController : ControllerBase {
             return StatusCode(400, new {chroniclesToUpdate, updateChronicleAttributes.error});
         }
     }
+
+    [HttpPost("chronicles/add")]
+    public async Task<IActionResult> addNewUserChronicle(string username, UpdateUserChronicles changes) {
+        
+    }
+
 
     private bool invalidEmail(string email) {
         var emailAttribute = new EmailAddressAttribute();

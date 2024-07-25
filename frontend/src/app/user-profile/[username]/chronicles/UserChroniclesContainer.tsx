@@ -32,29 +32,40 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
     const [toggleAddChronicles, setToggleAddChronicles] = useState(false);
 
     useEffect(() => {
-        document.addEventListener('visibilitychange', function() {
-            let listOfChangesToDb = viewerUCredux.getState().UserChronicles.listOfChanges;
-            let viewers_username = viewerUCredux.getState().UserChronicles.username;
+        const handleUCvisibilityChange = () => {
+            sendUCchanges(false);
+        };    
 
-            if (document.visibilityState === "hidden" && Object.keys(listOfChangesToDb).length > 0 && viewers_username != "") {
+        function sendUCchanges(dismount: boolean) {
+            let listOfUserChronicleChangesToDb = viewerUCredux.getState().UserChronicles.listOfChanges;
+            let viewers_username = viewerUCredux.getState().UserChronicles.username;
+            
+            if ((document.visibilityState === "hidden" || dismount) && Object.keys(listOfUserChronicleChangesToDb).length > 0 && viewers_username != "") {
               var url = `http://localhost:5172/user/${viewers_username}/chronicles/update`;
               var data = JSON.stringify({
-                "listOfChanges": listOfChangesToDb
+                "listOfChanges": listOfUserChronicleChangesToDb
               });
+              
+              console.log("sending changes to db");
               const blob = new Blob([data], { type: 'application/json' });
-
               dispatch(clearChanges());
               navigator.sendBeacon(url, blob);
 
             }
-          });
+        }
+
+        document.addEventListener('visibilitychange', handleUCvisibilityChange);
+
+        return() => {            
+            sendUCchanges(true);
+            document.removeEventListener('visibilitychange', handleUCvisibilityChange);
+        }
     }, []);
 
     function profileViewSetup() {
         if ((viewerUsername == profileUsername && profileUC.current != undefined && "!!!UninitializedReduxStore!!!" in profileUC.current)) {
             setEditAllowed(true);
             profileUC.current = structuredClone(viewerUCredux.getState().UserChronicles.userChronicles);
-            console.log(profileUC.current);
             setCategorizedChronicles(sortByStatus(profileUC.current ? profileUC.current : {}));
         } 
 
@@ -250,7 +261,9 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         <div className='user-container'>            
             <div className='user-chronicle-filters'>
                 <input className='user-chronicle-filters-search' placeholder='search bar' onChange={searchChronicleTitles}></input>
-                <button className='user-chronicle-filters-button' onClick={toggleSearch}>Add Chronicle</button>
+                {editAllowed &&
+                    <button className='user-chronicle-filters-button' onClick={toggleSearch}>Add Chronicle</button>                
+                }
                 <div className='filter-category'>
                     <p className='filter-category-name'>Status</p>
                     <select className="status-options">

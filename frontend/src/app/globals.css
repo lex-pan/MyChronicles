@@ -140,7 +140,7 @@
 .about-section {
     display: grid;
     grid-template-columns: 22em 1fr;
-    grid-template-rows: 5.5vh 16vh 11.5vh 30vh; 
+    grid-auto-rows: max-content;
     border:  1px solid rgb(216, 216, 216);
     width: 76em;
     margin-top: 0.5em;
@@ -181,6 +181,7 @@
     grid-row: 3/5;
     border: 1px solid rgb(172, 172, 172);
     padding: 1.4em;
+    overflow: hidden;
 }
 
 .about-history-title {
@@ -192,6 +193,7 @@
     display: grid;
     grid-template-columns: 21em 10em 10em 5em;
     margin-top: 0.8em;
+    border-bottom: 1px solid rgb(172, 172, 172);
 }
 
 .about-history-subcategories p {
@@ -201,7 +203,9 @@
 .about-history-item {
     display: grid;
     grid-template-columns: 20.5em 10em 10em 5em;
-    border: 1px solid rgb(172, 172, 172);
+    border-left: 1px solid rgb(172, 172, 172);
+    border-right: 1px solid rgb(172, 172, 172);
+    border-bottom: 1px solid rgb(172, 172, 172);
     margin-bottom: -1px;
 }
 
@@ -221,7 +225,6 @@
 .about-stats p {
     font-size: 22px;
     border-bottom: 1px solid rgb(172, 172, 172);
-    margin-bottom: 0.8em;
 }
 
 .about-section-stats {
@@ -232,7 +235,9 @@
 
 .about-stats li {
     font-size: 17px;
-    border: 1px solid rgb(172, 172, 172);
+    border-left: 1px solid rgb(172, 172, 172);
+    border-right: 1px solid rgb(172, 172, 172);
+    border-bottom: 1px solid rgb(172, 172, 172);
     padding: 0.5em;
     margin-bottom: -1px;
 }
@@ -472,6 +477,7 @@
     width: 100%;
     margin-left: 0.5em;
     margin-right: 0.5em;
+    overflow-y: scroll;
 }
 
 .add-chronicles-section h1{
@@ -502,10 +508,17 @@
 
 .add-chronicle-additional {
     position: relative;
-    left: -0.3%;
+    left: -0.5%;
     border: 1px solid rgb(172, 172, 172);
-    width: 160.7%;
+    width: 159.7%;
     margin-bottom: -1px;
+}
+
+.add-chronicle-additional-info {
+    padding-top: 1em;
+    padding-left: 1em;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
 }
 
 .add-chronicle-item-top {
@@ -600,9 +613,6 @@
 }
 
 .user-container-section {
-    display: grid;
-    grid-template-rows: auto auto auto;
-    grid-template-columns: 372px 114px 112px 178px;
     width: 85%;
     margin-left: 5%;
     margin: 2em;
@@ -617,9 +627,17 @@
     border-bottom: 1px solid rgb(172, 172, 172);
 }
 
+.user-section-attributes {
+    display: grid;
+    margin-left: 2em;
+    grid-template-columns: 368px 114px 112px 178px 120px;
+    border-bottom: 1px solid rgb(172, 172, 172);
+    width: 92.3%;
+}
+
 .user-container-category {
     margin-top: 1em;
-    margin-left: 35px;
+    margin-left: 5px;
     font-size: 18px;
 }
 
@@ -651,24 +669,27 @@
     white-space: nowrap; 
     padding: 0.5em;
     font-size: 18px;
-    outline: 1px solid rgb(172, 172, 172);
+    border: 1px solid transparent;
+    border-right: 1px solid rgb(172, 172, 172);
+    border-bottom: 1px solid rgb(172, 172, 172);
     margin-top: 1px;
     margin-left: 1px;
     width: 19%;
     background-color: white;
-    border: 1px solid transparent;
 }
 
 .user-chronicle-info-small {
     color: black;
     padding: 0.5em;
     font-size: 18px;
-    outline: 1px solid rgb(172, 172, 172);
+    
     margin-top: 1px;
     margin-left: 1px;
     width: 12%;
     background-color: white;
     border: 1px solid transparent;
+    border-bottom: 1px solid rgb(172, 172, 172);
+    border-right: 1px solid rgb(172, 172, 172);
     overflow-wrap: break-word;
 }
 
@@ -720,12 +741,14 @@
 }
 
 .chronicle-list-more-info {
-    width: 95.25%;
+    width: 92.2%;
+    margin-left: 2em;
     padding-left: 1em;
     padding-right: 1em;
     padding-top: 0.2em;
     padding-bottom: 2em;
     border: 1px solid rgb(172, 172, 172);
+    border-top: 1px solid transparent;
     margin-bottom: -1px;
 }
 
@@ -742,6 +765,7 @@
 }
 
 .chronicle-title {
+    border-left: 1px solid rgb(172, 172, 172);
     width: 40%;
 }
 

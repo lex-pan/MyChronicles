@@ -46,6 +46,18 @@ public class ChroniclesService : MyChroniclesDbContext {
         }
     }
 
+    //     public QueriedChronicle(string BookID, string BookTitle, string EntertainmentCategory, int Year) {
+
+    public async Task<ErrorOr<List<QueriedChronicle>>> queryChroniclesByString(string queryString) {
+        List<QueriedChronicle> entities = await this.Set<AlternativeTitles>()
+            .Where(e => e.alternative_title.ToLower().Contains(queryString.ToLower()))
+            .Take(30)
+            .Select(e => new QueriedChronicle(e.chronicles.chronicle_id, e.alternative_title, e.entertainment_category, e.chronicles.start_date, e.chronicles.country , e.chronicles.author))
+            .ToListAsync();
+
+        return ErrorOr<List<QueriedChronicle>>.Success(entities);
+    }
+
     /*
             Guid? chronicleId = _chronicles.existingChronicle(info.title);
 

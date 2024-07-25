@@ -8,3 +8,11 @@ public record ManualExtensionUpdate(
     string? review,
     string? notes
 );
+
+/*
+                "chronicleID": chronicleId,
+                "status": status,
+                "rating": rating,
+                "review": review,
+                "episode": episode
+*/

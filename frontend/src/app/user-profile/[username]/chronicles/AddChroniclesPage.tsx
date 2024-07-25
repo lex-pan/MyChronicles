@@ -1,69 +1,23 @@
-import React, { useState } from "react";
-import AddChronicle from "./AddChronicle";
+import React, { useRef, useState } from "react";
+import AddChronicleItem from "./AddChronicleItem";
 import { searchChroniclePageProps, AddChronicleInfo } from "@/app/utils/interfaces";
 
 export default function AddChroniclesPage({toggle} : searchChroniclePageProps) {
-    
-    // call api to retrieve results 
-    let searchResults : Record<number, AddChronicleInfo> = {
-        67: {
-            chronicle_id: 67, 
-            title: "book 1",
-            category: "Novel",
-            year: "2024"
-        }, 
-        33: {
-            chronicle_id: 33, 
-            title: "book 2",
-            category: "Novel",
-            year: "2024"
-        }, 
-        95: {
-            chronicle_id: 95, 
-            title: "some comic",
-            category: "Graphic Novel",
-            year: "2024"
-        }, 
-        109: {
-            chronicle_id: 109, 
-            title: "show 1",
-            category: "Show",
-            year: "2024"
-        }, 
-        86: {
-            chronicle_id: 86, 
-            title: "film 1",
-            category: "Film",
-            year: "2024"
-        }, 
-        28: {
-            chronicle_id: 28, 
-            title: "comic 2",
-            category: "Graphic Novel",
-            year: "2024"
-        }, 
-        49: {
-            chronicle_id: 49, 
-            title: "show 30",
-            category: "Show",
-            year: "2024"
-        }
-    }
+    const [searchedChronicles, setSearchedChronicles] = useState(() => sortSearchedChronicles([]));
 
-    const [searchedChronicles, setSearchedChronicles] = useState(sortSearchedChronicles());
-
-    function sortSearchedChronicles() {
+    function sortSearchedChronicles(searchResults: Array<AddChronicleInfo>) {
         let reads : Array<AddChronicleInfo> = [];
         let watches : Array<AddChronicleInfo> = [];
 
-        Object.keys(searchResults).forEach(key => {
-            const numericKey = parseInt(key, 10); // Parse key to integer
-            if (searchResults[numericKey].category == "Novel" || searchResults[numericKey].category == "Graphic Novel") {
-                reads.push(searchResults[numericKey]);
+        for (let i = 0; i < searchResults.length; i++) {
+            console.log(searchResults[i]);
+            console.log(searchResults[i].entertainment_category);
+            if (searchResults[i].entertainment_category == "Novel" || searchResults[i].entertainment_category == "Graphic Novel") {
+                reads.push(searchResults[i]);
             } else {
-                watches.push(searchResults[numericKey]);
+                watches.push(searchResults[i]);
             }
-        });
+        }
 
         return [reads, watches]
     }
@@ -80,10 +34,26 @@ export default function AddChroniclesPage({toggle} : searchChroniclePageProps) {
         };
     }
 
-    function saveInput(e : React.ChangeEvent<any>){
+    async function saveInput(e : React.ChangeEvent<any>){
         console.log(e.target.value);
         let queryString = e.target.value;
         // once db is set up, send queryString to db to fetch search results
+        const data = await chroniclesQuery(queryString);
+        console.log(data);
+
+        setSearchedChronicles(sortSearchedChronicles(data));
+    }
+
+    async function chroniclesQuery(queryString: string) {
+        console.log("querying chronicles");
+        const request = await fetch(`http://localhost:5172/chronicles/query/${queryString}`, {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/text' // Example: Accept JSON responses
+            }
+        });
+        
+        return request.json()
     }
 
     // by setting processSearch to debounce(), everytime processSearch is shown it'd call debounce()
@@ -108,7 +78,7 @@ export default function AddChroniclesPage({toggle} : searchChroniclePageProps) {
                         </div>
                         <div className='add-chronicles-content'>
                             {searchedChronicles[0].map(item => (
-                                <AddChronicle key={item.chronicle_id} searched_chronicle={item}/>
+                                <AddChronicleItem key={item.chronicle_id} searched_chronicle={item}/>
                             ))}
                         </div>    
                     </div>
@@ -121,7 +91,7 @@ export default function AddChroniclesPage({toggle} : searchChroniclePageProps) {
                         </div>
                         <div className='add-chronicles-content'>
                             {searchedChronicles[1].map(item => (
-                                <AddChronicle key={item.chronicle_id} searched_chronicle={item}/>
+                                <AddChronicleItem key={item.chronicle_id} searched_chronicle={item}/>
                             ))}
                         </div>    
                     </div>

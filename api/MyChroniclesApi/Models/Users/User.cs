@@ -25,7 +25,7 @@ Custom Properties in Users Class: You need to initialize these as required, typi
 Custom Class Inheritance: For your own classes that inherit from other custom classes, you are responsible for initializing both inherited properties and new properties. Call the base class constructor to ensure proper initialization.
 */
 public class User : IdentityUser {
-    public DateTime account_creation_time { get; }
+    public DateTime account_creation_time { get; set; }
     public string? bio { get; set; }
     public DateTime last_online { get; set; }
     public string preferred_language { get; set; }

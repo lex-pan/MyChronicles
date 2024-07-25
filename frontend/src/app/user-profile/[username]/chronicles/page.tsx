@@ -10,7 +10,7 @@ Future ToDo's for this section
     - QOL filter actions on chronicles
     - different ways to categorize chronicles 
 */
-
+import { cookies } from "next/headers";
 import { UserchronicleFetch } from "@/app/utils/interfaces";
 import UserChroniclesLayout from "./UserChroniclesContainer";
 import { revalidatePath } from 'next/cache'
@@ -19,10 +19,10 @@ import { revalidatePath } from 'next/cache'
 async function retrieveUserChronicleData(username : string) {
     const response = await fetch(`http://localhost:5172/user/${username}/chronicles`, {
         method: 'GET',
-        credentials: 'include', // Include cookies with the request
         headers : { 
             'Content-Type': 'application/json',
-            'Accept': 'application/json'
+            'Accept': 'application/json',
+            Cookie: cookies().toString()  // includes cookies, since credentials include is for client side
         }
     });
     
@@ -33,7 +33,8 @@ export default async function SSUserChronicleData({params} : {params : { usernam
     revalidatePath(`/user-profile/[username]/chronicles`, 'page');
 
     const response : UserchronicleFetch | string = await retrieveUserChronicleData(params.username);
-
+    console.log(response);
+    console.log(typeof response != 'string' && 'convertedUC' in response);
     if (response == null || response == 'username does not exist') {
         return (
             <UserChroniclesLayout ssProfileUC={undefined} profileUsername={params.username} profileExists={false}/>

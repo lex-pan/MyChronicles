@@ -4,7 +4,7 @@ import convertDatetoReadble from "@/app/utils/convenientFunctions";
 import { useAppSelector, useAppDispatch, useAppStore } from '../../../globalRedux/hooks';
 import { useEffect, useRef, useState } from "react";
 import { ChangeEvent } from "react";
-import { updateBio } from "@/globalRedux/features/User/UserOtherSlice";
+import { updateBio, clearBioUpdate } from "@/globalRedux/features/User/UserOtherSlice";
 
 interface UserAboutProps {
     data: UserProfileFetch;
@@ -13,7 +13,8 @@ interface UserAboutProps {
 
 export default function UserProfileAbout({data, username}: UserAboutProps) {
     let viewers_username = useAppSelector((state) => state.UserChronicles.username);
-    let bio = useAppSelector((state) => state.UserOther.bioChanges);
+    let newBio = useAppSelector((state) => state.UserOther.newBio);
+    let bioChanges = useAppSelector((state) => state.UserOther.bioChanges);
     let dispatch = useAppDispatch();
     let [editAllowed, setEditAllowed] = useState(false);
     
@@ -21,15 +22,28 @@ export default function UserProfileAbout({data, username}: UserAboutProps) {
         dispatch(updateBio(e.target.value));
     }
 
-    useEffect(() => {
-      window.addEventListener("beforeunload",  () => {
-        bioChanges();
-      });
+    useEffect(() => {    
+      function sendBioChanges() {
+          if (bioChanges != "") {
+            var url = `http://localhost:5172/user/${username}/bio`;
+            var data = JSON.stringify({
+              "bio": bioChanges
+            });
+            
+            dispatch(clearBioUpdate());
+            const blob = new Blob([data], { type: 'application/json' });
+            navigator.sendBeacon(url, blob);
 
-      return () => {
-        bioChanges();
+          }
       }
-    }, []);
+
+      document.addEventListener('visibilitychange', sendBioChanges);
+
+      return() => {            
+          sendBioChanges();
+          document.removeEventListener('visibilitychange', sendBioChanges);
+      }
+  }, []);
 
     useEffect(() => {
         if (viewers_username == username) {
@@ -39,32 +53,12 @@ export default function UserProfileAbout({data, username}: UserAboutProps) {
         }
     }, [viewers_username])
 
-    async function bioChanges() {
-      if (bio == "") {
-        return
-      }
-      console.log("sending bio changes");
-      const response = await fetch(`http://localhost:5172/user/${username}/bio`, {
-        method: 'POST',
-        credentials: 'include', // Include cookies with the request
-        headers : { 
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        },
-        body: JSON.stringify({
-            "bio": bio
-        })
-      });
-
-      return response.json();
-    }
-
     return ( 
       <div className="about-section">
         <h1 className="about-username">{username}</h1>
         <img src="/about/sakura-3.jpg"/>
         {editAllowed &&
-            <textarea defaultValue={bio == "" ? data.bio : bio} onChange={editBio}/>
+            <textarea defaultValue={newBio == "" ? data.bio : newBio} onChange={editBio}/>
         }
         {!editAllowed &&
             <textarea defaultValue={data.bio} disabled/>
