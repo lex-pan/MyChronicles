@@ -7,7 +7,6 @@ public class UCChange {
     public DateTime? start_date { get; set; }
     public DateTime? last_read { get; set; }
     public string? notes { get; set; }
-    public string? action { get; set; }
     public UCChange(
         float? episode = null,
         string? status = null,
@@ -15,8 +14,7 @@ public class UCChange {
         string? review = null,
         DateTime? start_date = null,
         DateTime? last_read = null,
-        string? notes = null,
-        string? action = null
+        string? notes = null
     ) 
     {
         this.episode = episode;
@@ -26,6 +24,5 @@ public class UCChange {
         this.start_date = start_date;
         this.last_read = last_read;
         this.notes = notes;
-        this.action = action;
     }
 }

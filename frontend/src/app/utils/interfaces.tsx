@@ -32,7 +32,7 @@ export interface StatusContainerProps {
 }
 
 export interface AddChronicleInfo {
-    chronicle_id: number;
+    chronicle_id: string;
     chronicle_title: string;
     entertainment_category: string;
     year: string;
@@ -49,7 +49,7 @@ export interface searchChroniclePageProps {
 }
 
 export interface SearchedChronicleInfo {
-    chronicle_id: number;
+    chronicle_id: string;
     title: string;
     rating: number;
     members: number;

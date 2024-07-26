@@ -13,7 +13,7 @@ console.log(window.location.href);
         // if user is logged in send to db
         chrome.runtime.sendMessage({type: "sendToDb", tabURL: result[0], title: result[1], chapter: result[2], entertainment_category: result[3]}, (response) => {
             // send to background worker to save in session storage (this way our extension can save it in case the user wants to review it later)
-            chrome.runtime.sendMessage({ type: "saveToSessionStorage", message: result, userChronicleId: response});  
+            chrome.runtime.sendMessage({ type: "saveToSessionStorage", message: result, userChronicleData: response});  
         })
     });
 })();

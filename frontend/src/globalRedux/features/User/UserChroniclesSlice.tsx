@@ -17,7 +17,6 @@ const initialState : UserChronicleReduxInterface = {
     listOfChanges: {},
 }
 
-
 export const UserChroniclesSlice = createSlice({
   name: "user-chronicles",
   initialState,
@@ -32,6 +31,25 @@ export const UserChroniclesSlice = createSlice({
     },
     clearChanges: (state) => {
       state.listOfChanges= {};
+    },
+    deleteUC: (state, action: PayloadAction<string | undefined>) => {
+      if (action.payload != null) {
+        delete state.userChronicles[action.payload];
+      } 
+    },
+    addUC: (state, action: PayloadAction<{id: string, title: string, entertainment_category: string, status: string, rating: number | null, episode: number | null}>) => {
+      let newUC : UserChronicle = {
+        book_id: action.payload.id,
+        book_name: action.payload.title,
+        entertainment_category: action.payload.entertainment_category,
+        episode: action.payload.episode,
+        last_read: "",
+        rating: action.payload.rating,
+        userChronicleForDelete: null,
+        status: action.payload.status
+      };
+
+      state.userChronicles[action.payload.id] = newUC; 
     },
     logout: (state) => {
       state.loggedIn = false;
@@ -82,6 +100,6 @@ export const initializeUserChronicles = createAsyncThunk(
   }
 );
 
-export const { updateExistingId, updateNewId, clearChanges, logout, login } = UserChroniclesSlice.actions;
+export const { updateExistingId, updateNewId, addUC, deleteUC, clearChanges, logout, login } = UserChroniclesSlice.actions;
 
 export default UserChroniclesSlice.reducer;

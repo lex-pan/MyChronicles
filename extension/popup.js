@@ -87,8 +87,8 @@ async function register(event) {
 function setUpExtension(tabData) {
     let extensionHtml = document.getElementById("extension-popup");
     let urlInfo = tabData.message;
-    let userChronicleInfo = tabData.userChronicleId;
-    console.log(tabData);
+    let userChronicleInfo = tabData.userChronicleData;
+    console.log(userChronicleInfo);
     // add stars to rating
     extensionHtml.innerHTML = 
     `
@@ -136,7 +136,7 @@ function setUpExtension(tabData) {
 }
 
 async function update(tabData) {
-  let userChronicleInfo = tabData.userChronicleId;
+  let userChronicleInfo = tabData.userChronicleData;
   const extensionInfo = document.getElementsByClassName("grid-info")[0];
   const status = extensionInfo.childNodes[3].childNodes[3].value;
   const rating = extensionInfo.childNodes[7].childNodes[3].value;
@@ -150,8 +150,7 @@ async function update(tabData) {
     },
     credentials: 'include',
     body: JSON.stringify({
-        "user_id" : userChronicleInfo.user_id,
-        "book_id" : userChronicleInfo.book_id,
+        "chronicle_id" : userChronicleInfo.book_id,
         "status": status,
         "rating": rating,
         "review": review,
@@ -159,13 +158,13 @@ async function update(tabData) {
     })
   });
 
-  tabData.userChronicleId.status = status;
-  tabData.userChronicleId.rating = rating;
-  tabData.userChronicleId.review = review;
-  tabData.userChronicleId.notes = notes;
+  tabData.userChronicleData.status = status;
+  tabData.userChronicleData.rating = rating;
+  tabData.userChronicleData.review = review;
+  tabData.userChronicleData.notes = notes;
 
   const activeTabId = await getActiveTabURL();
-  chrome.storage.session.set({ [activeTabId.toString()]: {message: tabData.message, userChronicleId: tabData.userChronicleId} }).then(() => {
+  chrome.storage.session.set({ [activeTabId.toString()]: {message: tabData.message, userChronicleData: tabData.userChronicleData} }).then(() => {
     console.log("Value was set");
   });
 

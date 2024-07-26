@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http.HttpResults;
 using System.Reflection;
 using System.Diagnostics;
+using MyChroniclesApi.Models.Chronicles;
 
 public class UsersService : MyChroniclesDbContext {
     public UsersService(DbContextOptions<MyChroniclesDbContext> options) : base(options) {
@@ -55,29 +56,54 @@ public class UsersService : MyChroniclesDbContext {
     // goes through each chronicle by finding the chronicle in db by combining user id and book id
     // for each chronicle, check the attributes it has and if it does, change the current one
     public async Task<ErrorOr<string>> updateFlexibleUserChronicles(Dictionary<Guid, UCChange> chroniclesToUpdate, string userId) {
-                    foreach (KeyValuePair<Guid, UCChange> chronicle in chroniclesToUpdate) {
-                // search user chronicle based on user id and book id
-                // change attributes 
-                UCChange propertiesToChange = chronicle.Value;
+        foreach (KeyValuePair<Guid, UCChange> chronicle in chroniclesToUpdate) {
+            // search user chronicle based on user id and book id
+            // change attributes 
+            UCChange propertiesToChange = chronicle.Value;
 
-                UserChronicles matchingChronicle = await this.Set<UserChronicles>().FindAsync(userId, chronicle.Key);
+            UserChronicles matchingUserChronicle = await this.Set<UserChronicles>().FindAsync(userId, chronicle.Key);
 
-                if (matchingChronicle is null) {
-                    return ErrorOr<string>.Failure(Error.InvalidInput("","no user with this chronicle was found"));
-                } else {
-                    PropertyInfo[] userChronicleAttributes = typeof(UCChange).GetProperties();
+            if (matchingUserChronicle is null) {
+                Chronicles foundChronicle = await this.Set<Chronicles>().FindAsync(chronicle.Key);
 
-                    foreach (PropertyInfo attribute in userChronicleAttributes) {
-                        if (attribute.Name != "user_id" && attribute.GetValue(propertiesToChange) != null) {
-                            typeof(UserChronicles).GetProperty(attribute.Name).SetValue(matchingChronicle, attribute.GetValue(propertiesToChange));
-                        }
-                    }
-
-                    await this.SaveChangesAsync();
+                if (foundChronicle == null || foundChronicle.entertainment_category == null) {
+                    return ErrorOr<string>.Failure(Error.NotFound("", "chronicle somehow not found gg's"));
                 }
-            }
 
-            return ErrorOr<string>.Success("all successfully modified");
+                UserChronicles newUC = new UserChronicles(
+                    UserId: userId,
+                    BookID: chronicle.Key,
+                    Episode: propertiesToChange.episode,
+                    EntertainmentCategory: foundChronicle.entertainment_category                    
+                );
+
+                PropertyInfo[] UCchangeAttributes = typeof(UCChange).GetProperties();
+
+                foreach (PropertyInfo attribute in UCchangeAttributes) {
+                    PropertyInfo UCattribute = typeof(UserChronicles).GetProperty(attribute.Name);
+                    if (UCattribute != null && attribute.GetValue(propertiesToChange) != null)  {
+                        typeof(UserChronicles).GetProperty(attribute.Name).SetValue(newUC, attribute.GetValue(propertiesToChange));
+                    }
+                }
+
+                await this.Set<UserChronicles>().AddAsync(newUC);
+                await this.SaveChangesAsync();    
+
+            } else {
+                PropertyInfo[] UCchangeAttributes = typeof(UCChange).GetProperties();
+
+                foreach (PropertyInfo attribute in UCchangeAttributes) {
+                    PropertyInfo UCattribute = typeof(UserChronicles).GetProperty(attribute.Name);
+                    if (UCattribute != null && attribute.GetValue(propertiesToChange) != null)  {
+                        typeof(UserChronicles).GetProperty(attribute.Name).SetValue(matchingUserChronicle, attribute.GetValue(propertiesToChange));
+                    }
+                }
+
+                await this.SaveChangesAsync();
+            }
+        }
+
+        return ErrorOr<string>.Success("all successfully modified");
     }
 
     public async Task<ErrorOr<List<RetrievedUserChronicle>>> retrieveUCByName(string userID) {
@@ -158,5 +184,18 @@ public class UsersService : MyChroniclesDbContext {
         } catch {
             return ErrorOr<string>.Failure(Error.InternalServerError("", "something went wrong with the server"));
         }    
+    }
+
+    public async Task<ErrorOr<string>> deleteChronicle(string userID, Guid  chronicleID) {
+        UserChronicles UCtoDelete = await this.Set<UserChronicles>().FindAsync(userID, chronicleID);
+
+        if (UCtoDelete == null) {
+            return ErrorOr<string>.Success("User never had this chronicle in their library");
+        }
+
+        this.Set<UserChronicles>().Remove(UCtoDelete);
+        await this.SaveChangesAsync();
+
+        return ErrorOr<string>.Success("sucessfully removed");
     }
 }

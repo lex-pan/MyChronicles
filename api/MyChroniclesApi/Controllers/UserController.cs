@@ -177,7 +177,7 @@ public class UserController : ControllerBase {
         ErrorOr<UserChronicles> updatedUC = await _user.updateAutomaticUserchronicle(newUserChronicle);
 
         if (updatedUC.error.Description == "No Error") {
-            return Ok(new {updatedUC.value.user_id, updatedUC.value.book_id, updatedUC.value.status, updatedUC.value.rating, updatedUC.value.review, updatedUC.value.notes});
+            return Ok(new {updatedUC.value.book_id, updatedUC.value.status, updatedUC.value.rating, updatedUC.value.review, updatedUC.value.notes});
         } else {
             return StatusCode(500, updatedUC.error);
         }
@@ -194,13 +194,12 @@ public class UserController : ControllerBase {
             status: info.status,
             rating: info.rating,
             review: info.review,
-            notes: info.notes,
-            action: "Update"
+            notes: info.notes
         );
 
         var chroniclesToUpdate = new Dictionary<Guid, UCChange>
         {
-            { info.book_id, changes }
+            { info.chronicle_id, changes }
         };
 
         ErrorOr<string> updateChronicleAttributes = await _user.updateFlexibleUserChronicles(chroniclesToUpdate, User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
@@ -208,7 +207,7 @@ public class UserController : ControllerBase {
         if (updateChronicleAttributes.error.Description == "No Error") {
             return Ok("successfully added");
         } else {
-            return StatusCode(500, "internal server error");
+            return StatusCode(500, changes);
         }
     }
 
@@ -381,12 +380,51 @@ public class UserController : ControllerBase {
             return StatusCode(400, new {chroniclesToUpdate, updateChronicleAttributes.error});
         }
     }
-
+    
     [HttpPost("chronicles/add")]
-    public async Task<IActionResult> addNewUserChronicle(string username, UpdateUserChronicles changes) {
-        
+    public async Task<IActionResult> addNewUserChronicle(UpdateIndividualUC changes) {
+        UCChange addedChronicle = new UCChange(
+            status: changes.status,
+            rating: changes.rating,
+            review: changes.review,
+           episode: changes.episode
+        );
+
+        var chroniclesToUpdate = new Dictionary<Guid, UCChange>
+        {
+            { changes.chronicle_id, addedChronicle }
+        };
+
+        ErrorOr<string> updateChronicleAttributes = await _user.updateFlexibleUserChronicles(chroniclesToUpdate, User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+
+        if (updateChronicleAttributes.error.Description == "No Error") {
+            return Ok(updateChronicleAttributes.value);
+        } else {
+            return StatusCode(500, updateChronicleAttributes.error);
+        }
     }
 
+    [HttpDelete("chronicles/delete/{chronicle_id}")]
+    public async Task<IActionResult> deleteUserChronicle(string chronicle_id) {
+        bool isSignedIn = _signInManager.IsSignedIn(User);
+
+        if (isSignedIn) {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (user_id == null) {
+                return StatusCode(400, "Invalid user id");
+            }
+
+            ErrorOr<string> deleteChronicle = await _user.deleteChronicle(user_id, new Guid(chronicle_id));
+
+            if (deleteChronicle.error.Description == "No Error") {
+                return Ok(deleteChronicle.value);
+            } else {
+                return StatusCode(500, deleteChronicle.error.Description);
+            }
+        } else {
+            return BadRequest("user must be logged in to delete their own entries");
+        }
+    }
 
     private bool invalidEmail(string email) {
         var emailAttribute = new EmailAddressAttribute();

@@ -16,7 +16,7 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
 chrome.runtime.onMessage.addListener((message, sender) => {
     if (message.type === "saveToSessionStorage") {
         const tabId = sender.tab.id;
-        chrome.storage.session.set({ [tabId.toString()]: {message: message.message, userChronicleId: message.userChronicleId} }).then(() => {
+        chrome.storage.session.set({ [tabId.toString()]: {message: message.message, userChronicleData: message.userChronicleData} }).then(() => {
             console.log("Value was set");
           });
         
@@ -72,9 +72,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
             })
         })
         .then(response => response.json())
-        .then(userChronicleId => {
-            console.log(userChronicleId);
-            sendResponse(userChronicleId);
+        .then(userChronicleData => {
+            console.log(userChronicleData);
+            sendResponse(userChronicleData);
         })
         .catch(error => sendResponse({error: error.toString()}))
     }

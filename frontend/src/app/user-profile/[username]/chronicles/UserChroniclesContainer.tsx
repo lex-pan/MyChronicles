@@ -14,7 +14,7 @@ import StatusContainer from './StatusContainer';
 import { UserChronicle, UserChronicleData } from '@/app/utils/interfaces';
 import AddChroniclesPage from './AddChroniclesPage';
 import { useAppSelector, useAppDispatch, useAppStore } from '../../../../globalRedux/hooks';
-import { clearChanges } from '@/globalRedux/features/User/UserChroniclesSlice';
+import { clearChanges, deleteUC } from '@/globalRedux/features/User/UserChroniclesSlice';
 
 export default function UserChroniclesLayout({ssProfileUC, profileUsername, profileExists} : UserChronicleData) {
     let viewerUCredux = useAppStore();
@@ -83,18 +83,23 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
     }
     
     function sortByStatus(filteredChronicles: Record<string, UserChronicle>) {
-        let newArray : any[] = [];
+        let newArray : Array<Record<string, UserChronicle>> = [];
         let statusMap: {[key: string]: number} = {};
         for (let i = 0; i < chronicleStatus.length; i++) {
-            newArray.push([]);
+            newArray.push({});
+            
             statusMap[chronicleStatus[i]] = i;
         }
-
+        console.log(newArray);
         if (filteredChronicles != undefined && Object.keys(filteredChronicles).length > 0) {
             Object.values(filteredChronicles).forEach(chronicle => {                
                 const status = chronicle.status;
                 const index = statusMap[status];
-                newArray[index].push(chronicle);
+                console.log(chronicle.book_id);
+                
+                if (newArray[index]) { // Ensure the index exists in newArray
+                    newArray[index][chronicle.book_id] = chronicle;
+                }
             });
         }        
 
@@ -194,7 +199,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         setToggleConfirmDelete(value => !value);
     }
 
-    function deleteChronicle() {
+    async function deleteChronicle() {
         if (categorizedChronicles == undefined) {
             return
         }
@@ -204,25 +209,22 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         for (let i = 0; i < chronicleStatus.length; i++) {
             // will need a way to dynamically switch based on how it's categorized
             // we retrieve the index of the categorized array that we want to remove from
-            if (chronicleStatus[i] == deleteChronicleName?.entertainment_category) {
+            if (chronicleStatus[i] == deleteChronicleName?.status) {
                 index = i;
             }
         }   
-
-        const UCbyStatus : Record<string, UserChronicle> = categorizedChronicles[index]; 
-        let UCafterRemoval : Record<string, UserChronicle> = {};
-
-        for (const key in UCbyStatus) {
-            if (UCbyStatus.hasOwnProperty(key)) {
-                if (UCbyStatus[key].book_id !== deleteChronicleName?.book_id) {
-                    UCafterRemoval[key] = UCbyStatus[key];
-                }
-            }
-        }
-
+        console.log(index);
+        console.log(deleteChronicleName);
         const updatedCategorizedChronicles = categorizedChronicles.map((categoryChronicles, i) => {
             if (i === index) {
-                return UCafterRemoval;
+                console.log(deleteChronicleName?.book_id);
+                console.log(deleteChronicleName?.book_id != null);
+                if (deleteChronicleName?.book_id != null) {
+                    console.log(categoryChronicles);
+                    delete categoryChronicles[deleteChronicleName.book_id]
+                }
+
+                return categoryChronicles;
             }
             return categoryChronicles;
         });
@@ -230,7 +232,16 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         setCategorizedChronicles(updatedCategorizedChronicles);
         toggleDelete(null);
 
-        // send call to db notifying it that user has deleted item 
+        dispatch(deleteUC(deleteChronicleName?.book_id));
+        // send to db for delete
+        await fetch(`http://localhost:5172/user/chronicles/delete/${deleteChronicleName?.book_id}`, {
+            method: 'DELETE',
+            headers: {
+                'Accept': 'application/text' // Example: Accept JSON responses
+            },
+            credentials: 'include'
+        });
+         
     }
 
   // when users edit, save changes to session storage

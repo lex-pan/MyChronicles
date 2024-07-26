@@ -47,3 +47,14 @@ public class UserChronicles {
         entertainment_category = EntertainmentCategory;
     }
 }
+
+/*
+        this.episode = episode;
+        this.status = status;
+        this.rating = rating;
+        this.review = review;
+        this.start_date = start_date;
+        this.last_read = last_read;
+        this.notes = notes;
+        this.action = action;
+*/

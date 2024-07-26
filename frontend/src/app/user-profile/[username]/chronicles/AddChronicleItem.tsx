@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react"
 import { SearchedChronicle } from "@/app/utils/interfaces";
-import { useAppStore } from "@/globalRedux/hooks";
+import { useAppStore, useAppDispatch } from "@/globalRedux/hooks";
+import { addUC } from "@/globalRedux/features/User/UserChroniclesSlice";
 
 export default function AddChronicleItem({searched_chronicle} : SearchedChronicle) {
     const [toggledChronicle, setToggledChronicle] = useState(false);
     const [inLibrary, setInLibrary] = useState(false);
     const reduxLibrary = useAppStore();
+    const dispatch = useAppDispatch();
 
     useEffect(() => {
         let viewerUC = reduxLibrary.getState().UserChronicles.userChronicles;
@@ -24,18 +26,14 @@ export default function AddChronicleItem({searched_chronicle} : SearchedChronicl
     async function addUserChronicle(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         console.log(e.currentTarget[5].innerHTML);
-        if (e.currentTarget[5].innerHTML == "Already In Library") {
-            toggleChronicle();
-            return 
-        }
 
         let chronicleId = searched_chronicle.chronicle_id;
         const formData = new FormData(e.currentTarget);
         const status = formData.get('status');
-        const rating = formData.get('rating');
+        let rating = formData.get('rating');
         const review = formData.get('review');
-        const episode = formData.get('episode');
-        console.log(formData);
+        let episode = formData.get('episode');
+        console.log(chronicleId);
         
         const addChronicleToUC = await fetch('http://localhost:5172/user/chronicles/add', {
             method: 'POST',
@@ -45,13 +43,25 @@ export default function AddChronicleItem({searched_chronicle} : SearchedChronicl
             },
             credentials: 'include',
             body: JSON.stringify({
-                "chronicleID": chronicleId,
+                "chronicle_id": chronicleId,
                 "status": status,
                 "rating": rating,
                 "review": review,
                 "episode": episode
             })
         });
+
+        let converted_rating = rating?.toString();
+        let converted_episode = episode?.toString();
+
+        dispatch(addUC({
+            id: searched_chronicle.chronicle_id, 
+            title: searched_chronicle.chronicle_title, 
+            entertainment_category: searched_chronicle.entertainment_category, 
+            status: status?.toString() ?? "-", 
+            rating: converted_rating ? parseFloat(converted_rating) : null,
+            episode: converted_episode ? parseFloat(converted_episode) : null
+        }));
 
         toggleChronicle();
         // send api call to database to save 
@@ -73,12 +83,13 @@ export default function AddChronicleItem({searched_chronicle} : SearchedChronicl
                     <div className="add-chronicle-bottom-first">
                         <p>Status</p>
                         <select name="status">
-                            <option value="reading">Reading</option>
-                            <option value="completed">Completed</option>
-                            <option value="paused">Paused</option>
-                            <option value="dropped">Dropped</option>
-                            <option value="plan to read">Plan to Read</option>
-                            <option value="rereading">Rereading</option>
+                            <option value="Reading">Reading</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Paused">Paused</option>
+                            <option value="Dropped">Dropped</option>
+                            <option value="Plan to Read">Plan to Read</option>
+                            <option value="Rereading">Rereading</option>
+                            <option value="-">-</option>
                         </select>
                         <p>Episode</p>
                         <input name="episode" type="number"></input>
