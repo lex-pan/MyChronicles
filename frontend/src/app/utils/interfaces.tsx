@@ -1,3 +1,5 @@
+import { Dispatch, SetStateAction } from 'react';
+
 export interface UserChronicleData {
     profileUsername: string;
     ssProfileUC: Record<string, UserChronicle> | undefined;
@@ -40,12 +42,18 @@ export interface AddChronicleInfo {
     creator: string;
 }
 
-export interface SearchedChronicle {   
+export interface SearchedChronicle { 
     searched_chronicle : AddChronicleInfo;
+    setCategorizedChronicles: Dispatch<SetStateAction<Record<string, UserChronicle>[] | undefined>>;
+    sortByStatus: (filteredChronicles: Record<string, UserChronicle>) => Array<Record<string, UserChronicle>>;
+    profileUC: Record<string, UserChronicle> | undefined;
 }
 
 export interface searchChroniclePageProps {
     toggle: () => void;
+    setCategorizedChronicles: Dispatch<SetStateAction<Record<string, UserChronicle>[] | undefined>>;
+    sortByStatus: (filteredChronicles: Record<string, UserChronicle>) => Array<Record<string, UserChronicle>>;
+    profileUC: Record<string, UserChronicle> | undefined;
 }
 
 export interface SearchedChronicleInfo {
@@ -102,4 +110,12 @@ export interface UserProfileFetch {
     avg_rating: number | null;
     bio: string;
     user_history: Array<UserProfileHistoryItem>;
+}
+
+export interface UserHistoryData {
+    title: string;
+    chapter: number;
+    action: string;
+    date_of_action: string;
+    url: string;
 }

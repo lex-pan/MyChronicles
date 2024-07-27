@@ -37,19 +37,8 @@ export const UserChroniclesSlice = createSlice({
         delete state.userChronicles[action.payload];
       } 
     },
-    addUC: (state, action: PayloadAction<{id: string, title: string, entertainment_category: string, status: string, rating: number | null, episode: number | null}>) => {
-      let newUC : UserChronicle = {
-        book_id: action.payload.id,
-        book_name: action.payload.title,
-        entertainment_category: action.payload.entertainment_category,
-        episode: action.payload.episode,
-        last_read: "",
-        rating: action.payload.rating,
-        userChronicleForDelete: null,
-        status: action.payload.status
-      };
-
-      state.userChronicles[action.payload.id] = newUC; 
+    addUC: (state, action: PayloadAction<{id: string, newUC: UserChronicle}>) => {
+      state.userChronicles[action.payload.id] = action.payload.newUC; 
     },
     logout: (state) => {
       state.loggedIn = false;

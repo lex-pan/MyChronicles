@@ -326,7 +326,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
                 </div>
             </div>
             }
-            {toggleAddChronicles && <AddChroniclesPage toggle={toggleSearch}/>} 
+            {toggleAddChronicles && <AddChroniclesPage toggle={toggleSearch} setCategorizedChronicles={setCategorizedChronicles} sortByStatus={sortByStatus} profileUC={profileUC.current}/>} 
             {categorizedChronicles && chronicleStatus.map((title, index) => (
                 <StatusContainer status={title} key={index} chroniclesStatus={categorizedChronicles[index]} confirmDelete={toggleDelete} profileUsername={profileUsername} profileUC={profileUC.current}/>
             ))}

@@ -83,10 +83,10 @@ export default function UserProfileAbout({data, username}: UserAboutProps) {
         <div className="about-stats">
           <p>Statistics</p>
           <ul className="about-section-stats">
-            <li>Last Online: {convertDatetoReadble(data.last_online)}</li>
-            <li>Date Joined: {convertDatetoReadble(data.date_joined)}</li>
-            <li>Watched/Read: {data.watched_or_read}</li>
-            <li>Average Rating: {data.avg_rating}</li>
+            <li className="about-stat">Last Online: {convertDatetoReadble(data.last_online)}</li>
+            <li className="about-stat">Date Joined: {convertDatetoReadble(data.date_joined)}</li>
+            <li className="about-stat">Watched/Read: {data.watched_or_read}</li>
+            <li className="about-stat">Average Rating: {data.avg_rating ?? "Unknown"}</li>
             <li className="about-stats-extra">Genres Read/Watched: Not implemented yet</li>
           </ul>
         </div>

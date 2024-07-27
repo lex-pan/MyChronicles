@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import AddChronicleItem from "./AddChronicleItem";
 import { searchChroniclePageProps, AddChronicleInfo } from "@/app/utils/interfaces";
 
-export default function AddChroniclesPage({toggle} : searchChroniclePageProps) {
+export default function AddChroniclesPage({toggle, setCategorizedChronicles, sortByStatus, profileUC} : searchChroniclePageProps) {
     const [searchedChronicles, setSearchedChronicles] = useState(() => sortSearchedChronicles([]));
 
     function sortSearchedChronicles(searchResults: Array<AddChronicleInfo>) {
@@ -78,7 +78,7 @@ export default function AddChroniclesPage({toggle} : searchChroniclePageProps) {
                         </div>
                         <div className='add-chronicles-content'>
                             {searchedChronicles[0].map(item => (
-                                <AddChronicleItem key={item.chronicle_id} searched_chronicle={item}/>
+                                <AddChronicleItem key={item.chronicle_id} searched_chronicle={item} setCategorizedChronicles={setCategorizedChronicles} sortByStatus={sortByStatus} profileUC={profileUC}/>
                             ))}
                         </div>    
                     </div>
@@ -91,7 +91,7 @@ export default function AddChroniclesPage({toggle} : searchChroniclePageProps) {
                         </div>
                         <div className='add-chronicles-content'>
                             {searchedChronicles[1].map(item => (
-                                <AddChronicleItem key={item.chronicle_id} searched_chronicle={item}/>
+                                <AddChronicleItem key={item.chronicle_id} searched_chronicle={item} setCategorizedChronicles={setCategorizedChronicles} sortByStatus={sortByStatus} profileUC={profileUC}/>
                             ))}
                         </div>    
                     </div>

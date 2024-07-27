@@ -2,8 +2,9 @@ import { useEffect, useState } from "react"
 import { SearchedChronicle } from "@/app/utils/interfaces";
 import { useAppStore, useAppDispatch } from "@/globalRedux/hooks";
 import { addUC } from "@/globalRedux/features/User/UserChroniclesSlice";
+import { UserChronicle } from "@/app/utils/interfaces";
 
-export default function AddChronicleItem({searched_chronicle} : SearchedChronicle) {
+export default function AddChronicleItem({searched_chronicle, setCategorizedChronicles, sortByStatus, profileUC} : SearchedChronicle) {
     const [toggledChronicle, setToggledChronicle] = useState(false);
     const [inLibrary, setInLibrary] = useState(false);
     const reduxLibrary = useAppStore();
@@ -27,13 +28,11 @@ export default function AddChronicleItem({searched_chronicle} : SearchedChronicl
         e.preventDefault();
         console.log(e.currentTarget[5].innerHTML);
 
-        let chronicleId = searched_chronicle.chronicle_id;
         const formData = new FormData(e.currentTarget);
         const status = formData.get('status');
         let rating = formData.get('rating');
         const review = formData.get('review');
         let episode = formData.get('episode');
-        console.log(chronicleId);
         
         const addChronicleToUC = await fetch('http://localhost:5172/user/chronicles/add', {
             method: 'POST',
@@ -43,7 +42,7 @@ export default function AddChronicleItem({searched_chronicle} : SearchedChronicl
             },
             credentials: 'include',
             body: JSON.stringify({
-                "chronicle_id": chronicleId,
+                "chronicle_id": searched_chronicle.chronicle_id,
                 "status": status,
                 "rating": rating,
                 "review": review,
@@ -54,14 +53,27 @@ export default function AddChronicleItem({searched_chronicle} : SearchedChronicl
         let converted_rating = rating?.toString();
         let converted_episode = episode?.toString();
 
-        dispatch(addUC({
-            id: searched_chronicle.chronicle_id, 
-            title: searched_chronicle.chronicle_title, 
-            entertainment_category: searched_chronicle.entertainment_category, 
-            status: status?.toString() ?? "-", 
+        let newUC : UserChronicle = {
+            book_id: searched_chronicle.chronicle_id,
+            book_name: searched_chronicle.chronicle_title,
+            entertainment_category: searched_chronicle.entertainment_category,
+            episode: converted_episode ? parseFloat(converted_episode) : null,
+            last_read: "",
             rating: converted_rating ? parseFloat(converted_rating) : null,
-            episode: converted_episode ? parseFloat(converted_episode) : null
-        }));
+            userChronicleForDelete: null,
+            status: status?.toString() ?? "-"
+        };
+
+        dispatch(addUC({id: searched_chronicle.chronicle_id, newUC}));
+
+        if (profileUC) {
+            profileUC[searched_chronicle.chronicle_id] = newUC; 
+        } else {
+            profileUC = {};
+            profileUC[searched_chronicle.chronicle_id] = newUC; 
+        }
+
+        setCategorizedChronicles(sortByStatus(profileUC));
 
         toggleChronicle();
         // send api call to database to save 
