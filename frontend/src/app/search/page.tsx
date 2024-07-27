@@ -4,6 +4,24 @@ import { useState } from "react";
 import { SearchedChronicleInfo } from "../utils/interfaces";
 import SearchedChronicle from "./SearchedChronicle";
 
+/*
+cover:
+  - chronicle_id
+  - title
+  - entertainment_category
+  - episodes
+  - rating
+  - members
+  - status
+
+Detailed:
+  - country
+  - author
+  - start date
+  - end date
+  - synopsis
+*/
+
 export default function Search() {
   let [searchResults, setSearchResults] = useState<Array<SearchedChronicleInfo>>([
     {

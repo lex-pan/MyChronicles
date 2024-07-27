@@ -426,6 +426,24 @@ public class UserController : ControllerBase {
         }
     }
 
+    //http://localhost:5172/user/${username}/history
+    [HttpGet("{username}/history/{page_number}")]
+    public async Task<IActionResult> retrieveUserHistory(string username, int page_number) {
+        var user = await _userManager.FindByNameAsync(username);
+
+        if (user is null) {
+            return BadRequest("user does not exist");
+        }
+
+        ErrorOr<List<RetrievedUserHistory>> userHistory = await _user.retrieveHistoryByUserID(user.Id, page_number);
+
+        if (userHistory.error.Description == "No Error") {
+            return Ok(userHistory.value);
+        } else {
+            return StatusCode(400, userHistory.error);
+        }
+    }
+
     private bool invalidEmail(string email) {
         var emailAttribute = new EmailAddressAttribute();
         if (emailAttribute.IsValid(email)) {

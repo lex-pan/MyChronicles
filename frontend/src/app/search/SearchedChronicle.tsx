@@ -24,7 +24,7 @@ export default function SearchedChronicle({chronicle} : SearchedChronicleInfoPro
 
     return(
         <div className="searched-chronicle">
-            <p className="searched-chronicle-text">book one</p>
+            <p className="searched-chronicle-text chronicle-first-column">book one</p>
             <p className="searched-chronicle-text">5</p>
             <p className="searched-chronicle-text">348,576</p>
             <p className="searched-chronicle-text">32</p>

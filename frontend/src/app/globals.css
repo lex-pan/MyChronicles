@@ -29,11 +29,11 @@
 }
 
 /* Repeating patterns */
-.chronicle-attribute-names, .user-section-attributes, .about-history-subcategories {
+.chronicle-attribute-names, .user-section-attributes, .about-history-subcategories, .search-results-attributes {
     border-bottom: 1px solid rgb(172, 172, 172);
 }
 
-.chronicle-attributes, .user-chronicle-info, .user-chronicle-info-small, .about-history-item, .about-stat, .about-stats-extra {
+.chronicle-attributes, .user-chronicle-info, .user-chronicle-info-small, .about-history-item, .about-stat, .about-stats-extra, .searched-chronicle-text {
     border: 1px solid transparent;
     border-right: 1px solid rgb(172, 172, 172);
     border-bottom: 1px solid rgb(172, 172, 172);
@@ -907,9 +907,9 @@
 
 .search-results-attributes {
     margin-top: 1em;
-    margin-right: 2.4em;
+    margin-right: 3em;
     display: grid;
-    grid-template-columns: 20.2em 6em 6.5em 6em 8em 6em;
+    grid-template-columns: 20.2em 6em 6.5em 6em 8em 5.9em;
 }
 
 .searched-chronicle {
@@ -922,7 +922,6 @@
     font-size: 17px;
     display: flex;
     align-items: center;
-    border: 1px solid rgb(172, 172, 172);
     padding: 0.3em;
     margin-left: -1px;
     margin-bottom: -1px;

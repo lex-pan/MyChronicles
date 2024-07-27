@@ -22,7 +22,7 @@ export default async function ssUserHistory({params} : {params : { username : st
     let userHistory : Array<UserHistoryData> = await retrieveUserHistory(params.username);
     
     return (
-      <UserHistory history={userHistory}/>
+      <UserHistory history={userHistory} username={params.username}/>
     );
 }
   

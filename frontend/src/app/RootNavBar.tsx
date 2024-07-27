@@ -37,7 +37,7 @@ export default function RootNavBar() {
         <nav className="nav-bar" style={{backgroundColor: navBarColor}}>
           <h1><Link href="/" className="nav-bar-title">MyChronicles</Link></h1> 
           <Link href="/search" className="nav-link">Search</Link>
-          <Link href="/add" className="nav-link">Add</Link> 
+          <Link href="/contribute" className="nav-link">Contribute</Link> 
           <Link href={`/user-profile/${username}`} className="nav-link">Profile</Link> 
           <Link href={`/user-profile/${username}`}><img className="nav-profile" src="/images/default-profile-image.png"/></Link>
           <img onClick={handleLogOut} className="nav-logout" src="/images/logout.png"/>
@@ -47,7 +47,7 @@ export default function RootNavBar() {
         <nav className="nav-bar" style={{backgroundColor: navBarColor}}>
           <h1><Link href="/" className="nav-bar-title">MyChronicles</Link></h1> 
           <Link href="/search" className="nav-link">Search</Link>
-          <Link href="/add" className="nav-link">Add</Link> 
+          <Link href="/contribute" className="nav-link">Contribute</Link> 
           <Link href="/login" className="nav-link">Profile</Link> 
           <Link href="/login"><img className="nav-profile" src="/images/default-profile-image.png"/></Link>
           <img onClick={handleLogOut} className="nav-logout" src="/images/logout.png"/>
