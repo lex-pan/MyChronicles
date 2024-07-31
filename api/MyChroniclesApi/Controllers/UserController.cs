@@ -504,7 +504,7 @@ public class UserController : ControllerBase {
     // otherwise create one and return the newly generated ID
     // if there are dupes compare with url, if not successful just use first dupe
     private async Task<ErrorOr<Guid>> chronicleID(string title, string entertainment_category, string url) {
-        ErrorOr<AlternativeTitles> alt_title_exists = await _chronicles.existingChronicle(title, entertainment_category);
+        ErrorOr<AlternativeTitles> alt_title_exists = await _chronicles.existingChronicleByTitle(title, entertainment_category);
 
         if (alt_title_exists.error.Description == "alternative title does not exist") {
             // create a model that accepts a chronicle with only the name

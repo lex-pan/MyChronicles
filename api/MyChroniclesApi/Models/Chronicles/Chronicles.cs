@@ -8,28 +8,29 @@ public class Chronicles {
     public string title { get; set; }
     public string? author { get; set; }
     public string? entertainment_category { get; set; }
-    public int? episodes { get; set; }
+    public float? episodes { get; set; }
     public int? length { get; set; }
     public string? language { get; set; }
     public string? country { get; set; }
     public int? members { get; set; }
-    public int? rating { get; set; }
+    public float? rating { get; set; }
     public string? status { get; set; }
     public DateTime? start_date { get; set; }
     public DateTime? end_date { get; set; }
     public string? synopsis { get; set; }
     public DateTime? db_add_date { get; set; }
+    public string? detailed_summary { get; set; }
     public Chronicles() {}
     private Chronicles(
             string Title, 
             string Author = null, 
             string EntertainmentCategory = null, 
-            int? Episodes = null, 
+            float? Episodes = null, 
             int? Length = null, 
             string Language = null, 
             string Country = null,
             int? Members = null,
-            int? Rating = null,
+            float? Rating = null,
             string Status = null,
             DateTime? Started = null,
             DateTime? Ended = null,

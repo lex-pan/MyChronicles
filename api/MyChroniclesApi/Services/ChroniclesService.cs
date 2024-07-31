@@ -11,7 +11,7 @@ public class ChroniclesService : MyChroniclesDbContext {
         
     }
 
-    public async Task<ErrorOr<AlternativeTitles>> existingChronicle(string title, string entertainment_category) {
+    public async Task<ErrorOr<AlternativeTitles>> existingChronicleByTitle(string title, string entertainment_category) {
         var existingTitle = await this.Set<AlternativeTitles>().FirstOrDefaultAsync(alt_title => alt_title.alternative_title == title && alt_title.entertainment_category == entertainment_category);
         
         if (existingTitle is null) {
@@ -56,6 +56,77 @@ public class ChroniclesService : MyChroniclesDbContext {
             .ToListAsync();
 
         return ErrorOr<List<QueriedChronicle>>.Success(entities);
+    }
+
+    public async Task<ErrorOr<List<DetailedQueriedChronicle>>> queryChroniclesByStringDetailed(string queryString, int pageNumber) {
+        List<DetailedQueriedChronicle> entities = await this.Set<AlternativeTitles>()
+            .Where(e => e.alternative_title.ToLower().Contains(queryString.ToLower()))
+            .Skip(pageNumber * 50)
+            .Take(50)
+            .Select(e => new DetailedQueriedChronicle(
+                e.chronicles.chronicle_id, 
+                e.alternative_title, 
+                e.entertainment_category, 
+                e.chronicles.status, 
+                e.chronicles.country , 
+                e.chronicles.author, 
+                e.chronicles.rating, 
+                e.chronicles.members,
+                e.chronicles.episodes,
+                e.chronicles.synopsis
+                ))
+            .ToListAsync();
+            
+        return ErrorOr<List<DetailedQueriedChronicle>>.Success(entities);
+    }
+
+    public async Task<ErrorOr<bool>> existingChronicleById(Guid chronicleID) {
+        var chronicleExists = await this.Set<Chronicles>().FindAsync(chronicleID);
+        
+        if (chronicleExists is null) {
+            return ErrorOr<bool>.Success(false);
+        } else {
+            return ErrorOr<bool>.Success(true);
+        }
+    }
+
+    public async Task<ErrorOr<ExtraChronicleInfo>> retrieveAdditionalChronicleInfo(Guid ChronicleID) {
+        var chronicleExists = await this.Set<Chronicles>().FindAsync(ChronicleID);
+        
+        if (chronicleExists is null) {
+            return ErrorOr<ExtraChronicleInfo>.Failure(Error.NotFound("", "chronicle with this id does not exist"));
+        } else {
+            List<string> genres = await this.Set<ChroniclesTag>()
+                .Where(e => e.chronicle_id == ChronicleID)
+                .Select(e => e.tag)
+                .ToListAsync();
+
+            List<string> tags = await this.Set<ChroniclesGenre>()
+                .Where(e => e.chronicle_id == ChronicleID)
+                .Select(e => e.genre)
+                .ToListAsync();
+            
+            List<string> alternative_titles = await this.Set<AlternativeTitles>()
+                .Where(e => e.chronicle_id == ChronicleID)
+                .Select(e => e.alternative_title)
+                .ToListAsync();
+            
+            List<string> chronicle_reviews = await this.Set<ChroniclesReview>()
+                .Where(e => e.chronicle_id == ChronicleID)
+                .Select(e => e.review)
+                .ToListAsync();
+
+            ExtraChronicleInfo extra = new ExtraChronicleInfo(
+                genres,
+                tags,
+                alternative_titles,
+                chronicle_reviews,
+                chronicleExists.detailed_summary
+            );
+
+            return ErrorOr<ExtraChronicleInfo>.Success(extra);
+        }
+
     }
 
     /*

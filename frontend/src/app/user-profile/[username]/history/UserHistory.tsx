@@ -34,7 +34,7 @@ export default function UserHistory({history, username} : userHistoryProps) {
                 dbPageCount.current = dbPageCount.current + 1;
                 setUserHistory(previousList => [...previousList, ...result]);                
 
-                if (result.length < 25) {
+                if (result.length < 100) {
                     remainingHistory.current = false;
                 }
             }
@@ -43,6 +43,10 @@ export default function UserHistory({history, username} : userHistoryProps) {
         }
 
         window.addEventListener("scroll", onscroll);
+
+        return () => {
+            document.removeEventListener('scroll', onscroll);
+        };
     }, []);
 
     return (

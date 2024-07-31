@@ -65,8 +65,25 @@ export interface SearchedChronicleInfo {
     date: string;
 }
 
+export interface DetailedSearchedChronicleInfo {
+    chronicle_id: string;
+    chronicle_title: string;
+    country: string;
+    creator: string;
+    rating: number;
+    members: number;
+    entertainment_category: string;
+    episoodes: number;
+    status: string;
+    synopsis: string;
+}
+
 export interface SearchedChronicleInfoProps {
     chronicle: SearchedChronicleInfo;
+}
+
+export interface DetailedSearchChronicleInfoProps {
+    chronicle: DetailedSearchedChronicleInfo;
 }
 
 export interface UserReview {

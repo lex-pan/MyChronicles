@@ -203,13 +203,11 @@ public class UsersService : MyChroniclesDbContext {
         List<RetrievedUserHistory> recentUserHistory = await this.Set<UserHistory>()
             .Where(e => e.user_id == user_id)
             .OrderByDescending(e => e.date_of_action) // Order by date in descending order for most recent entries
-            .Skip(page_number * 25)
-            .Take(25)
+            .Skip(page_number * 100)
+            .Take(100)
             .Select(e => new RetrievedUserHistory(e.title, e.chapter, e.action, e.url, e.date_of_action))
             .ToListAsync();
         
         return ErrorOr<List<RetrievedUserHistory>>.Success(recentUserHistory);
     }
 }
-
-//     public RetrievedUserHistory(string Title, int Chapter, string Action, string Url, DateTime DateOfAction) 

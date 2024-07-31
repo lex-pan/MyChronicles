@@ -23,9 +23,9 @@ export default function Review({review_data} : ReviewProps) {
         This novel can be a fun read, if you can handle the excessive simping over the MC and the plot holes.
             </p>
             <div className="agree-disagree">
-                <p className="arrow">⇧</p>
+                <img className="review-arrow down" src="/images/arrow.svg"/>
                 <p className="score">47</p>
-                <p className="arrow">⇩</p>
+                <img className="review-arrow up" src="/images/arrow.svg"/>
             </div>
         </li>
     )

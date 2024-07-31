@@ -1,100 +1,84 @@
 // should include a search bar and beneath it, a bunch of filters
+// consider different layouts such as display stats and synopsis together
+// implement one that allows users to view image (when i get logistics down) 
+
 'use client'
-import { useState } from "react";
-import { SearchedChronicleInfo } from "../utils/interfaces";
+import React, { useState, useEffect, useRef } from "react";
+import { DetailedSearchedChronicleInfo } from "../utils/interfaces";
+import { debounce } from "../utils/convenientFunctions";
 import SearchedChronicle from "./SearchedChronicle";
 
-/*
-cover:
-  - chronicle_id
-  - title
-  - entertainment_category
-  - episodes
-  - rating
-  - members
-  - status
-
-Detailed:
-  - country
-  - author
-  - start date
-  - end date
-  - synopsis
-*/
-
 export default function Search() {
-  let [searchResults, setSearchResults] = useState<Array<SearchedChronicleInfo>>([
-    {
-      chronicle_id: 2,
-      title: "some book",
-      rating: 4,
-      members: 348576,
-      category: "Novel",
-      date: "Apr 2024"
-    },
-    {
-      chronicle_id: 3,
-      title: "some book",
-      rating: 4,
-      members: 348576,
-      category: "Novel",
-      date: "Apr 2024"
-    },
-    {
-      chronicle_id: 4,
-      title: "some book",
-      rating: 4,
-      members: 348576,
-      category: "Novel",
-      date: "Apr 2024"
-    },
-    {
-      chronicle_id: 5,
-      title: "some book",
-      rating: 4,
-      members: 348576,
-      category: "Novel",
-      date: "Apr 2024"
-    },
-    {
-      chronicle_id: 6,
-      title: "some book",
-      rating: 4,
-      members: 348576,
-      category: "Novel",
-      date: "Apr 2024"
-    },
-    {
-      chronicle_id: 7,
-      title: "some book",
-      rating: 4,
-      members: 348576,
-      category: "Novel",
-      date: "Apr 2024"
-    }
-  ])
+  let searchPageNumber= useRef(0);
+  let queryString = useRef("");
+  let semaphore = useRef(true);
+  let remainingSearch = useRef(true);
+  let [searchResults, setSearchResults] = useState<Array<DetailedSearchedChronicleInfo>>([]);
 
-    return (
-      <div className="search-page">
-        <div className="filter-search-options">
-          <input className="filter-search-bar" placeholder="search-bar"></input>
-        </div>
-        <div className="search-results">
-        <div className="search-results-attributes">
-            <p>Title</p>
-            <p>Score</p>
-            <p>Members</p>
-            <p>Episodes</p>
-            <p>Category</p>
-            <p>Year</p>
-          </div>
-          {searchResults.map(chronicle => (
-            <SearchedChronicle key={chronicle.chronicle_id} chronicle={chronicle}/>
-          ))}
-        </div>
-      </div>
-    );
+  useEffect(() => {
+    async function onscroll() {
+        if (window.scrollY + window.innerHeight == document.body.scrollHeight && remainingSearch.current && semaphore.current) {
+            semaphore.current = false;
+            searchPageNumber.current = searchPageNumber.current + 1;
+            let result : Array<DetailedSearchedChronicleInfo> = await sendAdvancedQueryToDb();
+            setSearchResults(previousSearch => [...previousSearch, ...result]);                
+          
+            if (result.length < 50) {
+                remainingSearch.current = false;
+            }
+        }
+
+        semaphore.current = true;
+    }
+
+    window.addEventListener("scroll", onscroll);
+
+    return () => {
+      document.removeEventListener('scroll', onscroll);
+  };
+}, []);
+
+  async function newSearch(e: React.ChangeEvent<any>) {
+    console.log(e.target.value);
+    if (e.target.value == "" || e.target.value == queryString) {
+      return
+    }
+
+    queryString.current = e.target.value;
+    let newSearchResults = await sendAdvancedQueryToDb();
+    console.log(newSearchResults);
+    searchPageNumber.current = 0;
+    setSearchResults(previousSearch => newSearchResults);
   }
+
+  async function sendAdvancedQueryToDb() {
+
+    const searchResults = await fetch(`http://localhost:5172/chronicles/detailed-query/${queryString.current}/${searchPageNumber.current}`, {
+      method: 'GET',
+      headers: {
+          'Accept': 'application/text' // Example: Accept JSON responses
+      },
+    });
+
+    let jsonifiedSearchResults : Array<DetailedSearchedChronicleInfo> = await searchResults.json();
+    return jsonifiedSearchResults;
+  }
+
+  const debouncedQuery = debounce((e) => newSearch(e));
+
+  return (
+    <div className="search-page">
+      <div className="filter-search-options">
+        <input className="filter-search-bar" placeholder="search-bar" onKeyUp={(e) => debouncedQuery(e)}></input>
+      </div>
+      <div className="search-results">
+        {searchResults.map((chronicle, index) => (
+          <SearchedChronicle key={index} chronicle={chronicle}/>
+        ))}
+      </div>
+    </div>
+  );
+}
 
   /*
           <div className="category">

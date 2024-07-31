@@ -1,14 +1,15 @@
 import ChronicleNavBar from "./ChronicleNavBar";
+import ValidPage from "./ValidPage";
 
 export default function RootLayout({
-  children,
+  children, params
 }: Readonly<{
-  children: React.ReactNode;
+  children: React.ReactNode, params: {chronicleId: string};
 }>) {
   return (
-    <>
+    <ValidPage params={params}>
         <ChronicleNavBar />
         {children}
-    </>
+    </ValidPage>
   );
 }

@@ -1,6 +1,7 @@
 import React, { useRef, useState } from "react";
 import AddChronicleItem from "./AddChronicleItem";
 import { searchChroniclePageProps, AddChronicleInfo } from "@/app/utils/interfaces";
+import { debounce } from "@/app/utils/convenientFunctions";
 
 export default function AddChroniclesPage({toggle, setCategorizedChronicles, sortByStatus, profileUC} : searchChroniclePageProps) {
     const [searchedChronicles, setSearchedChronicles] = useState(() => sortSearchedChronicles([]));
@@ -20,18 +21,6 @@ export default function AddChroniclesPage({toggle, setCategorizedChronicles, sor
         }
 
         return [reads, watches]
-    }
-    
-    // returns a function
-    // ...args is what is passed to the function we want to call after user finishes typing check processSearch for what inputs we give
-    // timer is an id and clearTimeout will get rid of timer if a new one is invoked
-    // the function knows about the previous timer because closures allow the returned function to still have access to the timer in debounce
-    function debounce(searchDb : (e : React.ChangeEvent<any>) => void, timeout = 700){
-        let timer: ReturnType<typeof setTimeout>;
-        return (e : React.ChangeEvent<any>) => {
-          clearTimeout(timer);
-          timer = setTimeout(() => { searchDb(e); }, timeout);
-        };
     }
 
     async function saveInput(e : React.ChangeEvent<any>){
