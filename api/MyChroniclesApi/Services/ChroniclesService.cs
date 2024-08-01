@@ -90,11 +90,11 @@ public class ChroniclesService : MyChroniclesDbContext {
         }
     }
 
-    public async Task<ErrorOr<ExtraChronicleInfo>> retrieveAdditionalChronicleInfo(Guid ChronicleID) {
+    public async Task<ErrorOr<AllChronicleInfo>> retrieveAdditionalChronicleInfo(Guid ChronicleID) {
         var chronicleExists = await this.Set<Chronicles>().FindAsync(ChronicleID);
         
         if (chronicleExists is null) {
-            return ErrorOr<ExtraChronicleInfo>.Failure(Error.NotFound("", "chronicle with this id does not exist"));
+            return ErrorOr<AllChronicleInfo>.Failure(Error.NotFound("", "chronicle with this id does not exist"));
         } else {
             List<string> genres = await this.Set<ChroniclesTag>()
                 .Where(e => e.chronicle_id == ChronicleID)
@@ -116,15 +116,23 @@ public class ChroniclesService : MyChroniclesDbContext {
                 .Select(e => e.review)
                 .ToListAsync();
 
-            ExtraChronicleInfo extra = new ExtraChronicleInfo(
+            AllChronicleInfo all = new AllChronicleInfo(
+                chronicleExists.chronicle_id,
+                chronicleExists.title,
+                chronicleExists.entertainment_category,
+                chronicleExists.status,
+                chronicleExists.country,
+                chronicleExists.author,
+                chronicleExists.rating,
+                chronicleExists.members,
+                chronicleExists.episodes,
+                chronicleExists.synopsis,
                 genres,
                 tags,
-                alternative_titles,
-                chronicle_reviews,
-                chronicleExists.detailed_summary
+                alternative_titles
             );
 
-            return ErrorOr<ExtraChronicleInfo>.Success(extra);
+            return ErrorOr<AllChronicleInfo>.Success(all);
         }
 
     }

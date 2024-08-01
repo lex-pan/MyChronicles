@@ -4,7 +4,7 @@
 
 'use client'
 import React, { useState, useEffect, useRef } from "react";
-import { DetailedSearchedChronicleInfo } from "../utils/interfaces";
+import { GeneralSearchedChronicleInfo } from "../utils/interfaces";
 import { debounce } from "../utils/convenientFunctions";
 import SearchedChronicle from "./SearchedChronicle";
 
@@ -13,14 +13,26 @@ export default function Search() {
   let queryString = useRef("");
   let semaphore = useRef(true);
   let remainingSearch = useRef(true);
-  let [searchResults, setSearchResults] = useState<Array<DetailedSearchedChronicleInfo>>([]);
+  let [searchResults, setSearchResults] = useState<Array<GeneralSearchedChronicleInfo>>([]);
+  const [toggleAddChronicles, setToggleAddChronicles] = useState(false);
+  const [chronicleToBeAdded, setChronicleToBeAdded] = useState<GeneralSearchedChronicleInfo | null>();
+
+  function toggle(chronicleToAdd: GeneralSearchedChronicleInfo | null) {
+    setChronicleToBeAdded(chronicle => chronicleToAdd);
+      setToggleAddChronicles(value => !value);
+  }
+
+  function addChronicle(e: React.ChangeEvent<any>) {
+    // add chronicle to user  
+    console.log(e);
+  }
 
   useEffect(() => {
     async function onscroll() {
         if (window.scrollY + window.innerHeight == document.body.scrollHeight && remainingSearch.current && semaphore.current) {
             semaphore.current = false;
             searchPageNumber.current = searchPageNumber.current + 1;
-            let result : Array<DetailedSearchedChronicleInfo> = await sendAdvancedQueryToDb();
+            let result : Array<GeneralSearchedChronicleInfo> = await sendAdvancedQueryToDb();
             setSearchResults(previousSearch => [...previousSearch, ...result]);                
           
             if (result.length < 50) {
@@ -60,7 +72,7 @@ export default function Search() {
       },
     });
 
-    let jsonifiedSearchResults : Array<DetailedSearchedChronicleInfo> = await searchResults.json();
+    let jsonifiedSearchResults : Array<GeneralSearchedChronicleInfo> = await searchResults.json();
     return jsonifiedSearchResults;
   }
 
@@ -68,12 +80,57 @@ export default function Search() {
 
   return (
     <div className="search-page">
+      {toggleAddChronicles && chronicleToBeAdded != null &&
+      <div className='overlay'>
+          <div className="overlay-container add-searched-chronicle">
+              <h1>Add {chronicleToBeAdded.chronicle_title}?</h1>
+              <div className="add-searched-chronicle-attributes">
+                <div className="add-searched-chronicle-attribute">
+                  <p>Score</p>
+                  <input/>
+                </div>
+                <div className="add-searched-chronicle-attribute">
+                  <p>Episodes</p>
+                  <input/>
+                </div>
+                <div className="add-searched-chronicle-attribute">
+                <p>Status</p>
+                <select defaultValue="-">
+                      <option value="Reading">Reading</option>
+                      <option value="Completed">Completed</option>
+                      <option value="Paused">Paused</option>
+                      <option value="Dropped">Dropped</option>
+                      <option value="Plan to Read">Plan to Read</option>
+                      <option value="Rereading">Rereading</option>
+                      <option value="-">-</option>
+                  </select>
+                </div>
+                <div className="add-searched-chronicle-attribute">
+                  <p>Start Date</p>
+                  <input type="date"/>
+                </div>
+                <div className="add-searched-chronicle-attribute">
+                  <p>Last Read</p>
+                  <input type="date"/>
+                </div>
+                <p>Review</p>
+                <textarea/>
+                <p>Notes</p>
+                <textarea/>
+              </div>
+              <div className='overlay-container-button-container'>
+                  <button onClick={() => toggle(null)} className='no'>No</button>
+                  <button onClick={(e) => addChronicle(e)} className='yes'>Yes</button>
+              </div>
+          </div>
+      </div>
+      }
       <div className="filter-search-options">
         <input className="filter-search-bar" placeholder="search-bar" onKeyUp={(e) => debouncedQuery(e)}></input>
       </div>
       <div className="search-results">
         {searchResults.map((chronicle, index) => (
-          <SearchedChronicle key={index} chronicle={chronicle}/>
+          <SearchedChronicle key={index} chronicle={chronicle} toggleAdd={toggle}/>
         ))}
       </div>
     </div>

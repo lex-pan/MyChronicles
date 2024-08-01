@@ -8,7 +8,7 @@ export default function RootLayout({
 }>) {
   return (
     <ValidPage params={params}>
-        <ChronicleNavBar />
+        <ChronicleNavBar params={params}/>
         {children}
     </ValidPage>
   );

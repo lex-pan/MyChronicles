@@ -65,7 +65,7 @@ public class ChroniclesController : ControllerBase {
         ErrorOr<bool> exists = await _MyChroniclesDb.existingChronicleById(chronicleID);
 
         if (exists.error.Description == "No Error" && exists.value) {
-            ErrorOr<ExtraChronicleInfo> extraInfo = await _MyChroniclesDb.retrieveAdditionalChronicleInfo(chronicleID);
+            ErrorOr<AllChronicleInfo> extraInfo = await _MyChroniclesDb.retrieveAdditionalChronicleInfo(chronicleID);
             
             return Ok(extraInfo.value);
         } else {

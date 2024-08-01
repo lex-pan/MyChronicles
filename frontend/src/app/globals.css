@@ -49,6 +49,15 @@ textarea {
     border-left: 1px solid rgb(172, 172, 172);
 }
 
+.chronicle-first-row {
+    border-top: 1px solid rgb(172, 172, 172);
+}
+
+button {
+    background-color: white;
+    border: 1px solid rgb(172, 172, 172);
+}
+
 /* about page*/
 .about-synopsis {
     width: 100%;
@@ -324,21 +333,60 @@ textarea {
     margin-left: -0.5em;
 }
 
-.confirm-delete {
+.overlay-container {
     background-color: white;
     position: absolute;
     top: 50%; 
     left: 50%; 
     transform: translate(-50%, -50%);
-    height: 22em;
     width: 36em;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
+    border: 1px solid rgb(172, 172, 172);
 }
 
-.confirm-delete h1 {
+.delete-chronicle {
+    height: 22em;
+}
+
+.add-searched-chronicle {
+    height: 40em;
+}
+
+.add-searched-chronicle-attributes {
+    width: 45%;
+    height: 60%;
+    display: flex;
+    border: 1px solid rgb(172, 172, 172);
+    flex-direction: column;
+    padding: 0.5em;
+}
+
+.add-searched-chronicle-attribute {
+    display: grid;
+    grid-template-columns: 5.5em 1fr;
+    margin: 0.3em;
+}
+
+.add-searched-chronicle-attributes p {
+    font-size: 17px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.add-searched-chronicle-attributes input, select {
+    width: 9.8em;
+    height: 2.5em;
+}
+
+.add-searched-chronicle-attributes textarea {
+    grid-column: 1/3;
+}
+
+.overlay-container h1 {
     padding-left: 1em;
     padding-right: 1em;
     font-size: 36px;
@@ -346,12 +394,10 @@ textarea {
     text-align: center;
 }
 
-.confirm-delete button {
-    background-color: white;
+.overlay-container button {
     width: 8em;
     height: 2.7em;
     font-size: 16px;
-    border: 1px solid rgb(172, 172, 172);
     margin: 0.8em;
     margin-top: 2em;
 }
@@ -402,8 +448,6 @@ textarea {
     margin-left: 2.5em;
     width: 80%;
     height: 64.6%;
-    background-color: white;
-    border: 1px solid rgb(172, 172, 172);
     font-size: 16px;
 }
 
@@ -458,8 +502,6 @@ textarea {
     right: 2.5%;
     height: 3.2em;
     width: 3.2em;
-    background-color: white;
-    border: 1px solid rgb(172, 172, 172);
 }
 
 .close-chronicles-options:hover {
@@ -544,8 +586,6 @@ textarea {
 }
 
 .add-chronicle-item-top-button {
-    background-color: white;
-    border: 1px solid rgb(172, 172, 172);
     margin-top: 0.1em;
     margin-bottom: 0.4em;
     border-radius: 100%;
@@ -616,8 +656,6 @@ textarea {
     height: 2.5em;
     margin: 1em;
     font-size: 16px;
-    background-color: white;
-    border: 1px solid rgb(172, 172, 172);
 }
 
 .user-container-section {
@@ -727,8 +765,6 @@ textarea {
     width: 1.2em;
     height: 1em;
     padding-bottom: 6px;
-    border: 1px solid rgb(119, 119, 119);
-    background-color: white;
     border-radius: 100%;
     color: transparent;
     text-shadow: 0 0 0 rgb(119, 119, 119);
@@ -895,17 +931,17 @@ textarea {
 .search-results {
     display: grid;
     grid-template-columns: repeat(auto-fill, 31em);
-    grid-auto-rows: minmax(23.5em, 23.5em); /* Makes sure that the height of the head of the display stays the same when the navigations for lists pop up and when window is resized*/
+    grid-auto-rows: minmax(21em, 21em); /* Makes sure that the height of the head of the display stays the same when the navigations for lists pop up and when window is resized*/
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
-    margin: 2em;
+    margin: 1em;
 }
 
 .search-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    grid-template-rows: 3em 15.25em 3em;
+    grid-template-rows: 2em 15.25em 2em;
     margin: 1.2em;
     border: 1px solid rgb(0, 153, 255);
 }
@@ -960,8 +996,8 @@ textarea {
 .grid-info-stars-outer {
     display: flex;
     justify-content: center;
-    margin-top: -0.17em;
-    font-size: 42px;
+    margin-top: -0.3em;
+    font-size: 39px;
     -webkit-text-stroke: 2px rgb(0, 153, 255); /* width and color */
     letter-spacing: 3px;
     color: white;
@@ -987,14 +1023,14 @@ textarea {
 }
 
 .search-container-add {
-    font-size: 15px;
-    width: 4em;
+    font-weight: 600;
+    font-size: 20px;
     position: absolute;
-    right: 5%;
-    top: 10%;
-    background-color: rgb(0, 174, 255);
+    right: 1%;
+    top: -23%;
     padding: 0.5em;
-    border: 2px solid white;
+    background-color: transparent;
+    border: none;
     color: white;
 }
 
@@ -1041,7 +1077,6 @@ textarea {
 }
 
 .stats-general p {
-    border: 1px solid rgb(172, 172, 172);
     font-size: 17px;
     padding: 0.4em;
     margin-bottom: -1px;
@@ -1055,6 +1090,9 @@ textarea {
     font-size: 18px;
     padding: 0.4em;
     border: 1px solid rgb(172, 172, 172);
+    height: 13.8em;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .stats-detailed {
@@ -1081,6 +1119,24 @@ textarea {
     padding: 0.3em;
 }
 
+.chronicle-page-bottom {
+    grid-column: 2/3;
+    margin: 2em;
+    margin-top: 0em;
+    margin-right: 0em;
+    display: flex;
+    justify-content: flex-end;
+}
+
+.chronicle-page-bottom button {
+    padding: 0.4em;
+    font-size: 17px;
+    width: 12em;
+    height: 3em;
+    border-radius: 10px;
+    margin-right: 1.4em;
+}
+
 .chronicle-reviews {
     margin: auto;
     margin-top: 1em;
@@ -1102,6 +1158,27 @@ textarea {
     margin-bottom: -1px;
 }
 
+.chronicle-review-top {
+    grid-column: 1/3;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chronicle-review-size {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgb(172, 172, 172);
+    width: 12em;
+    height: 2.5em;
+    margin-top: 0.55em;
+    left: 50%;
+    position: relative;
+    font-size: 17px;
+    cursor: pointer;
+}
+
 .chronicle-review-username {
     font-weight: 300;
     font-size: 22px;
@@ -1109,21 +1186,19 @@ textarea {
 
 .chronicle-review-date {
     font-size: 17px;
-    display: flex;
-    justify-content: flex-end;
-    align-items: flex-end;
 }
 
 .chronicle-review-text {
     margin-top: 0.3em;
     grid-column: 1/3;
-    height: 15.3em;
     line-height: 30px; /* 4px +12px + 4px */
     resize: none;
     padding: 0.6em;
     font-size: 17px;
     border: 1px solid rgb(172, 172, 172);
-    overflow-y: hidden;
+    overflow: hidden;
+    height: auto;
+    text-overflow: ellipsis;
 }
 
 .agree-disagree {

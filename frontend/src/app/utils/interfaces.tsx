@@ -65,7 +65,7 @@ export interface SearchedChronicleInfo {
     date: string;
 }
 
-export interface DetailedSearchedChronicleInfo {
+export interface GeneralSearchedChronicleInfo {
     chronicle_id: string;
     chronicle_title: string;
     country: string;
@@ -73,7 +73,7 @@ export interface DetailedSearchedChronicleInfo {
     rating: number;
     members: number;
     entertainment_category: string;
-    episoodes: number;
+    episodes: number;
     status: string;
     synopsis: string;
 }
@@ -83,7 +83,8 @@ export interface SearchedChronicleInfoProps {
 }
 
 export interface DetailedSearchChronicleInfoProps {
-    chronicle: DetailedSearchedChronicleInfo;
+    chronicle: GeneralSearchedChronicleInfo;
+    toggleAdd: (chronicleToAdd: GeneralSearchedChronicleInfo | null) => void
 }
 
 export interface UserReview {
@@ -136,3 +137,19 @@ export interface UserHistoryData {
     date_of_action: string;
     url: string;
 }
+
+export interface ExtraSearchedChronicleInfo {
+    genres: Array<string>;
+    tags: Array<string>;
+    alternative_titles: Array<string>;
+    reviews : Array<string>;
+    summary: string;
+}
+
+/*
+        List<string> Genres,
+        List<string> Tags,
+        List<string> AlternativeTitles,
+        List<string> Reviews,
+        string Summary
+*/

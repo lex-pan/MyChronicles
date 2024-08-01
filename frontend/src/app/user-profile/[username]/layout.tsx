@@ -9,16 +9,9 @@ export default function RootLayout({
   return (
     <ValidPage params={params}>
       <div className='user-profile-container'>
-        < NavOptions />
+        < NavOptions params={params} />
         {children}
       </div>
   </ValidPage>
   );
 }
-
-/*
-      <ValidPage params={params}>
-        < NavOptions />
-        {children}
-      </ValidPage>
-*/

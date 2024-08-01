@@ -317,9 +317,9 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
             </div>
             {toggleConfirmDelete &&
             <div className='overlay'>
-                <div className='confirm-delete'>
+                <div className='overlay-container delete-chronicle'>
                     <h1>Delete {deleteChronicleName?.book_name}?</h1>
-                    <div className='confirm-delete-button-container'>
+                    <div className='overlay-container-button-container'>
                         <button onClick={() => toggleDelete(null)} className='no'>No</button>
                         <button onClick={deleteChronicle} className='yes'>Yes</button>
                     </div>

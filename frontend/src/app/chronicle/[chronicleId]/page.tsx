@@ -18,6 +18,6 @@ export default async function ssChronicle({params} : {params : { chronicleId : s
     let chronicleData = await retrieveChronicleData(params.chronicleId);
     console.log(chronicleData);
     return (
-        <Chronicle extraData={chronicleData}/>
+        <Chronicle allInfo={chronicleData}/>
     )
 }
