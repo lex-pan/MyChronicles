@@ -91,7 +91,7 @@ export default function AddChronicleOverlay({chronicle, toggle} : AddChronicleOv
         <div className='overlay'>
           {loggedIn &&
           <form className="overlay-container add-searched-chronicle" onSubmit={addChronicle}>
-              <h1>Add {chronicle.chronicle_title}?</h1>
+              <h1 className="add-searched-chronicle-title">Add {chronicle.chronicle_title}?</h1>
               <div className="add-searched-chronicle-attributes">
                 <div className="searched-attributes row-one">
                   <p>Rating</p>
