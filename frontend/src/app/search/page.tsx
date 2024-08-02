@@ -7,6 +7,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { GeneralSearchedChronicleInfo } from "../utils/interfaces";
 import { debounce } from "../utils/convenientFunctions";
 import SearchedChronicle from "./SearchedChronicle";
+import AddChronicleOverlay from "../utils/Components/AddChronicleOverlay";
 
 export default function Search() {
   let searchPageNumber= useRef(0);
@@ -14,17 +15,13 @@ export default function Search() {
   let semaphore = useRef(true);
   let remainingSearch = useRef(true);
   let [searchResults, setSearchResults] = useState<Array<GeneralSearchedChronicleInfo>>([]);
+
   const [toggleAddChronicles, setToggleAddChronicles] = useState(false);
   const [chronicleToBeAdded, setChronicleToBeAdded] = useState<GeneralSearchedChronicleInfo | null>();
-
+  
   function toggle(chronicleToAdd: GeneralSearchedChronicleInfo | null) {
-    setChronicleToBeAdded(chronicle => chronicleToAdd);
+      setChronicleToBeAdded(chronicle => chronicleToAdd);
       setToggleAddChronicles(value => !value);
-  }
-
-  function addChronicle(e: React.ChangeEvent<any>) {
-    // add chronicle to user  
-    console.log(e);
   }
 
   useEffect(() => {
@@ -81,49 +78,7 @@ export default function Search() {
   return (
     <div className="search-page">
       {toggleAddChronicles && chronicleToBeAdded != null &&
-      <div className='overlay'>
-          <div className="overlay-container add-searched-chronicle">
-              <h1>Add {chronicleToBeAdded.chronicle_title}?</h1>
-              <div className="add-searched-chronicle-attributes">
-                <div className="add-searched-chronicle-attribute">
-                  <p>Score</p>
-                  <input/>
-                </div>
-                <div className="add-searched-chronicle-attribute">
-                  <p>Episodes</p>
-                  <input/>
-                </div>
-                <div className="add-searched-chronicle-attribute">
-                <p>Status</p>
-                <select defaultValue="-">
-                      <option value="Reading">Reading</option>
-                      <option value="Completed">Completed</option>
-                      <option value="Paused">Paused</option>
-                      <option value="Dropped">Dropped</option>
-                      <option value="Plan to Read">Plan to Read</option>
-                      <option value="Rereading">Rereading</option>
-                      <option value="-">-</option>
-                  </select>
-                </div>
-                <div className="add-searched-chronicle-attribute">
-                  <p>Start Date</p>
-                  <input type="date"/>
-                </div>
-                <div className="add-searched-chronicle-attribute">
-                  <p>Last Read</p>
-                  <input type="date"/>
-                </div>
-                <p>Review</p>
-                <textarea/>
-                <p>Notes</p>
-                <textarea/>
-              </div>
-              <div className='overlay-container-button-container'>
-                  <button onClick={() => toggle(null)} className='no'>No</button>
-                  <button onClick={(e) => addChronicle(e)} className='yes'>Yes</button>
-              </div>
-          </div>
-      </div>
+        <AddChronicleOverlay chronicle={chronicleToBeAdded} toggle={toggle}/>
       }
       <div className="filter-search-options">
         <input className="filter-search-bar" placeholder="search-bar" onKeyUp={(e) => debouncedQuery(e)}></input>

@@ -2,7 +2,7 @@
 import { useRouter } from 'next/navigation';
 import { useAppSelector, useAppDispatch, useAppStore } from '../../globalRedux/hooks';
 import { login } from '@/globalRedux/features/User/UserChroniclesSlice';
-
+import Link from 'next/link';
 
 export default function Login() {
   const router = useRouter();
@@ -46,6 +46,7 @@ export default function Login() {
       <textarea placeholder="Username or Email" name="usernameOrEmail"></textarea>
       <input placeholder="Password" type="password" name="password"></input>
       <button>Login</button> 
+      <Link href={"/register"} className="loginRegisterSwitch">Don't have an account? Register here.</Link>
     </form>
   );
 }

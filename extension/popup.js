@@ -158,6 +158,8 @@ async function update(tabData) {
     })
   });
 
+  console.log(review);
+
   tabData.userChronicleData.status = status;
   tabData.userChronicleData.rating = rating;
   tabData.userChronicleData.review = review;

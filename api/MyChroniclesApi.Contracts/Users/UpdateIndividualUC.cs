@@ -5,5 +5,8 @@ public record UpdateIndividualUC(
     string? status, 
     float? rating,
     string? review,
-    float? episode
+    float? episode,
+    string? start_date,
+    string? last_read,
+    string? notes
 );

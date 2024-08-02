@@ -1,23 +1,26 @@
 import { revalidatePath } from "next/cache";
 import ChronicleReviews from "./ChronicleReviews";
+import { cookies } from "next/headers";
 
 async function retrieveChronicleData(chronicleId: string) {
     const chronicleReviews = await fetch(`http://localhost:5172/chronicles/reviews/${chronicleId}`, {
         method: 'GET',
         headers: {
-            'Accept': 'application/text' // Example: Accept JSON responses
-        },
-        //next: {revalidate: 3600}
-    });
+            'Accept': 'application/json', // Example: Accept JSON responses
+            Cookie: cookies().toString()  // includes cookies, since credentials include is for client side
 
+        },
+    });
+    console.log(chronicleReviews);
     return chronicleReviews.json();
 }
 
 export default async function ssChronicle({params} : {params : { chronicleId : string}}) {
     revalidatePath('/chronicle/[chronicleId]', 'page');
-
-    //let chronicleReviews = await retrieveChronicleData(params.chronicleId);
-    //console.log(chronicleReviews);
+    const chronicleReviews = await retrieveChronicleData(params.chronicleId);
+    
+    console.log(chronicleReviews);
+    
     return (
         <ChronicleReviews/>
     )

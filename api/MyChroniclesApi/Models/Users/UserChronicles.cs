@@ -12,6 +12,7 @@ public class UserChronicles {
     public string? status { get; set; }
     public float? rating { get; set; }
     public string? review { get; set; }
+    public DateTime? review_date { get; set; }
     public bool private_review { get; set; }
     public DateTime start_date { get; set; }
     public DateTime last_read { get; set; }
@@ -31,7 +32,8 @@ public class UserChronicles {
             string? Status = null,
             float? Rating = null,
             string? Review = null,
-            string? Notes = null
+            string? Notes = null,
+            DateTime? ReviewDate = null
         )
     {
         user_id = UserId;
@@ -45,16 +47,6 @@ public class UserChronicles {
         last_read = DateTime.UtcNow;
         notes = Notes;
         entertainment_category = EntertainmentCategory;
+        review_date = ReviewDate;
     }
 }
-
-/*
-        this.episode = episode;
-        this.status = status;
-        this.rating = rating;
-        this.review = review;
-        this.start_date = start_date;
-        this.last_read = last_read;
-        this.notes = notes;
-        this.action = action;
-*/

@@ -352,22 +352,41 @@ button {
 }
 
 .add-searched-chronicle {
-    height: 40em;
+    height: 44em;
+    width: 52em;
+}
+
+.add-searched-chronicle h1 {
+    margin-top: 0.3em;
+    background-color: rgb(0, 153, 255);
+    height: 1.8em;
+    color: white;
+    white-space: nowrap;
+    font-size: 26px;
+    width: 80%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .add-searched-chronicle-attributes {
-    width: 45%;
-    height: 60%;
-    display: flex;
+    width: 80%;
+    height: 69.4%;
     border: 1px solid rgb(172, 172, 172);
-    flex-direction: column;
-    padding: 0.5em;
+    margin-top: 1em;
+    padding: 1em;
+    padding-left: 1.5em;
+    padding-right: 1.5em;
 }
 
-.add-searched-chronicle-attribute {
-    display: grid;
-    grid-template-columns: 5.5em 1fr;
+.searched-attributes {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
     margin: 0.3em;
+    margin-bottom: 1.5em;
 }
 
 .add-searched-chronicle-attributes p {
@@ -375,18 +394,44 @@ button {
     display: flex;
     justify-content: flex-start;
     align-items: center;
+    white-space:nowrap;
 }
 
-.add-searched-chronicle-attributes input, select {
+.add-searched-chronicle-attribute-input-num {
+    margin-left: 0.5em;
+    margin-right: 2em;
+    width: 5em;
+    height: 2.3em;
+    font-size: 16px;
+    padding-left: 0.5em;
+}
+
+.add-searched-chronicle-attribute-input-date {
     width: 9.8em;
     height: 2.5em;
+    font-size: 16px;
+    margin-left: 0.5em;
+    margin-right: 2em;
+}
+
+.add-searched-chronicle-attributes select {
+    width: 9.8em;
+    height: 2.5em;
+    background-color: white;
+    border: 1px solid rgb(172, 172, 172);
+    margin-left: 1em;
+    padding-left: 0.8em;
+    font-size: 16px;
 }
 
 .add-searched-chronicle-attributes textarea {
-    grid-column: 1/3;
+    margin-top: 0.5em;
+    width: 98%;
+    height: 7em;
+    margin-bottom: 1.5em;
 }
 
-.overlay-container h1 {
+.overlay-container-title {
     padding-left: 1em;
     padding-right: 1em;
     font-size: 36px;
@@ -395,11 +440,13 @@ button {
 }
 
 .overlay-container button {
-    width: 8em;
-    height: 2.7em;
+    font-weight: 600;
+    width: 12em;
+    height: 3.2em;
     font-size: 16px;
     margin: 0.8em;
     margin-top: 2em;
+    cursor: pointer;
 }
 
 .no:hover {
@@ -916,6 +963,12 @@ button {
     margin-bottom: 2em;
 }
 
+.loginRegisterSwitch {
+    position: absolute;
+    bottom: 3%;
+    color: rgb(119, 119, 119);
+}
+
 .filter-search-options {
     margin: auto;
     margin-top: 2em;
@@ -931,7 +984,7 @@ button {
 .search-results {
     display: grid;
     grid-template-columns: repeat(auto-fill, 31em);
-    grid-auto-rows: minmax(21em, 21em); /* Makes sure that the height of the head of the display stays the same when the navigations for lists pop up and when window is resized*/
+    grid-auto-rows: minmax(22em, 22em); /* Makes sure that the height of the head of the display stays the same when the navigations for lists pop up and when window is resized*/
     flex-wrap: wrap;
     justify-content: center;
     align-items: center;
@@ -1135,6 +1188,12 @@ button {
     height: 3em;
     border-radius: 10px;
     margin-right: 1.4em;
+    cursor: pointer;
+}
+
+.chronicle-page-bottom button:hover {
+    background-color: rgb(0, 153, 255);
+    color: white;
 }
 
 .chronicle-reviews {

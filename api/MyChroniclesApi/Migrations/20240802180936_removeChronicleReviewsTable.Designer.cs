@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyChroniclesApi.Services;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MyChroniclesApi.Migrations
 {
     [DbContext(typeof(MyChroniclesDbContext))]
-    partial class MyChroniclesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240802180936_removeChronicleReviewsTable")]
+    partial class removeChronicleReviewsTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -514,9 +517,6 @@ namespace MyChroniclesApi.Migrations
 
                     b.Property<string>("review")
                         .HasColumnType("text");
-
-                    b.Property<DateTime?>("review_date")
-                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("start_date")
                         .HasColumnType("timestamp with time zone");

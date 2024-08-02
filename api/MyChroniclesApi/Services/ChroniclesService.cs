@@ -5,6 +5,7 @@ using Microsoft.Extensions.Configuration;
 using System.Transactions;
 using MyChroniclesApi.ServiceErrors;
 using Microsoft.Extensions.ObjectPool;
+using MyChroniclesApi.Models.Users;
 
 public class ChroniclesService : MyChroniclesDbContext {
     public ChroniclesService(DbContextOptions<MyChroniclesDbContext> options) : base(options) {
@@ -110,11 +111,6 @@ public class ChroniclesService : MyChroniclesDbContext {
                 .Where(e => e.chronicle_id == ChronicleID)
                 .Select(e => e.alternative_title)
                 .ToListAsync();
-            
-            List<string> chronicle_reviews = await this.Set<ChroniclesReview>()
-                .Where(e => e.chronicle_id == ChronicleID)
-                .Select(e => e.review)
-                .ToListAsync();
 
             AllChronicleInfo all = new AllChronicleInfo(
                 chronicleExists.chronicle_id,
@@ -136,18 +132,37 @@ public class ChroniclesService : MyChroniclesDbContext {
         }
 
     }
+    
+    public async Task<ErrorOr<ChronicleSearchPage>> retrieveChronicleReviewsById(Guid chronicleId, string userId) {
 
-    /*
-            Guid? chronicleId = _chronicles.existingChronicle(info.title);
+        //  var chronicleExists = await this.Set<Chronicles>().FindAsync(ChronicleID);
+        var chronicleReviews = await this.Set<UserChronicles>()
+            .Where(e => e.book_id == chronicleId && e.review != "" && e.review != null)
+            .Take(30)
+            .Select(e => new ChroniclesReview(
+                e.review,
+                e.users.UserName,
+                e.rating,
+                e.episode,
+                e.review_date
+            ))
+            .ToListAsync();
 
-        if (chronicleId is null) {
-            // create a model that accepts a chronicle with only the name
-            var newChronicle = new Chronicles(
-                info.title
-            );
-            
-            // should add a chronicle and return chronicle id
-            chronicleId = _chronicles.addChronicle(newChronicle);
+        if (userId != null) {
+            var userReview = await this.Set<UserChronicles>()
+                .Where(uc => uc.book_id == chronicleId && uc.user_id == userId)
+                .Select(uc => new ChroniclesReview(
+                    uc.review,
+                    uc.users.UserName,
+                    uc.rating,
+                    uc.episode,
+                    uc.review_date
+                ))
+                .FirstOrDefaultAsync();
+                
+            return ErrorOr<ChronicleSearchPage>.Success(new ChronicleSearchPage(chronicleReviews, UserReview: userReview));
         }
-    */       
+    
+        return ErrorOr<ChronicleSearchPage>.Success(new ChronicleSearchPage(chronicleReviews, null));
+    }
 }

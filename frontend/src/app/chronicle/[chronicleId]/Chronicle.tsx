@@ -1,5 +1,9 @@
 // main page 
 // displays title, synopsis, stats, character
+'use client'
+import AddChronicleOverlay from "@/app/utils/Components/AddChronicleOverlay";
+import { useRef, useState } from "react";
+import { GeneralSearchedChronicleInfo } from "@/app/utils/interfaces";
 
 interface allChronicleInfo{
     chronicle_id: string;
@@ -14,7 +18,7 @@ interface allChronicleInfo{
     synopsis: string;
     genres: [],
     tags: [],
-    alternative_titles: [],
+    alternative_titles: []
 };
 
 interface allChronicleInfoProps{
@@ -22,9 +26,31 @@ interface allChronicleInfoProps{
 };
 
 export default function Chronicle({allInfo}: allChronicleInfoProps) {
-    console.log(allInfo);
+    const [toggleAddChronicles, setToggleAddChronicles] = useState(false);
+    const chronicleToBeAdded = useRef<GeneralSearchedChronicleInfo>({
+        chronicle_id: allInfo.chronicle_id,
+        chronicle_title: allInfo.chronicle_title,
+        country: allInfo.country,
+        creator: allInfo.creator,
+        rating: allInfo.rating,
+        members: allInfo.members,
+        entertainment_category: allInfo.entertainment_category,
+        episodes: allInfo.episodes,
+        status: allInfo.status,
+        synopsis: allInfo.synopsis
+    });
+
+    function toggle(chronicleToAdd: GeneralSearchedChronicleInfo | null) {
+        setToggleAddChronicles(value => !value);
+        console.log(toggleAddChronicles);
+        console.log(chronicleToBeAdded);
+    }
 
     return (
+        <>
+        {toggleAddChronicles && chronicleToBeAdded.current &&
+            <AddChronicleOverlay chronicle={chronicleToBeAdded.current} toggle={toggle}/>
+        }
         <div className="chronicle-page">
             <h1>{allInfo.chronicle_title}</h1>
             <div className="stats-general">
@@ -59,8 +85,9 @@ export default function Chronicle({allInfo}: allChronicleInfoProps) {
                 </ul>
             </div>
             <div className="chronicle-page-bottom">
-                <button>Add</button>
+                <button onClick={() => toggle(chronicleToBeAdded.current)}>Add</button>
             </div>
         </div>
+    </>
     )
 }

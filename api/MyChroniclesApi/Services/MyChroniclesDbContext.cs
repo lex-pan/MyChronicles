@@ -31,7 +31,6 @@ public class MyChroniclesDbContext : IdentityDbContext<User>
     public DbSet<ChroniclesGenre> ChroniclesGenres { get; set; }
     public DbSet<ChroniclesTag> ChroniclesTags { get; set; }
     public DbSet<ChronicleUrlMatch> ChronicleUrlMatch { get; set; }
-    public DbSet<ChroniclesReview> ChroniclesReview { get; set; }
     // Add other DbSet properties from ChroniclesService as needed
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -69,14 +68,6 @@ public class MyChroniclesDbContext : IdentityDbContext<User>
             .HasOne(u => u.chronicles)  
             .WithMany()  
             .HasForeignKey(u => u.chronicle_id); 
-
-        modelBuilder.Entity<ChroniclesReview>()
-            .HasOne(u => u.chronicles)
-            .WithMany()
-            .HasForeignKey(u => u.chronicle_id);
-
-        modelBuilder.Entity<ChroniclesReview>()
-            .HasKey(cg => new { cg.chronicle_id, cg.user_id});
         
         modelBuilder.Entity<ChroniclesGenre>()
             .HasOne(u => u.chronicles) 

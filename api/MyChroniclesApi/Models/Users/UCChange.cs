@@ -4,6 +4,7 @@ public class UCChange {
     public string? status { get; set; }
     public float? rating { get; set; }
     public string? review { get; set; }
+    public DateTime? review_date { get; set; }
     public DateTime? start_date { get; set; }
     public DateTime? last_read { get; set; }
     public string? notes { get; set; }
@@ -12,6 +13,7 @@ public class UCChange {
         string? status = null,
         float? rating = null,
         string? review = null,
+        DateTime? review_date = null,
         DateTime? start_date = null,
         DateTime? last_read = null,
         string? notes = null
@@ -21,6 +23,7 @@ public class UCChange {
         this.status = status;
         this.rating = rating;
         this.review = review;
+        this.review_date = review_date;
         this.start_date = start_date;
         this.last_read = last_read;
         this.notes = notes;

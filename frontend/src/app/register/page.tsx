@@ -1,4 +1,6 @@
 'use client';
+import Link from "next/link";
+
 export default function Register() {
     
     async function handleRegistration(e: React.FormEvent<HTMLFormElement>) {
@@ -32,6 +34,7 @@ export default function Register() {
         <textarea placeholder="Email" name="email"></textarea>
         <input placeholder="Password" type="password" name="password"></input>
         <button>Register</button> 
+        <Link href={"/login"} className="loginRegisterSwitch">Have an account? Sign in here.</Link>
       </form>
     );
 }

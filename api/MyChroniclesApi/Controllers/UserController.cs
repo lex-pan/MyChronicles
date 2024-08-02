@@ -12,6 +12,7 @@ using System.Security.Claims; // Ensure this using directive is included
 using MyChroniclesApi.Models.Chronicles;
 using MyChroniclesApi.ServiceErrors;
 using Newtonsoft.Json;
+using MyChroniclesApi.Migrations;
 
 /*
 User Registration Flow
@@ -196,6 +197,10 @@ public class UserController : ControllerBase {
             review: info.review,
             notes: info.notes
         );
+        
+        if (!(info.rating == null)) {
+            changes.review_date = DateTime.UtcNow;
+        }
 
         var chroniclesToUpdate = new Dictionary<Guid, UCChange>
         {
@@ -320,6 +325,7 @@ public class UserController : ControllerBase {
         }
     }
 
+    // consider using a switch statement in the future
     [HttpPost("{username}/chronicles/update")]
     public async Task<IActionResult> updateUserChronicles(string username, UpdateUserChronicles changes) {
         var user = await _userManager.FindByNameAsync(username);
@@ -362,6 +368,11 @@ public class UserController : ControllerBase {
                         if (changes.listOfChanges[UserChronicleBookID][UCproperty] is null) {
                             mappedProperty.SetValue(UCAttributesChange, null);
                         } else {
+
+                            if (UCproperty == "review") {
+                                var review_date_property = UCAttributesChangeType.GetProperty("review_date");
+                                review_date_property.SetValue(UCAttributesChange, DateTime.UtcNow);
+                            }
                             var castValue = Convert.ChangeType(changes.listOfChanges[UserChronicleBookID][UCproperty], type);
                             mappedProperty.SetValue(UCAttributesChange, castValue);
                         }
@@ -383,11 +394,31 @@ public class UserController : ControllerBase {
     
     [HttpPost("chronicles/add")]
     public async Task<IActionResult> addNewUserChronicle(UpdateIndividualUC changes) {
+        DateTime start_date;
+        DateTime last_read;
+
+        if (changes.start_date == "" || changes.start_date is null) {
+            start_date = new DateTime(1, 1, 1);
+        } else {
+            DateTime castValue = DateTime.Parse(changes.start_date).ToUniversalTime();
+            start_date = castValue;
+        }
+
+        if (changes.last_read == "" || changes.last_read is null) {
+            last_read = new DateTime(1, 1, 1);
+        } else {
+            DateTime castValue = DateTime.Parse(changes.last_read).ToUniversalTime();
+            last_read = castValue;
+        }
+
         UCChange addedChronicle = new UCChange(
             status: changes.status,
             rating: changes.rating,
             review: changes.review,
-           episode: changes.episode
+            episode: changes.episode,
+            start_date: start_date,
+            last_read: last_read,
+            notes: changes.notes         
         );
 
         var chroniclesToUpdate = new Dictionary<Guid, UCChange>

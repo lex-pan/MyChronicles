@@ -46,7 +46,10 @@ export default function AddChronicleItem({searched_chronicle, setCategorizedChro
                 "status": status,
                 "rating": rating,
                 "review": review,
-                "episode": episode
+                "episode": episode,
+                "start_date": "",
+                "last_read": "",
+                "notes": ""
             })
         });
 

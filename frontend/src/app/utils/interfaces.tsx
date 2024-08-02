@@ -146,10 +146,9 @@ export interface ExtraSearchedChronicleInfo {
     summary: string;
 }
 
-/*
-        List<string> Genres,
-        List<string> Tags,
-        List<string> AlternativeTitles,
-        List<string> Reviews,
-        string Summary
-*/
+export interface AddChronicleOverlayProps {
+    chronicle: GeneralSearchedChronicleInfo;
+    toggle: (chronicleToAdd: GeneralSearchedChronicleInfo | null) => void;
+}
+
+// export default function AddChronicleOverlay({chronicle, toggle, addChronicle} : {chronicle : GeneralSearchedChronicleInfo}) {

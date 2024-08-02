@@ -5,6 +5,7 @@ using MyChroniclesApi.ServiceErrors;
 using MyChroniclesApi.Services;
 namespace MyChroniclesApi.Controllers;
 using MyChroniclesApi.Models.Chronicles;
+using System.Security.Claims; // Ensure this using directive is included
 
 [ApiController]
 [Route("[controller]")]
@@ -72,5 +73,28 @@ public class ChroniclesController : ControllerBase {
             return StatusCode(500, exists);
         }
     }
+
+    //    const chronicleReviews = await fetch(`http://localhost:5172/chronicles/reviews/${chronicleId}`, {
+    
+    [HttpGet("reviews/{chronicleId}")]
+    public async Task<IActionResult> retrieveChronicleReviews(string chronicleId) {
+        var isValidGuid = Guid.TryParse(chronicleId, out _);
+        if (!isValidGuid) {
+            return Ok(Error.InvalidInput("", "invalid guid format"));
+        }
+
+        Guid chronicleID = new Guid(chronicleId);
+        ErrorOr<bool> exists = await _MyChroniclesDb.existingChronicleById(chronicleID);
+
+        if (exists.error.Description == "No Error" && exists.value) {
+            string user_id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            ErrorOr<ChronicleSearchPage> extraInfo = await _MyChroniclesDb.retrieveChronicleReviewsById(chronicleID, user_id);
+            
+            return Ok(extraInfo.value);
+        } else {
+            return StatusCode(500, exists);
+        }
+    }
+    
  
 }

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { UserChronicleProps, AdditionalInfoUC } from "@/app/utils/interfaces";
 import { useAppDispatch, useAppStore, useAppSelector } from '../../../../globalRedux/hooks';
 import { updateExistingId, updateNewId } from "@/globalRedux/features/User/UserChroniclesSlice";
+import Link from "next/link";
 
 export default function UserChronicle({item, confirmDelete, profileUsername, profileUC} : UserChronicleProps) {
     let listOfChanges = useAppSelector((state) => state.UserChronicles.listOfChanges);
@@ -9,7 +10,6 @@ export default function UserChronicle({item, confirmDelete, profileUsername, pro
     const [detailedInfo, setDetailedInfo] = useState(false);
     const [additional_info, set_additional_info] = useState<AdditionalInfoUC | null>(null);
     let dispatch = useAppDispatch();
-
     // get the id
     // check out what has been changed
     // add it to listOfChanges 
@@ -112,8 +112,9 @@ export default function UserChronicle({item, confirmDelete, profileUsername, pro
         if (additional_info == null) {
             let response : AdditionalInfoUC = await retrieveAdditionalInfo(); 
             set_additional_info(response);
+            console.log(response);
         }
-
+        
         setDetailedInfo(state => !state);
     }
 
@@ -125,14 +126,14 @@ export default function UserChronicle({item, confirmDelete, profileUsername, pro
         console.log("api was called");
         return response.json();
     }
-
+    
     return (
         <>
         {viewersUsername == profileUsername &&
         <li className='user-container-item'>
             <div className='user-container-overview'>
                 <button onClick={() => confirmDelete(item)} className='chronicle-list-broader'></button>
-                <p className='chronicle-title user-chronicle-info'>{item.book_name}</p>
+                <Link href={`/chronicle/${item.book_id}`} className='chronicle-title user-chronicle-info'>{item.book_name}</Link>
                 <input className="user-chronicle-info-small" onChange={(e) => updateChronicle(e, "rating")} defaultValue={item.rating ?? ""} placeholder="-"/>
                 <input className="user-chronicle-info-small" onChange={(e) => updateChronicle(e, "episode")} defaultValue={item.episode ?? ""} placeholder="-"/>
                 <select className="user-chronicle-info" onChange={(e) => updateChronicle(e, "status")} defaultValue={item.status}>
@@ -151,7 +152,7 @@ export default function UserChronicle({item, confirmDelete, profileUsername, pro
                 <div className='chronicle-list-more-info'>
                     <div className="more-info-first-line">
                         <p className='user-chronicle-text'>Start Date:</p>
-                        <input type="date" className="user-chronicle-date" onBlur={(e) => updateChronicle(e, "start_date")} defaultValue={listOfChanges[item.book_id] && "start_date" in listOfChanges[item.book_id] ? listOfChanges[item.book_id]["start_date"] : (additional_info?.start_date && additional_info.start_date != "" ? new Date(additional_info?.start_date).toISOString().split('T')[0] : undefined)} />
+                        <input type="date" className="user-chronicle-date" onBlur={(e) => updateChronicle(e, "start_date")} defaultValue={listOfChanges[item.book_id] && "start_date" in listOfChanges[item.book_id] ? listOfChanges[item.book_id]["start_date"] : (additional_info?.start_date && additional_info.start_date != "" && !additional_info.start_date.includes("0001-01-01")  ? new Date(additional_info?.start_date).toISOString().split('T')[0] : undefined)} />
                         <p className='user-chronicle-text'>Category: {item.entertainment_category}</p>
                     </div>
                     <p className='user-chronicle-text'>Review</p>
@@ -177,14 +178,14 @@ export default function UserChronicle({item, confirmDelete, profileUsername, pro
                     <option value="Rereading">Rereading</option>
                     <option value="-">-</option>
                 </select>
-                <input type="date" className="user-chronicle-info" defaultValue={item.last_read != "" && item.last_read != "0001-01-01T00:00:00" ? new Date(item.last_read).toISOString().split('T')[0] : undefined} disabled/>
+                <input type="date" className="user-chronicle-info" defaultValue={item.last_read != "" && !item.last_read.includes("0001-01-01") ? new Date(item.last_read).toISOString().split('T')[0] : undefined} disabled/>
                 <button onClick={toggleInfo} className='chronicle-list-more-info-button'>v</button>
             </div>
             {detailedInfo && 
                 <div className='chronicle-list-more-info'>
                     <div className="more-info-first-line">
-                        <p className='user-chronicle-text'>Start Date:</p>
-                        <input type="date" className="user-chronicle-date" defaultValue={additional_info?.start_date && additional_info.start_date != "" ? new Date(additional_info?.start_date).toISOString().split('T')[0] : undefined} disabled/>
+                        <p className='user-chronicle-text'>Start Date:</p>  
+                        <input type="date" className="user-chronicle-date" defaultValue={additional_info?.start_date && additional_info.start_date != "0001-01-01" ? new Date(additional_info?.start_date).toISOString().split('T')[0] : undefined} disabled/>
                         <p className='user-chronicle-text'>Category: {item.entertainment_category}</p>
                     </div>
                     <p className='user-chronicle-text'>Review</p>

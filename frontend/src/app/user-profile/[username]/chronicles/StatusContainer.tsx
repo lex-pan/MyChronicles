@@ -10,7 +10,7 @@ export default function({status, chroniclesStatus, confirmDelete, profileUsernam
                 <h1 className='user-section-title'>{status}</h1>
                 <div className="user-section-attributes">
                     <p className='user-container-category'>Title</p>
-                    <p className='user-container-category'>Score</p>
+                    <p className='user-container-category'>Rating</p>
                     <p className='user-container-category'>Episodes</p>
                     <p className='user-container-category'>Status</p>
                     <p className='user-container-category'>Last Read</p>
