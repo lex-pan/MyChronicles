@@ -571,8 +571,9 @@ public class UserController : ControllerBase {
             // therefore must check if there is a corresponding url
             if (alt_title.isUnique == false) {
                 ErrorOr<Guid> matching_url = await _chronicles.matchUrls(url);
-
-                return matching_url;
+                if (matching_url.error.Description == "No Error") {
+                    return matching_url;
+                }
             }
 
             return ErrorOr<Guid>.Success(alt_title.chronicle_id);

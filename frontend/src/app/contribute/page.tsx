@@ -7,34 +7,93 @@ import { useAppSelector } from "@/globalRedux/hooks"
 export default function Contribute() {
     const loggedIn = useAppSelector(state => state.UserChronicles.loggedIn);
 
+    async function addNewChronicle(e: React.FormEvent<HTMLFormElement>) {
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const title = formData.get('title');
+        const author = formData.get('author');
+        const category = formData.get('category');
+        const episodes = formData.get('episodes');
+        const length = formData.get('length');
+        const country = formData.get('country');
+        const status = formData.get('showStatus');
+        const start_date = formData.get('start_date');
+        const end_date = formData.get('end_date');
+        const synopsis = formData.get('synopsis');
+
+        if (episodes && isNaN(parseFloat(episodes.toString())) && episodes.toString() != "") {
+            return 
+        }
+
+        console.log(formData);
+
+        const addNewChronicleToDB = await fetch('http://localhost:5172/chronicles/add', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/text' // Example: Accept JSON responses
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                'title': title,
+                'author': author,
+                'category': category,
+                'episodes': episodes,
+                'length': length,
+                'country': country,
+                'status': status,
+                'start_date': start_date,
+                'end_date': end_date,
+                'synopsis': synopsis
+            })
+        });
+
+        console.log(addNewChronicleToDB.json());
+    }
+
+    function validateInput(e: React.ChangeEvent<any>) {
+        let inputValue = e.target.value;
+        console.log(inputValue);
+        
+        if (inputValue[inputValue.length-1] == "." || inputValue == "") {
+            return 
+        }
+
+        if (isNaN(parseFloat(inputValue))) {
+            e.target.value = "";
+            return 
+        } else {
+            e.target.value = Math.round(parseFloat(inputValue) * 10)/10;
+        }
+    }
+
+
     // length as in total time of series
     return(
         <div className="contribute">
             {loggedIn &&
             <>
             <h1 className="add-searched-chronicle-title">Add New Chronicle To Database</h1>
-            <div className="contribute-adding-chronicles">
+            <form className="contribute-adding-chronicles" onSubmit={addNewChronicle}>
                 <p>Title</p>
-                <input placeholder="Required field"></input>
+                <input className="contribute-adding-chronicles-input" placeholder="Required field" name="title" required></input>
                 <p>Author</p>
-                <input></input>
+                <input className="contribute-adding-chronicles-input" name="author"></input>
                 <p>Category</p>
-                <select>
+                <select className="contribute-adding-chronicles-select" name="category">
                     <option value="Novel">Novel</option>
                     <option value="Graphic Novel">Graphic Novel</option>
                     <option value="Film">Film</option>
                     <option value="Show">Show</option>
                 </select>
                 <p>Episodes</p>
-                <input></input>
+                <input className="contribute-adding-chronicles-input" name="episodes" placeholder="Up to one decimal point" onChange={(e) => validateInput(e)}></input>
                 <p>Length</p>
-                <input></input>
-                <p>Language</p>
-                <input></input>
+                <input className="contribute-adding-chronicles-input" name="length" placeholder="Length per episode ex: 1h30m"></input>
                 <p>Country</p>
-                <input></input>
+                <input className="contribute-adding-chronicles-input" name="country"></input>
                 <p>Status</p>
-                <select name="showStatus" id="showStatus">
+                <select className="contribute-adding-chronicles-select" name="showStatus">
                     <option value="Ongoing">Ongoing</option>
                     <option value="Completed">Completed</option>
                     <option value="Paused">Paused</option>
@@ -44,13 +103,13 @@ export default function Contribute() {
                     <option value="Pilot">Pilot</option>
                 </select>
                 <p>Start Date</p>
-                <input type="date"></input>
+                <input type="date" className="contribute-adding-chronicles-input" name="start_date"></input>
                 <p>End Date</p>
-                <input type="date"></input>
+                <input type="date" className="contribute-adding-chronicles-input" name="end_date"></input>
                 <p>Synopsis</p>
-                <input></input>
-            </div>
-            <h1 className="add-searched-chronicle-title cursor">Submit</h1>
+                <textarea name="synopsis" className="contribute-adding-chronicles-input category-synopsis" placeholder="Required field" required></textarea>
+                <button className="add-searched-chronicle-title add-searched-chronicle-submit" type="submit">Submit</button>
+            </form>
             </>
             }
             {!loggedIn &&

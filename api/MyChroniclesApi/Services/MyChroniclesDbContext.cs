@@ -4,6 +4,7 @@ using MyChroniclesApi.Models.Users;
 using MyChroniclesApi.Models.Urls;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using MyChroniclesApi.Models.Logs;
 
 public class MyChroniclesDbContext : IdentityDbContext<User>
 {
@@ -32,6 +33,10 @@ public class MyChroniclesDbContext : IdentityDbContext<User>
     public DbSet<ChroniclesTag> ChroniclesTags { get; set; }
     public DbSet<ChronicleUrlMatch> ChronicleUrlMatch { get; set; }
     // Add other DbSet properties from ChroniclesService as needed
+
+    //DbSets for LogsService
+    public DbSet<ChronicleEditsLog> ChronicleEditsLog { get; set; }
+    public DbSet<ChronicleChanges> ChronicleChanges { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -97,5 +102,10 @@ public class MyChroniclesDbContext : IdentityDbContext<User>
 
         modelBuilder.Entity<ChroniclesCast>()
             .HasKey(cg => new { cg.chronicle_id, cg.character_id });
+
+        modelBuilder.Entity<ChronicleChanges>()
+            .HasOne(u => u.edits)
+            .WithOne(c => c.changes)
+            .HasForeignKey<ChronicleEditsLog>(c => c.changes_id);
     }
 }

@@ -24,6 +24,18 @@ public class ChroniclesService : MyChroniclesDbContext {
 
     public async Task<ErrorOr<string>> addChronicle(Chronicles chronicle, AlternativeTitles alt_chronicle) {
         try {
+            var matching_title_entries = await this.Set<AlternativeTitles>()
+                .Where(c => c.alternative_title == alt_chronicle.alternative_title)
+                .ToListAsync();
+
+            foreach(var entry in matching_title_entries) {
+                entry.isUnique = false;
+            }
+
+            if (matching_title_entries.Count > 0) {
+                alt_chronicle.isUnique = false;
+            }
+
             await this.Set<Chronicles>().AddAsync(chronicle);   
             await this.Set<AlternativeTitles>().AddAsync(alt_chronicle);
             await this.SaveChangesAsync();

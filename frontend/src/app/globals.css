@@ -1290,10 +1290,9 @@ button, select {
 /* Contribute Section */
 
 .contribute {
-    position: absolute;
-    top: 50%; 
-    left: 50%; 
-    transform: translate(-50%, -50%);
+    margin: auto;
+    margin-top: 3em;
+    width: 50%;
     width: 30em;
     height: auto;
 }
@@ -1305,21 +1304,25 @@ button, select {
 }
 
 .contribute-adding-chronicles {
+    position: relative;
     padding: 0.5em;
+    padding-top: 1.2em;
+    padding-bottom: 1.2em;
     border: 1px solid rgb(172, 172, 172);
     display: grid;
-    grid-template-columns: 9em 1fr;
-    grid-auto-rows: minmax(3em, 3em);
+    grid-template-columns: 10em 1fr;
+    grid-auto-rows: auto;
+    margin-bottom: 4em;
 }
 
 .contribute-adding-chronicles p {
+    margin-left: 1.5em;
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-.contribute-adding-chronicles select, input {
-    margin-left: 0.7em;
+.contribute-adding-chronicles-select, .contribute-adding-chronicles-input {
     margin-top: 0.3em;
     width: 80%;
     height: 80%;
@@ -1327,6 +1330,15 @@ button, select {
     font-size: 16px;
 }
 
-.cursor {
+.category-synopsis {
+    height: 8em;
+}
+
+.add-searched-chronicle-submit {
+    position: absolute;
+    bottom: -10%;
+    left: -0.3%;
     cursor: pointer;
+    width: 100.8%;
+    font-weight: 700;
 }
