@@ -1107,14 +1107,15 @@ button, select {
     width: 16em;
     height: 2.2em;
     border: 1px solid rgb(172, 172, 172);
+    margin-left: -1px;
 }
 
 .chronicle-page {
     margin: auto;
     margin-top: 1em;
-    width: 60.1%;
+    max-width: 60.1%;
     display: grid;
-    grid-template-columns: 19.5em 1fr;
+    grid-template-columns: 19.5em minmax(250px, 1fr);
     border: 1px solid rgb(172, 172, 172);
 }
 
@@ -1129,11 +1130,36 @@ button, select {
     margin: 1.5em;
 }
 
-.stats-general p {
+.stats-general p, .stats-general label {
+    display: flex;
     font-size: 17px;
     padding: 0.4em;
     margin-bottom: -1px;
     width: 16em;
+    align-items: center;
+}
+
+.stats-general select {
+    width: 80%;
+    margin-top: -50px;
+    margin-bottom: -50px;
+    height: 2em;
+    margin-left: 0.4em;
+    border: none;
+    font-size: 17px;
+}
+
+.stats-general input {
+    width: 100%;
+    box-sizing: border-box;
+    margin-left: 0.5em;
+    border: none;
+    font-size: 17px;
+    outline: none;
+}
+
+.stats-general label:focus-within {
+    outline: 2px solid #136eff; /* Dark blue color, commonly used for focus outline */
 }
 
 .synopsis {
@@ -1158,11 +1184,46 @@ button, select {
     padding: 0.4em;
 }
 
-.chronicle-attribute-list {
-    margin-left: -0.25em;
+.stats-detailed input {
+    border: none;
+    border-bottom: 1px solid rgb(172, 172, 172);
+    margin-left: 1em;
+    outline: none;
+    font-size: 17px;
 }
 
-.chronicle-attribute-list li{
+.search-chronicle-attributes {
+    width: 80%;
+    height: auto;
+    max-height: 17.8em;
+    margin: auto;
+    margin-top: 0.5em;
+    margin-bottom: 0.5em;
+    overflow: scroll;
+    background-color: white;    
+    border: 1px solid rgb(172, 172, 172);
+    padding: 0.8em;
+    margin-top: 1em;
+    margin-bottom: 1em;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+
+.selected-edit {
+    outline: 2px solid #136eff; /* Dark blue color, commonly used for focus outline */
+}
+
+.chronicle-attribute-list {
+    margin-top: 0.2em;
+    margin-bottom: 0.4em;
+    margin-left: -0.25em;
+    -webkit-user-select: none; /* Safari */
+    -ms-user-select: none; /* IE 10 and IE 11 */
+    user-select: none; /* Standard syntax */
+}
+
+.chronicle-attribute-list li, .search-chronicle-attributes li{
     font-size: 16px;
     display: inline-block;
     border-radius: 10px;
@@ -1342,3 +1403,4 @@ button, select {
     width: 100.8%;
     font-weight: 700;
 }
+

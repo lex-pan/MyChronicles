@@ -19,6 +19,7 @@ var builder = WebApplication.CreateBuilder(args);
     builder.Services.AddScoped<IUrlsService, UrlsService>();
     builder.Services.AddScoped<UsersService>();
     builder.Services.AddScoped<ChroniclesService>();
+    builder.Services.AddScoped<LogsService>();
     builder.Services.AddCors(options =>
     {
         options.AddPolicy(name: MyAllowSpecificOrigins,
