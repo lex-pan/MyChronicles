@@ -12,6 +12,7 @@ import tagsAndGenre from "@/app/utils/tagsAndGenre"
 import { Dispatch, SetStateAction } from 'react';
 import convertDatetoReadble from "@/app/utils/convenientFunctions";
 import { updateChronicle } from "@/globalRedux/features/Chronicles/ChronicleUpdateSlice";
+import { useRouter } from "next/navigation";
 
 export default function Chronicle({allInfo}: allChronicleInfoProps) {
     // permissions and toggling
@@ -20,6 +21,7 @@ export default function Chronicle({allInfo}: allChronicleInfoProps) {
     const chroniclePostUpdate : allChronicleInfo = useAppSelector(state => state.ChronicleUpdates.changed_chronicles[allInfo.chronicle_id]);
     const [editAllowed, setEditAllowed] = useState(false);
     const [toggleAddChronicles, setToggleAddChronicles] = useState(false);
+    const router = useRouter();
 
     const chronicleInfo = useRef<tagsAndGenres>({tags: tagsAndGenre.tags, genres: tagsAndGenre.genres});
     
@@ -135,7 +137,6 @@ export default function Chronicle({allInfo}: allChronicleInfoProps) {
         }
         console.log("passed episode check");
 
-
         const updateChronicleResponse = await fetch('http://localhost:5172/chronicles/update', {
             method: 'POST',
             headers: {
@@ -187,6 +188,10 @@ export default function Chronicle({allInfo}: allChronicleInfoProps) {
         if (e.key === 'Enter') {
             e.preventDefault();
         }
+    }
+
+    function goBack() {
+        router.back();
     }
 
     return (
@@ -270,6 +275,7 @@ export default function Chronicle({allInfo}: allChronicleInfoProps) {
                 </ul>
             </div>
             <div className="chronicle-page-bottom">
+                <button onClick={goBack} type="button">Back</button>
                 {loggedIn &&
                 <>
                 <button type="button" onClick={toggleEdit}>Cancel</button>       
@@ -340,6 +346,7 @@ export default function Chronicle({allInfo}: allChronicleInfoProps) {
                 </ul>
             </div>
             <div className="chronicle-page-bottom">
+                <button onClick={goBack} type="button">Back</button>
                 {loggedIn &&
                 <button onClick={toggleEdit}>Edit</button>                
                 }

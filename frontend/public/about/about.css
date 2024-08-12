@@ -68,6 +68,13 @@
 
 .attribution {
     position: absolute;
-    color: black;
-    bottom: -4em;
+    bottom: 2%;
+    left: 80%;
+    font-size: 18px;
+    color: white;
+    z-index: 5;
+}
+
+a {
+    color: white;
 }

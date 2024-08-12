@@ -11,17 +11,17 @@ async function retrieveChronicleData(chronicleId: string) {
 
         },
     });
-    console.log(chronicleReviews);
+
     return chronicleReviews.json();
 }
 
-export default async function ssChronicle({params} : {params : { chronicleId : string}}) {
+export default async function ssReviews({params} : {params : { chronicleId : string}}) {
     revalidatePath('/chronicle/[chronicleId]', 'page');
     const chronicleReviews = await retrieveChronicleData(params.chronicleId);
     
     console.log(chronicleReviews);
     
     return (
-        <ChronicleReviews/>
+        <ChronicleReviews user_review={chronicleReviews.user_review} reviews={chronicleReviews.reviews} chronicleID={params.chronicleId}/>
     )
 }

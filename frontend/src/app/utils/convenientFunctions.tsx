@@ -14,10 +14,8 @@ export default function convertDatetoReadble(dateString: string) {
 // Function to shorten month names in a date string
 function shortenMonthInDate(dateString: string): string {
     const [month, day, year] = dateString.split(' ');
-    console.log(month);
     // Shorten month name if it's longer than 3 characters
     const shortenedMonth = shortenMonth(month);
-    console.log(shortenedMonth);
     // Reassemble the date string
     return `${shortenedMonth} ${day} ${year}`;
 }

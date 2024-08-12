@@ -33,6 +33,17 @@ public class ChroniclesController : ControllerBase {
         }
     }
 
+    [HttpGet("search/default")]
+    public async Task<IActionResult> defaultChroniclesQuery() {
+        ErrorOr<List<QueriedChronicle>> listOfChronicles = await _MyChroniclesDb.queryChroniclesByString("a");
+
+        if (listOfChronicles.error.Description == "No Error") {
+            return Ok(listOfChronicles.value);
+        } else {
+            return StatusCode(500, listOfChronicles.error);
+        }
+    }
+
     [HttpGet("detailed-query/{queryString}/{pageNumber}")]
     public async Task<IActionResult> chroniclesDetailedQuery(string queryString, int pageNumber) {
         ErrorOr<List<DetailedQueriedChronicle>> listOfChronicles = await _MyChroniclesDb.queryChroniclesByStringDetailed(queryString, pageNumber);

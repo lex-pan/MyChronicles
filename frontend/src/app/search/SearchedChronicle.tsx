@@ -16,7 +16,7 @@ export default function SearchedChronicle({chronicle, toggleAdd} : DetailedSearc
             </div>
             <textarea className="search-container-synopsis" defaultValue={chronicle.synopsis ?? "N/A"} disabled/>
             <div className="search-container-bottom">
-                <div className="grid-info-stars-outer"><div className="grid-info-stars-inner"></div></div>
+                <div className="grid-info-stars-outer"><div className="grid-info-stars-inner" style={{"width" : `${chronicle.rating * 0.9}em`}}></div></div>
                 <button className="search-container-add" onClick={() => toggleAdd(chronicle)}>Add</button>
             </div>
         </div>

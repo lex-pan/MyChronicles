@@ -87,15 +87,12 @@ export interface DetailedSearchChronicleInfoProps {
     toggleAdd: (chronicleToAdd: GeneralSearchedChronicleInfo | null) => void
 }
 
-export interface UserReview {
-    user_review_id: number;
-    username: string;
-    rating: number;
-    review: string;
-}
-
-export interface ReviewProps {
-    review_data: UserReview;
+export interface UserReviews {
+    username: string,
+    review: string,
+    rating: number,
+    episodes: number,
+    review_date: string
 }
 
 export interface UserchronicleFetch {

@@ -1063,16 +1063,15 @@ button, select {
 .grid-info-stars-inner {
     position: absolute;
     display: inline-block;
-    top: 0;
-    left: 0;
     white-space: nowrap; /* collapses to one single line. does not allow line breaks*/
     overflow: hidden;   /* this is essential because it basically hides content that surpasses width length */
-    width: 0em;
+    left: 31%;
+    width: 0em; /* star is filled in every 0.9 em*/
 }
 
 .grid-info-stars-inner::before {
-    content: "\2605\2605\2605\2605\2605";
-    color: rgb(103, 199, 255);
+    content: "✦✦✦✦✦";
+    color: rgb(0, 255, 149);
 }
 
 .search-container-add {
