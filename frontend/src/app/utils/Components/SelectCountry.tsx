@@ -1,6 +1,6 @@
 export default function SelectCountry({cssStyling, defaultValue}: {cssStyling: string, defaultValue: string}) {
     return(
-        <select className={`countries-select ${cssStyling}`} defaultValue={defaultValue ?? ""}>
+        <select className={`countries-select ${cssStyling}`} defaultValue={defaultValue ?? ""} name="country">
             <option value="United States">United States</option>
             <option value="Afghanistan">Afghanistan</option>
             <option value="Albania">Albania</option>

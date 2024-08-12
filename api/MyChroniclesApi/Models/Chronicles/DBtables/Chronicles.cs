@@ -20,6 +20,8 @@ public class Chronicles {
     public DateTime? start_date { get; set; }
     public DateTime? end_date { get; set; }
     public string? synopsis { get; set; }
+    public string[]? genres { get; set; }
+    public string[]? tags { get; set; }
     public DateTime? db_add_date { get; set; }
     public string? detailed_summary { get; set; }
     public Chronicles() {}
@@ -36,7 +38,9 @@ public class Chronicles {
             string Status = null,
             DateTime? Started = null,
             DateTime? Ended = null,
-            string Synopsis = null   
+            string Synopsis = null,   
+            string[]? Genres = null,
+            string[]? Tags = null
         ) 
     {
         chronicle_id = Guid.NewGuid();
@@ -54,6 +58,8 @@ public class Chronicles {
         start_date = Started;
         end_date = Ended;
         synopsis = Synopsis;
+        genres = Genres;
+        tags = Tags;
     }
 
     public static ErrorOr<Chronicles> CreateAutomatic(string title, string entertainment_category) {
@@ -87,7 +93,6 @@ public class Chronicles {
             Started: start_date.value,
             Ended: end_date.value,
             Synopsis: chronicle.synopsis
-
         );
 
         return ErrorOr<Chronicles>.Success(validChronicle);

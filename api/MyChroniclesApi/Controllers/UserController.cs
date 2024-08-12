@@ -549,6 +549,7 @@ public class UserController : ControllerBase {
                 var new_alt_title = new AlternativeTitles(
                     newChronicle.value.title,
                     newChronicle.value.chronicle_id,
+                    true,
                     newChronicle.value.entertainment_category
                 );
 

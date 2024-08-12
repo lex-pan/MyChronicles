@@ -29,8 +29,6 @@ public class MyChroniclesDbContext : IdentityDbContext<User>
     public DbSet<AlternativeTitles> AlternativeTitles { get; set; }
     public DbSet<Character> Characters { get; set; }
     public DbSet<ChroniclesCast> ChroniclesCast { get; set; }
-    public DbSet<ChroniclesGenre> ChroniclesGenres { get; set; }
-    public DbSet<ChroniclesTag> ChroniclesTags { get; set; }
     public DbSet<ChronicleUrlMatch> ChronicleUrlMatch { get; set; }
     // Add other DbSet properties from ChroniclesService as needed
 
@@ -74,22 +72,6 @@ public class MyChroniclesDbContext : IdentityDbContext<User>
             .WithMany()  
             .HasForeignKey(u => u.chronicle_id); 
         
-        modelBuilder.Entity<ChroniclesGenre>()
-            .HasOne(u => u.chronicles) 
-            .WithMany()  
-            .HasForeignKey(u => u.chronicle_id);   
-        
-        modelBuilder.Entity<ChroniclesGenre>()
-            .HasKey(cg => new { cg.chronicle_id, cg.genre });
-        
-        modelBuilder.Entity<ChroniclesTag>()
-            .HasOne(u => u.chronicles)  
-            .WithMany()  
-            .HasForeignKey(u => u.chronicle_id);
-        
-        modelBuilder.Entity<ChroniclesTag>()
-            .HasKey(cg => new { cg.chronicle_id, cg.tag });
-
         modelBuilder.Entity<ChroniclesCast>()
             .HasOne(u => u.chronicles)  
             .WithMany()  

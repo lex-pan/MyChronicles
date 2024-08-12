@@ -152,3 +152,32 @@ export interface AddChronicleOverlayProps {
 }
 
 // export default function AddChronicleOverlay({chronicle, toggle, addChronicle} : {chronicle : GeneralSearchedChronicleInfo}) {
+
+export interface allChronicleInfo{
+    chronicle_id: string;
+    chronicle_title: string;
+    country: string;
+    creator: string;
+    rating: number;
+    members: number;
+    entertainment_category: string;
+    episodes: number;
+    status: string;
+    synopsis: string;
+    length: string;
+    start_date: string;
+    end_date: string;
+    genres: string[];
+    tags: string[];
+    other_creators: string[];
+    alternative_titles: string[];
+};
+
+export interface tagsAndGenres {
+    tags: string[],
+    genres: string[]
+}
+
+export interface allChronicleInfoProps{
+    allInfo: allChronicleInfo
+};

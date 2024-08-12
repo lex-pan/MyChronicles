@@ -6,6 +6,7 @@ using System.Transactions;
 using MyChroniclesApi.ServiceErrors;
 using Microsoft.Extensions.ObjectPool;
 using MyChroniclesApi.Models.Users;
+using MyChroniclesApi.Contracts.Chronicles;
 
 public class ChroniclesService : MyChroniclesDbContext {
     public ChroniclesService(DbContextOptions<MyChroniclesDbContext> options) : base(options) {
@@ -109,16 +110,6 @@ public class ChroniclesService : MyChroniclesDbContext {
         if (chronicleExists is null) {
             return ErrorOr<AllChronicleInfo>.Failure(Error.NotFound("", "chronicle with this id does not exist"));
         } else {
-            List<string> genres = await this.Set<ChroniclesTag>()
-                .Where(e => e.chronicle_id == ChronicleID)
-                .Select(e => e.tag)
-                .ToListAsync();
-
-            List<string> tags = await this.Set<ChroniclesGenre>()
-                .Where(e => e.chronicle_id == ChronicleID)
-                .Select(e => e.genre)
-                .ToListAsync();
-            
             List<string> alternative_titles = await this.Set<AlternativeTitles>()
                 .Where(e => e.chronicle_id == ChronicleID)
                 .Select(e => e.alternative_title)
@@ -135,8 +126,11 @@ public class ChroniclesService : MyChroniclesDbContext {
                 chronicleExists.members,
                 chronicleExists.episodes,
                 chronicleExists.synopsis,
-                genres,
-                tags,
+                chronicleExists.length,
+                chronicleExists.start_date,
+                chronicleExists.end_date,
+                chronicleExists.genres,
+                chronicleExists.tags,
                 alternative_titles
             );
 
@@ -177,4 +171,112 @@ public class ChroniclesService : MyChroniclesDbContext {
     
         return ErrorOr<ChronicleSearchPage>.Success(new ChronicleSearchPage(chronicleReviews, null));
     }
-}
+    
+    // possible non-edit values is empty string, null, or empty list
+    
+    public async Task<ErrorOr<string>> updateChronicleManually(ChronicleContractEdit chronicleEdits) {
+        // retrieve the chronicle to change it to valid points
+        Guid chronicleID;
+        bool validID = Guid.TryParse(chronicleEdits.chronicle_id, out chronicleID);
+
+        if (!validID) {
+            return ErrorOr<string>.Failure(Error.InvalidInput("", "invalid guid"));
+        }
+
+        Chronicles updatingChronicle = await this.Set<Chronicles>().FindAsync(chronicleID);
+
+        if (updatingChronicle != null) {
+            var propertyOfChronicles = updatingChronicle.GetType().GetProperties();
+
+            foreach (var propertyOfEdits in chronicleEdits.GetType().GetProperties()) {
+                // check if edit property is also a property in chronicles 
+                // and if it exists retrieve the property(returns name and value)
+                var editPropInChronicles = propertyOfChronicles.FirstOrDefault(p => p.Name == propertyOfEdits.Name);
+
+                // if the property we're editting is in the chronicles table we edit that
+                // otherwise we're edtting the tables that point to the chronicles table
+                if (editPropInChronicles != null && editPropInChronicles.Name != "chronicle_id") {
+                    if (propertyOfEdits.Name == "end_date" || propertyOfEdits.Name == "start_date") {
+                        if (propertyOfEdits.GetValue(chronicleEdits, null) == "") {
+                            editPropInChronicles.SetValue(updatingChronicle, new DateTime(1, 1, 1));
+                        } else {
+                            DateTime castValue = DateTime.Parse(propertyOfEdits.GetValue(chronicleEdits, null).ToString()).ToUniversalTime();
+                            editPropInChronicles.SetValue(updatingChronicle, castValue);
+                        }
+                    } else {
+                        if (propertyOfEdits.GetValue(chronicleEdits, null) is null) {
+                            editPropInChronicles.SetValue(updatingChronicle, null);
+                        } else {
+                            editPropInChronicles.SetValue(updatingChronicle, propertyOfEdits.GetValue(chronicleEdits, null));
+                        }
+                    }
+                } else {
+                    if (propertyOfEdits.Name == "other_creators") {
+                        // creator should already exist
+                        // if not, return null
+                    }
+
+                    if (propertyOfEdits.Name == "alt_titles") {
+                        List<string> new_titles = chronicleEdits.alt_titles;
+                        // make sure that new titles at least contains the main chronicle title
+                        var primary_title = new_titles.FirstOrDefault(title => title == updatingChronicle.title);
+
+                        if (primary_title is null) {
+                            return ErrorOr<string>.Failure(Error.InvalidInput("", "original title must exist"));
+                        } else {
+                            List<AlternativeTitles> existing_alt_titles = await this.Set<AlternativeTitles>()
+                                .Where(a => a.chronicle_id == updatingChronicle.chronicle_id)
+                                .ToListAsync();
+
+                            for (int i =0; i < new_titles.Count; i++) {
+                                var matching_title = existing_alt_titles.FirstOrDefault(e => e.alternative_title == new_titles[i]);
+
+                                if (matching_title is null) {
+                                    // check if other chronicles have the same alt title
+                                    var other_titles = await this.Set<AlternativeTitles>()
+                                        .Where(a => a.alternative_title == new_titles[i])
+                                        .ToListAsync();
+
+                                    AlternativeTitles newTitle = new AlternativeTitles(
+                                        new_titles[i],
+                                        updatingChronicle.chronicle_id,
+                                        false,
+                                        updatingChronicle.entertainment_category
+                                    );
+
+                                    if (other_titles is null) {
+                                        newTitle.isUnique = true;
+                                    } else {
+                                        for (int a = 0; a < other_titles.Count; a++) {
+                                            other_titles[a].isUnique = false;
+                                        }
+                                    }
+
+                                    await this.Set<AlternativeTitles>().AddAsync(newTitle);
+                                } else {
+                                    existing_alt_titles.Remove(matching_title);
+                                }  
+                            }
+
+                            this.Set<AlternativeTitles>().RemoveRange(existing_alt_titles);
+                        }
+                             
+                    }
+                        
+                }
+            }
+
+            await this.SaveChangesAsync();
+            return ErrorOr<string>.Success("successfully editted");
+        } else {
+            return ErrorOr<string>.Failure(Error.InvalidInput("", "chronicle does not exist"));
+        } 
+            
+    }            
+} 
+    
+    /*
+    check if other_creator already exists, if so map it to that guy 
+    List<string> other_creators, (should already be existing, so if it doesn't exist return an error)
+    List<string> alt_titles (if it doesn't exist create one, if it does check if it maps to the current chronicle, if it doesn't mark current as non-unique and create new one mapping)
+    */

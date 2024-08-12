@@ -1,7 +1,6 @@
 namespace MyChroniclesApi.Models.Chronicles;
 using MyChroniclesApi.Models.Users;
 
-// composite key between tag and chronicle id
 public class ChroniclesReview { 
     public string username { get; }
     public string review { get; set; }

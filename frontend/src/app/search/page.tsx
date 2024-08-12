@@ -43,7 +43,7 @@ export default function Search() {
     window.addEventListener("scroll", onscroll);
 
     return () => {
-      document.removeEventListener('scroll', onscroll);
+      window.removeEventListener('scroll', onscroll);
   };
 }, []);
 

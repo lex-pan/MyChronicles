@@ -1,45 +1,23 @@
 // main page 
 // displays title, synopsis, stats, character
 
-// when you click on the already present/newly added tags/genres, it removes it, and adds it back to the pool of searchable tags/genres
 'use client'
 import AddChronicleOverlay from "@/app/utils/Components/AddChronicleOverlay";
 import React, { useRef, useState } from "react";
-import { GeneralSearchedChronicleInfo } from "@/app/utils/interfaces";
-import { useAppSelector } from "@/globalRedux/hooks";
+import { GeneralSearchedChronicleInfo, allChronicleInfo, allChronicleInfoProps, tagsAndGenres } from "@/app/utils/interfaces";
+import { useAppSelector, useAppDispatch } from "@/globalRedux/hooks";
 import Link from "next/link";
 import SelectCountry from "@/app/utils/Components/SelectCountry";
 import tagsAndGenre from "@/app/utils/tagsAndGenre"
 import { Dispatch, SetStateAction } from 'react';
-
-interface allChronicleInfo{
-    chronicle_id: string;
-    chronicle_title: string;
-    country: string;
-    creator: string;
-    rating: number;
-    members: number;
-    entertainment_category: string;
-    episodes: number;
-    status: string;
-    synopsis: string;
-    genres: string[];
-    tags: string[];
-    alternative_titles: string[];
-};
-
-interface tagsAndGenres {
-    tags: string[],
-    genres: string[]
-}
-
-interface allChronicleInfoProps{
-    allInfo: allChronicleInfo
-};
+import convertDatetoReadble from "@/app/utils/convenientFunctions";
+import { updateChronicle } from "@/globalRedux/features/Chronicles/ChronicleUpdateSlice";
 
 export default function Chronicle({allInfo}: allChronicleInfoProps) {
     // permissions and toggling
+    const dispatch = useAppDispatch();
     const loggedIn = useAppSelector(state => state.UserChronicles.loggedIn);
+    const chroniclePostUpdate : allChronicleInfo = useAppSelector(state => state.ChronicleUpdates.changed_chronicles[allInfo.chronicle_id]);
     const [editAllowed, setEditAllowed] = useState(false);
     const [toggleAddChronicles, setToggleAddChronicles] = useState(false);
 
@@ -65,7 +43,7 @@ export default function Chronicle({allInfo}: allChronicleInfoProps) {
         synopsis: allInfo.synopsis
     });
 
-    function toggleAdd(chronicleToAdd: GeneralSearchedChronicleInfo | null) {
+    function toggleAdd() {
         setToggleAddChronicles(value => !value);
     }
 
@@ -75,7 +53,6 @@ export default function Chronicle({allInfo}: allChronicleInfoProps) {
 
     function filterAttributes(e: React.ChangeEvent<any>, attributesToLoopThrough: string[], setUseState: Dispatch<SetStateAction<string[]>>) {
         let input = e.target.value;
-        console.log(attributesToLoopThrough);
         let genreOrTagMeetingInput : string[] = [];
         for (let i = 0; i < attributesToLoopThrough.length; i++) {
             let genreOrTag = attributesToLoopThrough[i].toLowerCase();
@@ -105,7 +82,6 @@ export default function Chronicle({allInfo}: allChronicleInfoProps) {
 
     function addNonExistingAttributeOnEnter(e: React.KeyboardEvent<HTMLInputElement>, addTo: Dispatch<SetStateAction<string[]>>) {
         if (e.key === 'Enter') {
-            console.log(e.currentTarget.value);
             const input = e.currentTarget.value;
             e.currentTarget.value = "";
             addTo(prevItems => [...prevItems, input]);
@@ -138,38 +114,118 @@ export default function Chronicle({allInfo}: allChronicleInfoProps) {
         }
     }
 
+    async function submitEdit(e: React.FormEvent<HTMLFormElement>) {
+        console.log("submitting");
+        e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+
+        let converted_episode = formData.get('episodes')?.toString();
+        let episodeNumber;
+        console.log(converted_episode);
+        if (converted_episode != "" && converted_episode != undefined) {
+            episodeNumber = parseFloat(converted_episode);
+
+            if (!isNaN(episodeNumber)) {
+                // Round to one decimal place
+                let roundedEpisode = Math.round(episodeNumber * 10) / 10;
+                console.log(roundedEpisode);
+            } else {
+                return "invalid float";
+            }
+        }
+        console.log("passed episode check");
+
+
+        const updateChronicleResponse = await fetch('http://localhost:5172/chronicles/update', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/text' // Example: Accept JSON responses
+            },
+            credentials: 'include',
+            body: JSON.stringify({
+                "chronicle_id": allInfo.chronicle_id,
+                "status": formData.get('showStatus')?.toString(),
+                "country": formData.get('country')?.toString(),
+                "author": formData.get('author')?.toString(),
+                "episodes": episodeNumber,
+                "synopsis": formData.get('synopsis')?.toString(),
+                "length": formData.get('length')?.toString(),
+                "start_date": formData.get("start date")?.toString(),
+                "end_date": formData.get("end date")?.toString(),
+                "genres": currentGenre,
+                "tags": currentTags,
+                "other_creators": currentOtherCreators,
+                "alt_titles": currentAlternativeTitles,
+            })
+        });
+
+        let userUpdatedChronicle : allChronicleInfo = {
+            chronicle_id: allInfo.chronicle_id,
+            chronicle_title: allInfo.chronicle_title,
+            rating: allInfo.rating,
+            members: allInfo.members,
+            entertainment_category: allInfo.entertainment_category,
+            status: formData.get('showStatus')?.toString() || "",
+            country: formData.get('country')?.toString() || "",
+            creator: formData.get('author')?.toString() || "",
+            episodes: episodeNumber || 0,
+            synopsis: formData.get('synopsis')?.toString() || "",
+            length: formData.get('length')?.toString() || "",
+            start_date: formData.get("start date")?.toString() || "",
+            end_date: formData.get("end date")?.toString() || "",
+            genres: currentGenre,
+            tags: currentTags,
+            other_creators: currentOtherCreators,
+            alternative_titles: currentAlternativeTitles,
+        }
+
+        dispatch(updateChronicle(userUpdatedChronicle));
+    }
+
+    function preventSubmit(e: React.KeyboardEvent<HTMLFormElement>) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+        }
+    }
+
     return (
         <>
         {toggleAddChronicles && chronicleToBeAdded.current &&
             <AddChronicleOverlay chronicle={chronicleToBeAdded.current} toggle={toggleAdd}/>
         }
         {editAllowed &&
-        <div className="chronicle-page">
+        <form className="chronicle-page" onKeyDown={(e) => preventSubmit(e)} onSubmit={submitEdit}>
             <h1>{allInfo.chronicle_title}</h1>
             <div className="stats-general">
                 <p className="chronicle-attributes chronicle-first-column chronicle-first-row">Members: {allInfo.members}</p>
                 <p className="chronicle-attributes chronicle-first-column">Rating: {allInfo.rating}</p>
                 <p className="chronicle-attributes chronicle-first-column">Category: {allInfo.entertainment_category}</p>
-                    <p className="chronicle-attributes chronicle-first-column">Status: 
-                        <select name="showStatus" defaultValue={allInfo.status ?? ""}>
-                            <option value="Ongoing">Ongoing</option>
-                            <option value="Completed">Completed</option>
-                            <option value="Paused">Paused</option>
-                            <option value="Cancelled">Cancelled</option>
-                            <option value="Hiatus">Hiatus</option>
-                            <option value="In Development">In Development</option>
-                            <option value="Pilot">Pilot</option>
-                            <option value="">-</option>
-                        </select>
-                    </p>
-                    <p className="chronicle-attributes chronicle-first-column">Country: 
-                        <SelectCountry cssStyling={""} defaultValue={allInfo.country}/>
-                    </p>
-                    <label className="chronicle-attributes chronicle-first-column">Author: <input defaultValue={allInfo.creator}></input></label>
-                    <label className="chronicle-attributes chronicle-first-column">Episodes: <input defaultValue={allInfo.episodes}></input></label>
+                <p className="chronicle-attributes chronicle-first-column">Status: 
+                    <select name="showStatus" defaultValue={allInfo.status ?? ""}>
+                        <option value="Ongoing">Ongoing</option>
+                        <option value="Completed">Completed</option>
+                        <option value="Paused">Paused</option>
+                        <option value="Cancelled">Cancelled</option>
+                        <option value="Hiatus">Hiatus</option>
+                        <option value="In Development">In Development</option>
+                        <option value="Pilot">Pilot</option>
+                        <option value="">-</option>
+                    </select>
+                </p>
+                <p className="chronicle-attributes chronicle-first-column">Country: 
+                    <SelectCountry cssStyling={""} defaultValue={allInfo.country}/>
+                </p>
+                <label className="chronicle-attributes chronicle-first-column">Author: <input name="author" defaultValue={allInfo.creator}></input></label>
+                <label className="chronicle-attributes chronicle-first-column">Episodes: <input name="episodes" defaultValue={allInfo.episodes}></input></label>
             </div>
-            <textarea className="synopsis">{allInfo.synopsis}</textarea>
+            <textarea name="synopsis" className="synopsis" defaultValue={allInfo.synopsis}></textarea>
             <div className="stats-detailed">
+                <div className="stats-detailed-minor">
+                    <p>Length: <input className="minor-text-input" name="length" defaultValue={allInfo.length}></input></p>
+                    <p>Start Date: <input type="date" name="start date" defaultValue={convertDatetoReadble(allInfo.start_date)}></input></p>
+                    <p>End Date: <input type="date" name="end date" defaultValue={convertDatetoReadble(allInfo.end_date)}></input></p>
+                </div>
                 <div>Genre
                 <input onChange={(e) => filterAttributes(e, chronicleInfo.current.genres, setSearchedGenres)} onKeyDown={(e) => addAttributeOnEnter(e, setCurrentGenre, setSearchedGenres, "genre")}></input>
                 <ul className="search-chronicle-attributes">
@@ -216,16 +272,16 @@ export default function Chronicle({allInfo}: allChronicleInfoProps) {
             <div className="chronicle-page-bottom">
                 {loggedIn &&
                 <>
-                <button onClick={toggleEdit}>Cancel</button>       
-                <button>Submit</button>         
+                <button type="button" onClick={toggleEdit}>Cancel</button>       
+                <button type="submit">Submit</button>         
                 </>                
                 }
                 {!loggedIn &&
                 <Link href={"/login"}><button>Login to Edit</button></Link>
                 }
-                <button onClick={() => toggleAdd(chronicleToBeAdded.current)}>Add</button>
+                <button onClick={toggleAdd} type="button">Add</button>
             </div>
-        </div> 
+        </form> 
         }
         {!editAllowed &&
         <div className="chronicle-page">
@@ -239,28 +295,45 @@ export default function Chronicle({allInfo}: allChronicleInfoProps) {
                 <p className="chronicle-attributes chronicle-first-column">Author: {allInfo.creator}</p>
                 <p className="chronicle-attributes chronicle-first-column">Episodes: {allInfo.episodes}</p>
             </div>
-            <textarea disabled className="synopsis">{allInfo.synopsis}</textarea>
+            <textarea disabled className="synopsis" value={allInfo.synopsis}></textarea>
             <div className="stats-detailed">
+                <div className="stats-detailed-minor">
+                    <p>Length: {chroniclePostUpdate ? chroniclePostUpdate.length : allInfo.length}</p>
+                    <p>Start Date: {chroniclePostUpdate ? convertDatetoReadble(chroniclePostUpdate.start_date) : convertDatetoReadble(allInfo.start_date)}</p>
+                    <p>End Date: {chroniclePostUpdate ? convertDatetoReadble(chroniclePostUpdate.end_date) : convertDatetoReadble(allInfo.end_date)}</p>
+                </div>
                 <div>Genre</div>
                 <ul className="chronicle-attribute-list">
-                    {currentGenre.length > 0 && currentGenre.map((genre, index) =>
+                    {chroniclePostUpdate && chroniclePostUpdate.genres.length > 0 && chroniclePostUpdate.genres.map((genre, index) =>
+                        <li key={index}>{genre}</li>
+                    )}
+                    {!chroniclePostUpdate && currentGenre.length > 0 && currentGenre.map((genre, index) =>
                             <li key={index}>{genre}</li>
                     )}
                 </ul>
                 <div>Tags</div>
                 <ul className="chronicle-attribute-list">
-                    {allInfo.tags.length > 0 && allInfo.tags.map((tag, index) =>
+                    {chroniclePostUpdate && chroniclePostUpdate.tags.length > 0 && chroniclePostUpdate.tags.map((tag, index) =>
+                        <li key={index}>{tag}</li>
+                    )}
+                    {!chroniclePostUpdate && allInfo.tags && allInfo.tags.length > 0 && allInfo.tags.map((tag, index) =>
                             <li key={index}>{tag}</li>
                     )}
                 </ul>
                 <p>Other Creators</p>
                 <ul className="chronicle-attribute-list">
-                {allInfo.creator && allInfo.creator.length > 0 && allInfo.alternative_titles.map((alt_title, index) =>
-                            <li key={index}>{alt_title}</li>
+                {chroniclePostUpdate && chroniclePostUpdate.other_creators.length > 0 && chroniclePostUpdate.other_creators.map((creator, index) =>
+                        <li key={index}>{creator}</li>
+                )}
+                {!chroniclePostUpdate && allInfo.creator && allInfo.creator.length > 0 && allInfo.alternative_titles.map((creator, index) =>
+                            <li key={index}>{creator}</li>
                 )}
                 </ul>
                 <p>Alternative Titles</p>
                 <ul className="chronicle-attribute-list">
+                    {chroniclePostUpdate && chroniclePostUpdate.alternative_titles.length > 0 && chroniclePostUpdate.alternative_titles.map((alt_title, index) =>
+                        <li key={index}>{alt_title}</li>
+                    )}
                     {allInfo.alternative_titles.length > 0 && allInfo.alternative_titles.map((alt_title, index) =>
                             <li key={index}>{alt_title}</li>
                     )}
@@ -273,7 +346,7 @@ export default function Chronicle({allInfo}: allChronicleInfoProps) {
                 {!loggedIn &&
                 <Link href={"/login"}><button>Login to Edit</button></Link>
                 }
-                <button onClick={() => toggleAdd(chronicleToBeAdded.current)}>Add</button>
+                <button onClick={toggleAdd}>Add</button>
             </div>
         </div> 
         }

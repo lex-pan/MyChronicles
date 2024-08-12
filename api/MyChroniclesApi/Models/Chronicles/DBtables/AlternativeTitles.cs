@@ -12,11 +12,11 @@ public class AlternativeTitles {
     public string entertainment_category { get; set; }
     public Chronicles chronicles {get; set;} 
     public AlternativeTitles() {}
-    public AlternativeTitles(string AlternativeTitle, Guid ChronicleId, string EntertainmentCategory) {
+    public AlternativeTitles(string AlternativeTitle, Guid ChronicleId, bool Unique, string EntertainmentCategory) {
         id = Guid.NewGuid();
         alternative_title = AlternativeTitle;
         chronicle_id = ChronicleId;
-        isUnique = true;
+        isUnique = Unique;
         entertainment_category = EntertainmentCategory;
     }
 }

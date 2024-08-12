@@ -2,7 +2,7 @@ import UserChronicle from "./UserChronicle"
 import { useState, useEffect } from "react"
 import { StatusContainerProps, UserChronicleData } from "@/app/utils/interfaces";
 
-export default function({status, chroniclesStatus, confirmDelete, profileUsername, profileUC} : StatusContainerProps) {
+export default function StatusContainer({status, chroniclesStatus, confirmDelete, profileUsername, profileUC} : StatusContainerProps) {
     return (
         <>
         {chroniclesStatus != undefined && Object.keys(chroniclesStatus).length > 0 &&

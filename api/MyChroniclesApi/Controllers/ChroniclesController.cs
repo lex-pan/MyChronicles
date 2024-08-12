@@ -100,7 +100,6 @@ public class ChroniclesController : ControllerBase {
         }
     }
 
-    //         const addNewChronicleToDB = await fetch('http://localhost:5172/chronicles/add', {
     [HttpPost("add")]   
     public async Task<IActionResult> chronicleSubmission(NewChronicle chronicle) {
         ErrorOr<Chronicles> validatedChronicle = Chronicles.AddManual(chronicle);
@@ -133,6 +132,7 @@ public class ChroniclesController : ControllerBase {
             AlternativeTitles newAltTitle = new AlternativeTitles(
                 validatedChronicle.value.title,
                 validatedChronicle.value.chronicle_id,
+                true,
                 validatedChronicle.value.entertainment_category
             );
 
@@ -143,5 +143,16 @@ public class ChroniclesController : ControllerBase {
             return BadRequest(validatedChronicle.error);
         }
     }
- 
+    
+    [HttpPost("update")]   
+    public async Task<IActionResult> updateChronicle(ChronicleContractEdit chronicle) {        
+        ErrorOr<string> updateChronicle = await _MyChroniclesDb.updateChronicleManually(chronicle);
+
+        if (updateChronicle.error.Description == "No Error") {
+            return Ok(updateChronicle.value);
+        } else {
+            return StatusCode(400, updateChronicle.error);
+        }
+        
+    }       
 }

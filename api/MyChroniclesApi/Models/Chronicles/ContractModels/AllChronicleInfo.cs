@@ -10,8 +10,11 @@ public class AllChronicleInfo {
     public int? members { get; set; }
     public float? episodes { get; set; }
     public string synopsis { get; set; }
-    public List<string> genres { get; set; } 
-    public List<string> tags { get; set; }
+    public string? length { get; set; }
+    public DateTime? start_date { get; set; }
+    public DateTime? end_date { get; set; }
+    public string[] genres { get; set; } 
+    public string[] tags { get; set; }
     public List<string> alternative_titles { get; set; }
     
     public AllChronicleInfo(
@@ -25,8 +28,11 @@ public class AllChronicleInfo {
         int? Members,
         float? Episodes,
         string Synopsis,
-        List<string> Genres,
-        List<string> Tags,
+        string? Length,
+        DateTime? StartDate,
+        DateTime? EndDate,
+        string[] Genres,
+        string[] Tags,
         List<string> AlternativeTitles
     ) 
     {
@@ -40,6 +46,9 @@ public class AllChronicleInfo {
         members = Members;
         episodes = Episodes;
         synopsis = Synopsis;
+        length = Length;
+        start_date = StartDate;
+        end_date = EndDate;
         genres = Genres;
         tags = Tags;
         alternative_titles = AlternativeTitles;
