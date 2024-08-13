@@ -84,7 +84,8 @@ export interface SearchedChronicleInfoProps {
 
 export interface DetailedSearchChronicleInfoProps {
     chronicle: GeneralSearchedChronicleInfo;
-    toggleAdd: (chronicleToAdd: GeneralSearchedChronicleInfo | null) => void
+    toggleAdd: (chronicleToAdd: GeneralSearchedChronicleInfo | null) => void;
+    queriesForBack: () => void;
 }
 
 export interface UserReviews {

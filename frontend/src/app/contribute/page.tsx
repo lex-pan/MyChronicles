@@ -3,6 +3,8 @@
 // no link for donating, no1 likes donating ripp
 'use client'
 import { useAppSelector } from "@/globalRedux/hooks"
+import SelectCountry from "../utils/Components/SelectCountry";
+import { autoScalingTextArea } from "../utils/convenientFunctions";
 
 export default function Contribute() {
     const loggedIn = useAppSelector(state => state.UserChronicles.loggedIn);
@@ -91,7 +93,7 @@ export default function Contribute() {
                 <p>Length</p>
                 <input className="contribute-adding-chronicles-input" name="length" placeholder="Length per episode ex: 1h30m"></input>
                 <p>Country</p>
-                <input className="contribute-adding-chronicles-input" name="country"></input>
+                <SelectCountry cssStyling="contribute-adding-chronicles-input" defaultValue=""/>
                 <p>Status</p>
                 <select className="contribute-adding-chronicles-select" name="showStatus">
                     <option value="Ongoing">Ongoing</option>
@@ -107,7 +109,7 @@ export default function Contribute() {
                 <p>End Date</p>
                 <input type="date" className="contribute-adding-chronicles-input" name="end_date"></input>
                 <p>Synopsis</p>
-                <textarea name="synopsis" className="contribute-adding-chronicles-input category-synopsis" placeholder="Required field" required></textarea>
+                <textarea onChange={autoScalingTextArea} name="synopsis" className="contribute-adding-chronicles-input" placeholder="Required field" required></textarea>
                 <button className="add-searched-chronicle-title add-searched-chronicle-submit" type="submit">Submit</button>
             </form>
             </>

@@ -2,6 +2,7 @@ import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import UserChronicles from './features/User/UserChroniclesSlice';
 import UserOther from "./features/User/UserOtherSlice";
 import ChronicleUpdates from "./features/Chronicles/ChronicleUpdateSlice";
+import SearchQueries from "./features/Chronicles/ChroniclesQuerySlice";
 import {
     persistStore,
     persistReducer,
@@ -44,6 +45,7 @@ interface UserChronicleReduxInterface {
 export const makeStore = () => {
     let store: any =  configureStore({
         reducer: {
+            SearchQueries: SearchQueries,
             ChronicleUpdates: ChronicleUpdates,
             UserOther: UserOther,
             UserChronicles: persistReducer<UserChronicleReduxInterface>(userChroniclesPersistConfig, UserChronicles)

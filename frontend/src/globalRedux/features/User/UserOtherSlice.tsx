@@ -14,7 +14,7 @@ const initialState : UserOtherReduxInterface = {
 }
 
 export const UserOtherSlice = createSlice({
-  name: "user-chronicles",
+  name: "user-other",
   initialState,
   reducers: {
     updateBio: (state, action: PayloadAction<string>) => {

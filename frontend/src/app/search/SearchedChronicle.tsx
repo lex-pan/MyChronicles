@@ -1,10 +1,10 @@
 import { DetailedSearchChronicleInfoProps } from "../utils/interfaces";
 import Link from "next/link";
 
-export default function SearchedChronicle({chronicle, toggleAdd} : DetailedSearchChronicleInfoProps) {
+export default function SearchedChronicle({chronicle, toggleAdd, queriesForBack} : DetailedSearchChronicleInfoProps) {
     return(
         <div className="search-container">
-            <Link href={`/chronicle/${chronicle.chronicle_id}`} className="search-container-title"><h1>{chronicle.chronicle_title ?? "N/A"}</h1></Link>
+            <Link href={`/chronicle/${chronicle.chronicle_id}`} onClick={queriesForBack} className="search-container-title"><h1>{chronicle.chronicle_title ?? "N/A"}</h1></Link>
             <div className="search-container-stats-container">
                 <p className="search-container-stat">Category: {chronicle.entertainment_category ?? "N/A"}</p>
                 <p className="search-container-stat">Rating: {chronicle.rating ?? "N/A"}</p>

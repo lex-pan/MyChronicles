@@ -1,3 +1,7 @@
+// this slice is for saving results of the chronicles that the user has updated
+// although results are stored backend when saaved, the frontend won't show it 
+// when the user exits the page so we have a slice to make it seem like the change has applied
+
 'use client';
 
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
@@ -12,7 +16,7 @@ const initialState : updatedChronices = {
 }
 
 export const ChronicleUpdatesSlice = createSlice({
-  name: "user-chronicles",
+  name: "chronicle-updates",
   initialState,
   reducers: {
     updateChronicle: (state, action: PayloadAction<allChronicleInfo>) => {

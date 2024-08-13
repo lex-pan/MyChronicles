@@ -182,6 +182,8 @@ export default function Chronicle({allInfo}: allChronicleInfoProps) {
         }
 
         dispatch(updateChronicle(userUpdatedChronicle));
+
+        toggleEdit();
     }
 
     function preventSubmit(e: React.KeyboardEvent<HTMLFormElement>) {

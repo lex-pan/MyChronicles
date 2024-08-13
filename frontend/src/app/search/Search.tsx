@@ -8,13 +8,17 @@ import { GeneralSearchedChronicleInfo } from "../utils/interfaces";
 import { debounce } from "../utils/convenientFunctions";
 import SearchedChronicle from "./SearchedChronicle";
 import AddChronicleOverlay from "../utils/Components/AddChronicleOverlay";
+import { useAppSelector, useAppDispatch } from "@/globalRedux/hooks";
+import { saveSearchQueries } from "@/globalRedux/features/Chronicles/ChroniclesQuerySlice";
 
 export default function Search({defaultSearchResults} : {defaultSearchResults : Array<GeneralSearchedChronicleInfo>}) {
   let searchPageNumber= useRef(0);
   let queryString = useRef("");
   let semaphore = useRef(true);
   let remainingSearch = useRef(true);
-  let [searchResults, setSearchResults] = useState<Array<GeneralSearchedChronicleInfo>>(defaultSearchResults);
+  const savedSearchQueries = useAppSelector(state => state.SearchQueries.queried_chronicles);
+  let [searchResults, setSearchResults] = useState<Array<GeneralSearchedChronicleInfo>>(savedSearchQueries ? savedSearchQueries : defaultSearchResults);
+  const dispatch = useAppDispatch();
 
   const [toggleAddChronicles, setToggleAddChronicles] = useState(false);
   const [chronicleToBeAdded, setChronicleToBeAdded] = useState<GeneralSearchedChronicleInfo | null>();
@@ -75,6 +79,10 @@ export default function Search({defaultSearchResults} : {defaultSearchResults : 
 
   const debouncedQuery = debounce((e) => newSearch(e));
 
+  function queriesForBack() {
+    dispatch(saveSearchQueries(searchResults));
+  }
+
   return (
     <div className="search-page">
       {toggleAddChronicles && chronicleToBeAdded != null &&
@@ -85,7 +93,7 @@ export default function Search({defaultSearchResults} : {defaultSearchResults : 
       </div>
       <div className="search-results">
         {searchResults.map((chronicle, index) => (
-          <SearchedChronicle key={index} chronicle={chronicle} toggleAdd={toggle}/>
+          <SearchedChronicle key={index} chronicle={chronicle} toggleAdd={toggle} queriesForBack={queriesForBack}/>
         ))}
       </div>
     </div>

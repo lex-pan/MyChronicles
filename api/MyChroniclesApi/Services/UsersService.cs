@@ -150,7 +150,7 @@ public class UsersService : MyChroniclesDbContext {
                 .Where(e => e.user_id == userID)
                 .OrderByDescending(e => e.date_of_action)
                 .Select(e => new UserProfileHistory(e.title, e.action, e.date_of_action, e.chapter))
-                .Take(7)
+                .Take(6)
                 .ToListAsync();
             
             RetrievedUserProfile profileData = new RetrievedUserProfile(

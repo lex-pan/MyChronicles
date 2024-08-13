@@ -1,3 +1,5 @@
+import React from "react";
+
 // converts ISO8601 to something like Feb 10, 2004
 export default function convertDatetoReadble(dateString: string) {
     const date = new Date(dateString);
@@ -62,3 +64,8 @@ export function debounce(func : (...args: any[]) => any, timeout = 700){
 // in the onkeyup, because we use processSearch() the return function will be called because 
 // it'd be equivalent to debounce()(). where debounce() is the result and we call the function of the result debounce()()
 // const processSearch = debounce((e) => saveInput(e));
+
+export function autoScalingTextArea(e: React.ChangeEvent<any>) {
+    e.target.style.height = 'auto'; // Reset height to auto to calculate new scrollHeight
+    e.target.style.height = `${e.target.scrollHeight}px`; // Set height to scrollHeight
+}
