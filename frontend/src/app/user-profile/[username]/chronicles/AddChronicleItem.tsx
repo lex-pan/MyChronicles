@@ -18,7 +18,7 @@ export default function AddChronicleItem({searched_chronicle, setCategorizedChro
         } else {
             setInLibrary(false);
         }
-    }, []);
+    }, [reduxLibrary, searched_chronicle.chronicle_id]);
 
     function toggleChronicle() {
         setToggledChronicle(toggleStatus => !toggleStatus);

@@ -47,7 +47,7 @@ export default function Login() {
       <textarea placeholder="Username or Email" name="usernameOrEmail"></textarea>
       <input placeholder="Password" type="password" name="password"></input>
       <button>Login</button> 
-      <Link href={"/register"} className="loginRegisterSwitch">Don't have an account? Register here.</Link>
+      <Link href={"/register"} className="loginRegisterSwitch">Don&apos;t have an account? Register here.</Link>
     </form>
   );
 }

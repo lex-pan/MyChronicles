@@ -47,7 +47,7 @@ export default function UserHistory({history, username} : userHistoryProps) {
         return () => {
             document.removeEventListener('scroll', onscroll);
         };
-    }, []);
+    }, [username]);
 
     return (
     <div className="user-container history">

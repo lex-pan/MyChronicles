@@ -46,7 +46,7 @@ export default function Review({review_data, chronicleID} : {review_data: UserRe
             sendUCchanges(true);
             document.removeEventListener('visibilitychange', handleUCvisibilityChange);
         }
-    }, []);
+    }, [review_data.username, updateReviewedChronicle, username]);
 
     function updateReview(e: React.ChangeEvent<any>) {
         e.target.style.height = 'auto'; // Reset height to auto to calculate new scrollHeight

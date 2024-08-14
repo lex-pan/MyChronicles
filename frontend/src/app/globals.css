@@ -98,7 +98,6 @@ button, select {
     width: 8em;
     font-weight: 500;
     border: 2px solid transparent;
-    padding-right: 1px solid white;
 }
 
 .nav-link:hover {
@@ -150,7 +149,7 @@ button, select {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 4em;
+    height: 5em;
 }
 
 .nav-category-options-container {

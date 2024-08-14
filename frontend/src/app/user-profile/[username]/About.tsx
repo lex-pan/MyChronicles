@@ -43,7 +43,7 @@ export default function UserProfileAbout({data, username}: UserAboutProps) {
           sendBioChanges();
           document.removeEventListener('visibilitychange', sendBioChanges);
       }
-  }, []);
+  }, [bioChanges, dispatch, username]);
 
     useEffect(() => {
         if (viewers_username == username) {
@@ -51,7 +51,7 @@ export default function UserProfileAbout({data, username}: UserAboutProps) {
         } else {
             setEditAllowed(false);
         }
-    }, [viewers_username])
+    }, [viewers_username, username])
 
     return ( 
       <div className="about-section">

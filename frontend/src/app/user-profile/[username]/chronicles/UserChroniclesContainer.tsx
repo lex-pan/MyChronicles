@@ -60,7 +60,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
             sendUCchanges(true);
             document.removeEventListener('visibilitychange', handleUCvisibilityChange);
         }
-    }, []);
+    }, [dispatch, viewerUCredux]);
 
     function profileViewSetup() {
         if ((viewerUsername == profileUsername && profileUC.current != undefined && "!!!UninitializedReduxStore!!!" in profileUC.current)) {
@@ -275,45 +275,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
                 {editAllowed &&
                     <button className='user-chronicle-filters-button' onClick={toggleSearch}>Add Chronicle</button>                
                 }
-                <div className='filter-category'>
-                    <p className='filter-category-name'>Status</p>
-                    <select className="status-options">
-                        <option value="reading">Reading</option>
-                        <option value="completed">Completed</option>
-                        <option value="paused">Paused</option>
-                        <option value="dropped">Dropped</option>
-                        <option value="plan to read">Plan to Read</option>
-                        <option value="rereading">Rereading</option>
-                    </select>
-                </div>
-                <div className='filter-category'>
-                    <p className='filter-category-name'>Country</p>
-                    {/*add a country data list not drop down */}
-                    <select className="status-options">
-                        <option value="reading">Reading</option>
-                        <option value="completed">Completed</option>
-                        <option value="paused">Paused</option>
-                        <option value="dropped">Dropped</option>
-                        <option value="plan to read">Plan to Read</option>
-                        <option value="rereading">Rereading</option>
-                    </select>
-                </div>
-                <div className='filter-category-bottom'>
-                    <p className='filter-category-name'>Sort</p>
-                    {/*title, score, progress, last updated, last, added, start date, completion date, release date, avg score, popularity*/}
-                    <select className="status-options">
-                    <option value="reading">Reading</option>
-                    <option value="completed">Completed</option>
-                    <option value="paused">Paused</option>
-                    <option value="dropped">Dropped</option>
-                    <option value="plan to read">Plan to Read</option>
-                    <option value="rereading">Rereading</option>
-                    </select>
-                </div>
-                <div className='filter-category'>
-                    <p className='filter-category-name'>Year</p>
-                    <input className='user-chronicle-filters-year' placeholder='ex: 2019-2024'></input>
-                </div>
+                {/*Add the other filters back here when implemented*/}
             </div>
             {toggleConfirmDelete &&
             <div className='overlay'>
@@ -339,3 +301,44 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
     </>
   );
 }
+
+/*
+<div className='filter-category'>
+    <p className='filter-category-name'>Status</p>
+    <select className="status-options">
+        <option value="reading">Reading</option>
+        <option value="completed">Completed</option>
+        <option value="paused">Paused</option>
+        <option value="dropped">Dropped</option>
+        <option value="plan to read">Plan to Read</option>
+        <option value="rereading">Rereading</option>
+    </select>
+</div>
+<div className='filter-category'>
+    <p className='filter-category-name'>Country</p>
+    <select className="status-options">
+        <option value="reading">Reading</option>
+        <option value="completed">Completed</option>
+        <option value="paused">Paused</option>
+        <option value="dropped">Dropped</option>
+        <option value="plan to read">Plan to Read</option>
+        <option value="rereading">Rereading</option>
+    </select>
+</div>
+<div className='filter-category-bottom'>
+    <p className='filter-category-name'>Sort</p>
+    // title, score, progress, last updated, last, added, start date, completion date, release date, avg score, popularity
+    <select className="status-options">
+    <option value="reading">Reading</option>
+    <option value="completed">Completed</option>
+    <option value="paused">Paused</option>
+    <option value="dropped">Dropped</option>
+    <option value="plan to read">Plan to Read</option>
+    <option value="rereading">Rereading</option>
+    </select>
+</div>
+<div className='filter-category'>
+    <p className='filter-category-name'>Year</p>
+    <input className='user-chronicle-filters-year' placeholder='ex: 2019-2024'></input>
+</div>
+*/
