@@ -3,5 +3,6 @@ Content-Type: application/json
 
 {
     "emailOrUsername": "lexus",
-    "password": "Password1#"
+    "password": "Password1#",
+    "speed": "slow"
 }

@@ -84,7 +84,7 @@
 }
 
 .grid-info-stars-outer::before {
-    content: "\2605\2605\2605\2605\2605";
+    content: "✦✦✦✦✦";
 }
 
 .grid-info-stars-inner {
@@ -98,8 +98,8 @@
 }
 
 .grid-info-stars-inner::before {
-    content: "\2605\2605\2605\2605\2605";
-    color: rgb(103, 199, 255);
+    content: "✦✦✦✦✦";
+    color: rgb(0, 255, 149);
 }
 
 .status-div {

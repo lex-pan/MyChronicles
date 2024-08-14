@@ -44,7 +44,8 @@ async function login(event) {
       credentials: 'include',
       body: JSON.stringify({
           "emailOrUsername": usernameOrEmail,
-          "password": password
+          "password": password,
+          "speed": "fast"
       })
   });
 
@@ -104,6 +105,7 @@ function setUpExtension(tabData) {
               <option value="Dropped">Dropped</option>
               <option value="Plan to Read">Plan to Read</option>
               <option value="Rereading">Rereading</option>
+              <option value="">-</option>
             </select>
         </div>
         <p class="grid-info-item">Episode: ${urlInfo?.[2] ?? "Not Found"}</p>
@@ -129,10 +131,10 @@ function setUpExtension(tabData) {
       fillStars(userChronicleInfo.rating/5 * 100);
     }
 
-    document.getElementsByClassName("extension-button")[0].addEventListener('click', logout);
-    document.getElementsByClassName("extension-button")[2].addEventListener('click', () => {update(tabData)});
-    document.getElementsByClassName("rating-div-input")[0].addEventListener('blur', valueCheck);
-    document.getElementsByClassName("rating-div-input")[0].addEventListener('input', typeStars);
+    document.getElementsByClassName("extension-button")[0].addEventListener('click', logout);  // logs user out
+    document.getElementsByClassName("extension-button")[2].addEventListener('click', () => {update(tabData)});  // updates 
+    document.getElementsByClassName("rating-div-input")[0].addEventListener('blur', valueCheck); // ensures that rating is valid and fills stars
+    document.getElementsByClassName("rating-div-input")[0].addEventListener('input', typeStars); // also fills stars
 }
 
 async function update(tabData) {

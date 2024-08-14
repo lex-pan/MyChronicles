@@ -27,7 +27,8 @@ export default function Login() {
         credentials: 'include',
         body: JSON.stringify({
             "emailOrUsername": usernameOrEmail,
-            "password": password
+            "password": password,
+            "speed": "slow"
         })
     });
     

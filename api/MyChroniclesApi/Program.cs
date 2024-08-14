@@ -36,6 +36,8 @@ var builder = WebApplication.CreateBuilder(args);
     {
         options.Cookie.SameSite = SameSiteMode.None;
         options.Cookie.SecurePolicy = CookieSecurePolicy.Always; // Ensure cookies are sent only over HTTPS
+        options.ExpireTimeSpan = TimeSpan.FromDays(365 * 100); // Set a long expiration time, essentially making it never expire
+        options.SlidingExpiration = false; // Ensure the cookie doesn’t renew automatically on every request
     });
 
     builder.Services.Configure<CookiePolicyOptions>(options =>

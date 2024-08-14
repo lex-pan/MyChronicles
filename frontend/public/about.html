@@ -14,15 +14,15 @@ Attribution to https://github.com/jhammann/sakura for sakura petals
     <!-- Include any additional meta tags, stylesheets, or scripts here -->
 </head>
 <body>
-    <script src="./about/sakura/dist/sakura.min.js"></script>
-    <script>
-        var sakura = new Sakura('body', {
-            minSize: 30,
-            maxSize: 40,
-            delay: 200
-        });
-      </script>
     <span class="sakura-body">
+        <script src="./about/sakura/dist/sakura.min.js"></script>
+        <script>
+            var sakura = new Sakura('.sakura-body', {
+                minSize: 30,
+                maxSize: 40,
+                delay: 200
+            });
+        </script>
         <div class="about-section">
             <h1>Welcome to MyChronicles</h1>
             <p>Keep track of your shows, and novels in one place. <br><br>
@@ -31,11 +31,6 @@ Attribution to https://github.com/jhammann/sakura for sakura petals
                Enjoy!  <br><br>
             </p>
         </div>
-        <div class="attribution">
-            <p>TY freepik for the background image: <a href="https://www.freepik.com/free-ai-image/beautiful-anime-sakura-landscape-cartoon-scene_94944923.htm#from_view=detail_alsolike">Link</a></p>
-            <p>TY Jhamman for the sakura petals: <a href="https://github.com/jhammann/sakura">Link</a></p>
-        </div>
     </span>
-
 </body>
 </html>

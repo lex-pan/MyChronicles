@@ -103,6 +103,10 @@ public class UserController : ControllerBase {
         if (validPassword) {
             try {
                 await _signInManager.PasswordSignInAsync(user, request.password, isPersistent: true, lockoutOnFailure: false);
+                if (request.speed == "fast") {
+                    return Ok(new {username = user.UserName });
+                }
+
                 ErrorOr<List<RetrievedUserChronicle>> retrievedChronicles = await _user.retrieveUCByName(user.Id);
                 Dictionary<Guid, RetrievedUserChronicle> convertedUC = UCarrayToDictionary(retrievedChronicles.value);
 

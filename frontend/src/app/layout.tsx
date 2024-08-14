@@ -23,6 +23,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <StoreProvider>
           <RootNavBar/>
+          <div className="nav-bar-margin">&nbsp;</div>
           {children}
         </StoreProvider>
       </body>
