@@ -5,6 +5,7 @@ import { useAppSelector, useAppDispatch, useAppStore } from '../../../globalRedu
 import { useEffect, useRef, useState } from "react";
 import { ChangeEvent } from "react";
 import { updateBio, clearBioUpdate } from "@/globalRedux/features/User/UserOtherSlice";
+import apiLink from '@/app/utils/apiLink';
 
 interface UserAboutProps {
     data: UserProfileFetch;
@@ -25,7 +26,7 @@ export default function UserProfileAbout({data, username}: UserAboutProps) {
     useEffect(() => {    
       function sendBioChanges() {
           if (bioChanges != "") {
-            var url = `http://localhost:5172/user/${username}/bio`;
+            var url = `${apiLink}/user/${username}/bio`;
             var data = JSON.stringify({
               "bio": bioChanges
             });

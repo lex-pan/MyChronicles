@@ -5,6 +5,7 @@ import React, { useEffect } from 'react';
 import { useState } from 'react';
 import { useAppSelector, useAppDispatch, useAppStore } from '../globalRedux/hooks';
 import { logout } from '@/globalRedux/features/User/UserChroniclesSlice';
+import apiLink from '@/app/utils/apiLink';
 
 export default function RootNavBar() {
   const pathname = usePathname();
@@ -21,7 +22,7 @@ export default function RootNavBar() {
   // in this function when you send a fetch request, you need to send the user cookie
   // this way the api can identify which user you are using the credentials: include
   async function handleLogOut() {
-      const logoutResult = await fetch('http://localhost:5172/user/logout', {
+      const logoutResult = await fetch(`${apiLink}/user/logout`, {
           method: 'GET',
           credentials: 'include', // Include cookies with the request
       });
@@ -48,8 +49,8 @@ export default function RootNavBar() {
           <h1><Link href="/" className="nav-bar-title">MyChronicles</Link></h1> 
           <Link href="/search" className="nav-link">Search</Link>
           <Link href="/contribute" className="nav-link">Contribute</Link> 
-          <Link href="/login" className="nav-link">Profile</Link> 
-          <Link href="/login"><img className="nav-profile" src="/images/default-profile-image.png"/></Link>
+          <Link href="/login?post=profile" className="nav-link">Profile</Link> 
+          <Link href="/login?post=profile"><img className="nav-profile" src="/images/default-profile-image.png"/></Link>
           <img onClick={handleLogOut} className="nav-logout" src="/images/logout.png"/>
         </nav>
       }

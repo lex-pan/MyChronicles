@@ -13,6 +13,7 @@ import { Dispatch, SetStateAction } from 'react';
 import convertDatetoReadble from "@/app/utils/convenientFunctions";
 import { updateChronicle } from "@/globalRedux/features/Chronicles/ChronicleUpdateSlice";
 import { useRouter } from "next/navigation";
+import apiLink from '@/app/utils/apiLink';
 
 export default function Chronicle({allInfo}: allChronicleInfoProps) {
     // permissions and toggling
@@ -137,7 +138,7 @@ export default function Chronicle({allInfo}: allChronicleInfoProps) {
         }
         console.log("passed episode check");
 
-        const updateChronicleResponse = await fetch('http://localhost:5172/chronicles/update', {
+        const updateChronicleResponse = await fetch(`${apiLink}/chronicles/update`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -285,7 +286,7 @@ export default function Chronicle({allInfo}: allChronicleInfoProps) {
                 </>                
                 }
                 {!loggedIn &&
-                <Link href={"/login"}><button>Login to Edit</button></Link>
+                <Link href={"/login?post=back"}><button>Login to Edit</button></Link>
                 }
                 <button onClick={toggleAdd} type="button">Add</button>
             </div>
@@ -353,7 +354,7 @@ export default function Chronicle({allInfo}: allChronicleInfoProps) {
                 <button onClick={toggleEdit}>Edit</button>                
                 }
                 {!loggedIn &&
-                <Link href={"/login"}><button>Login to Edit</button></Link>
+                <Link href={"/login?post=back"}><button>Login to Edit</button></Link>
                 }
                 <button onClick={toggleAdd}>Add</button>
             </div>

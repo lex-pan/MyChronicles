@@ -5,6 +5,7 @@
 import { useAppSelector } from "@/globalRedux/hooks"
 import SelectCountry from "../utils/Components/SelectCountry";
 import { autoScalingTextArea } from "../utils/convenientFunctions";
+import apiLink from '@/app/utils/apiLink';
 
 export default function Contribute() {
     const loggedIn = useAppSelector(state => state.UserChronicles.loggedIn);
@@ -29,7 +30,7 @@ export default function Contribute() {
 
         console.log(formData);
 
-        const addNewChronicleToDB = await fetch('http://localhost:5172/chronicles/add', {
+        const addNewChronicleToDB = await fetch(`${apiLink}/chronicles/add`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

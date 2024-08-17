@@ -10,6 +10,7 @@ import SearchedChronicle from "./SearchedChronicle";
 import AddChronicleOverlay from "../utils/Components/AddChronicleOverlay";
 import { useAppSelector, useAppDispatch } from "@/globalRedux/hooks";
 import { saveSearchQueries } from "@/globalRedux/features/Chronicles/ChroniclesQuerySlice";
+import apiLink from '@/app/utils/apiLink';
 
 export default function Search({defaultSearchResults} : {defaultSearchResults : Array<GeneralSearchedChronicleInfo>}) {
   let searchPageNumber= useRef(0);
@@ -66,7 +67,7 @@ export default function Search({defaultSearchResults} : {defaultSearchResults : 
 
   async function sendAdvancedQueryToDb() {
 
-    const searchResults = await fetch(`http://localhost:5172/chronicles/detailed-query/${queryString.current}/${searchPageNumber.current}`, {
+    const searchResults = await fetch(`${apiLink}/chronicles/detailed-query/${queryString.current}/${searchPageNumber.current}`, {
       method: 'GET',
       headers: {
           'Accept': 'application/text' // Example: Accept JSON responses

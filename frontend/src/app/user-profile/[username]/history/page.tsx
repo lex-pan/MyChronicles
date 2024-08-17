@@ -3,9 +3,10 @@
 import UserHistory from "./UserHistory";
 import { UserHistoryData } from "@/app/utils/interfaces";
 import { revalidatePath } from "next/cache";
+import apiLink from '@/app/utils/apiLink';
 
 async function retrieveUserHistory(username: string) {
-  const userHistory = await fetch(`http://localhost:5172/user/${username}/history/0`, {
+  const userHistory = await fetch(`${apiLink}/user/${username}/history/0`, {
     method: 'GET',
     headers: {
         'Accept': 'application/json' // Example: Accept JSON responses

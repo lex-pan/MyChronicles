@@ -2,6 +2,7 @@
 
 import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { UserChronicle, UserchronicleFetch } from "@/app/utils/interfaces";
+import apiLink from '@/app/utils/apiLink';
 
 interface UserChronicleReduxInterface {
   userChronicles: Record<string, UserChronicle>;
@@ -76,7 +77,7 @@ export const UserChroniclesSlice = createSlice({
 export const initializeUserChronicles = createAsyncThunk(
   "UserChronicles/loginStatusAndRetrieve",
   async () => {
-    const response = await fetch(`http://localhost:5172/user/chronicles`, {
+    const response = await fetch(`${apiLink}/user/chronicles`, {
       method: 'GET',
       credentials: 'include', // Include cookies with the request
       headers : { 

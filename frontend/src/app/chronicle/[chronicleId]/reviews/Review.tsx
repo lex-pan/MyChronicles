@@ -2,6 +2,7 @@ import { UserReviews } from "@/app/utils/interfaces"
 import { useEffect, useState } from "react"
 import { useAppSelector, useAppDispatch } from "@/globalRedux/hooks";
 import { updateExistingId, clearChanges } from "@/globalRedux/features/User/UserChroniclesSlice";
+import apiLink from '@/app/utils/apiLink';
 
 // add option that allows users to view the entire review when they click on it
 
@@ -28,7 +29,7 @@ export default function Review({review_data, chronicleID} : {review_data: UserRe
             console.log(username);
             console.log(review_data.username);
             if (username == review_data.username && (document.visibilityState === "hidden" || dismount) && Object.keys(updateReviewedChronicle).length > 0 && username != "") {
-              var url = `http://localhost:5172/user/${username}/chronicles/update`;
+              var url = `${apiLink}/user/${username}/chronicles/update`;
               var data = JSON.stringify({
                 "listOfChanges": updateReviewedChronicle
               });

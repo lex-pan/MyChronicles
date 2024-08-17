@@ -1,9 +1,10 @@
 import { UserProfileFetch } from "@/app/utils/interfaces";
 import UserProfileAbout from "./About";
 import { revalidatePath } from 'next/cache'
+import apiLink from '@/app/utils/apiLink';
 
 async function retrieveUserChronicleData(username : string) {
-    const response = await fetch(`http://localhost:5172/user/${username}/profile`, {
+    const response = await fetch(`${apiLink}/user/${username}/profile`, {
         method: 'GET',
         credentials: 'include', // Include cookies with the request
         headers : { 

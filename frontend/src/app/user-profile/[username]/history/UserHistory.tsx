@@ -2,6 +2,7 @@
 import { UserHistoryData } from "@/app/utils/interfaces";
 import { useEffect, useRef, useState } from "react";
 import convertDatetoReadble from "@/app/utils/convenientFunctions";
+import apiLink from '@/app/utils/apiLink';
 
 interface userHistoryProps {
     history: Array<UserHistoryData>
@@ -10,7 +11,7 @@ interface userHistoryProps {
 
 async function retrieveUserHistory(username: string, pageNumber: number) {
     console.log("retrieve more history!!");
-    const userHistory = await fetch(`http://localhost:5172/user/${username}/history/${pageNumber}`, {
+    const userHistory = await fetch(`${apiLink}/user/${username}/history/${pageNumber}`, {
       method: 'GET',
       headers: {
           'Accept': 'application/json' // Example: Accept JSON responses

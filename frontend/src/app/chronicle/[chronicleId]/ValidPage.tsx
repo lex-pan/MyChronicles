@@ -1,7 +1,9 @@
 import { revalidatePath } from 'next/cache'
+import apiLink from '@/app/utils/apiLink';
+
 
 async function initializeChronicle(chronicleId : string) {
-    const response = await fetch(`http://localhost:5172/chronicles/${chronicleId}/exists`, {
+    const response = await fetch(`${apiLink}/chronicles/${chronicleId}/exists`, {
         method: 'GET',
     });
     

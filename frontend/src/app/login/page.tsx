@@ -1,12 +1,15 @@
 'use client';
-import { useRouter } from 'next/navigation';
+import { redirect, useRouter } from 'next/navigation';
 import { useAppSelector, useAppDispatch, useAppStore } from '../../globalRedux/hooks';
 import { login } from '@/globalRedux/features/User/UserChroniclesSlice';
 import Link from 'next/link';
+import apiLink from '@/app/utils/apiLink';
+import { useSearchParams } from 'next/navigation';
 
 export default function Login() {
   const router = useRouter();
   const dispatch = useAppDispatch();
+  const searchParams = useSearchParams();
 
   // in this function when you send a fetch request, if login is successful
   // the response will contain a set-cookie header that the browser will automatically set for you
@@ -18,7 +21,7 @@ export default function Login() {
     const usernameOrEmail = formData.get('usernameOrEmail');
     const password = formData.get('password');
 
-    const loginUserResult = await fetch('http://localhost:5172/user/login', {
+    const loginUserResult = await fetch(`${apiLink}/user/login`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -35,10 +38,19 @@ export default function Login() {
     const userInfo = await loginUserResult.json();
     console.log(userInfo);
 
+
     if (loginUserResult.status == 200) {
       dispatch(login({username: userInfo.username, userChronicles: userInfo.userChronicles}));
-      router.back();
-    }     
+      const postLogin = searchParams.get('post');
+      console.log(postLogin);
+      if (postLogin == 'profile') {
+        router.push(`/user-profile/${userInfo.username}`);
+      } else {
+        router.back();
+      }
+    }  else {
+      // display error message
+    }
   }
 
   return ( 

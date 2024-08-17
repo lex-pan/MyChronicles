@@ -2,6 +2,7 @@ import React, { useRef, useState } from "react";
 import AddChronicleItem from "./AddChronicleItem";
 import { searchChroniclePageProps, AddChronicleInfo } from "@/app/utils/interfaces";
 import { debounce } from "@/app/utils/convenientFunctions";
+import apiLink from '@/app/utils/apiLink';
 
 export default function AddChroniclesPage({toggle, setCategorizedChronicles, sortByStatus, profileUC} : searchChroniclePageProps) {
     const [searchedChronicles, setSearchedChronicles] = useState(() => sortSearchedChronicles([]));
@@ -35,7 +36,7 @@ export default function AddChroniclesPage({toggle, setCategorizedChronicles, sor
 
     async function chroniclesQuery(queryString: string) {
         console.log("querying chronicles");
-        const request = await fetch(`http://localhost:5172/chronicles/query/${queryString}`, {
+        const request = await fetch(`${apiLink}/chronicles/query/${queryString}`, {
             method: 'GET',
             headers: {
                 'Accept': 'application/text' // Example: Accept JSON responses

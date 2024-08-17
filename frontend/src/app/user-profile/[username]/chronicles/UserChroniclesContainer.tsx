@@ -15,6 +15,7 @@ import { UserChronicle, UserChronicleData } from '@/app/utils/interfaces';
 import AddChroniclesPage from './AddChroniclesPage';
 import { useAppSelector, useAppDispatch, useAppStore } from '../../../../globalRedux/hooks';
 import { clearChanges, deleteUC } from '@/globalRedux/features/User/UserChroniclesSlice';
+import apiLink from '@/app/utils/apiLink';
 
 export default function UserChroniclesLayout({ssProfileUC, profileUsername, profileExists} : UserChronicleData) {
     let viewerUCredux = useAppStore();
@@ -41,7 +42,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
             let viewers_username = viewerUCredux.getState().UserChronicles.username;
             
             if ((document.visibilityState === "hidden" || dismount) && Object.keys(listOfUserChronicleChangesToDb).length > 0 && viewers_username != "") {
-              var url = `http://localhost:5172/user/${viewers_username}/chronicles/update`;
+              var url = `${apiLink}/user/${viewers_username}/chronicles/update`;
               var data = JSON.stringify({
                 "listOfChanges": listOfUserChronicleChangesToDb
               });
@@ -234,7 +235,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
 
         dispatch(deleteUC(deleteChronicleName?.book_id));
         // send to db for delete
-        await fetch(`http://localhost:5172/user/chronicles/delete/${deleteChronicleName?.book_id}`, {
+        await fetch(`${apiLink}/user/chronicles/delete/${deleteChronicleName?.book_id}`, {
             method: 'DELETE',
             headers: {
                 'Accept': 'application/text' // Example: Accept JSON responses

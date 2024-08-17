@@ -14,10 +14,11 @@ import { cookies } from "next/headers";
 import { UserchronicleFetch } from "@/app/utils/interfaces";
 import UserChroniclesLayout from "./UserChroniclesContainer";
 import { revalidatePath } from 'next/cache'
+import apiLink from '@/app/utils/apiLink';
 // https://nextjs.org/docs/app/building-your-application/routing/dynamic-routes 
 
 async function retrieveUserChronicleData(username : string) {
-    const response = await fetch(`http://localhost:5172/user/${username}/chronicles`, {
+    const response = await fetch(`${apiLink}/user/${username}/chronicles`, {
         method: 'GET',
         headers : { 
             'Content-Type': 'application/json',

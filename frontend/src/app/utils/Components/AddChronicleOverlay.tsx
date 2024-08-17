@@ -4,6 +4,7 @@ import { addUC } from "@/globalRedux/features/User/UserChroniclesSlice";
 import { AddChronicleOverlayProps, UserChronicle } from "../interfaces";
 import { useAppSelector, useAppDispatch } from "@/globalRedux/hooks";
 import Link from "next/link";
+import apiLink from '@/app/utils/apiLink';
 
 export default function AddChronicleOverlay({chronicle, toggle} : AddChronicleOverlayProps) {
     const loggedIn = useAppSelector((state) => state.UserChronicles.loggedIn);
@@ -49,7 +50,7 @@ export default function AddChronicleOverlay({chronicle, toggle} : AddChronicleOv
       const review = formData.get("review");
       const notes = formData.get("notes");
       
-      const addChronicleToUC = await fetch('http://localhost:5172/user/chronicles/add', {
+      const addChronicleToUC = await fetch(`${apiLink}/user/chronicles/add`, {
           method: 'POST',
           headers: {
               'Content-Type': 'application/json',
@@ -131,7 +132,7 @@ export default function AddChronicleOverlay({chronicle, toggle} : AddChronicleOv
               <h1 className="overlay-container-title">Login To Add Chronicles</h1>
               <div className="overlay-container-button-container">
                 <button onClick={() => toggle(null)} className='yes'>No</button>
-                <Link href={"/login"}><button className="no">Login</button></Link>
+                <Link href={"/login?post=back"}><button className="no">Login</button></Link>
               </div>
             </div>
           }

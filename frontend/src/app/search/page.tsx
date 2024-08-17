@@ -1,8 +1,9 @@
 import { revalidatePath } from "next/cache";
 import Search from "./Search";
+import apiLink from "../utils/apiLink";
 
 async function retrieveChronicleData() {
-    const searchResults = await fetch(`http://localhost:5172/chronicles/search/default`, {
+    const searchResults = await fetch(`${apiLink}/chronicles/search/default`, {
         method: 'GET',
         headers: {
             'Accept': 'application/json', // Example: Accept JSON responses

@@ -3,6 +3,7 @@ import { SearchedChronicle } from "@/app/utils/interfaces";
 import { useAppStore, useAppDispatch } from "@/globalRedux/hooks";
 import { addUC } from "@/globalRedux/features/User/UserChroniclesSlice";
 import { UserChronicle } from "@/app/utils/interfaces";
+import apiLink from '@/app/utils/apiLink';
 
 export default function AddChronicleItem({searched_chronicle, setCategorizedChronicles, sortByStatus, profileUC} : SearchedChronicle) {
     const [toggledChronicle, setToggledChronicle] = useState(false);
@@ -34,7 +35,7 @@ export default function AddChronicleItem({searched_chronicle, setCategorizedChro
         const review = formData.get('review');
         let episode = formData.get('episode');
         
-        const addChronicleToUC = await fetch('http://localhost:5172/user/chronicles/add', {
+        const addChronicleToUC = await fetch(`${apiLink}/user/chronicles/add`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
