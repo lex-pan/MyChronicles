@@ -145,11 +145,6 @@ public class UserController : ControllerBase {
 
     [HttpPost("automatic-update")]
     public async Task<IActionResult> AutomaticUserUpdate(AutomaticExtensionUpdate info) {
-        bool isSignedIn = _signInManager.IsSignedIn(User);
-        if (!isSignedIn) {
-            return StatusCode(300, "User must be logged in for automatic updates");
-        }
-
         // if chronicle with name does not exist, create a copy of it with only the name initalized, return guid of chronicle
         ErrorOr<Guid> chronicleId = await chronicleID(info.title, info.entertainment_category, info.url);
 
@@ -159,6 +154,11 @@ public class UserController : ControllerBase {
         
         if (chronicleId.error.Description != "No Error") {
             return BadRequest(chronicleId.error);
+        }
+
+        bool isSignedIn = _signInManager.IsSignedIn(User);
+        if (!isSignedIn) {
+            return StatusCode(300, "User must be logged in for automatic updates");
         }
 
         UserHistory history = new UserHistory(
@@ -181,10 +181,10 @@ public class UserController : ControllerBase {
 
         ErrorOr<UserChronicles> updatedUC = await _user.updateAutomaticUserchronicle(newUserChronicle);
 
-        if (updatedUC.error.Description == "No Error") {
+        if (updatedUC.error.Description == "No Error" && !info.UCretrieved) {
             return Ok(new {updatedUC.value.book_id, updatedUC.value.status, updatedUC.value.rating, updatedUC.value.review, updatedUC.value.notes});
         } else {
-            return StatusCode(500, updatedUC.error);
+            return Ok(new {});
         }
     }
 
@@ -205,10 +205,10 @@ public class UserController : ControllerBase {
         if (!(info.rating == null)) {
             changes.review_date = DateTime.UtcNow;
         }
-
+        Guid chronicleGuid = new Guid(info.chronicle_id);
         var chroniclesToUpdate = new Dictionary<Guid, UCChange>
         {
-            { info.chronicle_id, changes }
+            { chronicleGuid, changes }
         };
 
         ErrorOr<string> updateChronicleAttributes = await _user.updateFlexibleUserChronicles(chroniclesToUpdate, User.FindFirst(ClaimTypes.NameIdentifier)?.Value);

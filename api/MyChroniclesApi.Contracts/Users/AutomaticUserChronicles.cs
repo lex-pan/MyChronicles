@@ -3,5 +3,6 @@ public record AutomaticExtensionUpdate(
     string title,
     int chapter,
     string url,
-    string entertainment_category
+    string entertainment_category,
+    bool UCretrieved
 );

@@ -1,3 +1,3 @@
-const apiLink = "https://my-chronicles-api.onrender.com";
+const apiLink = "http://localhost:5172";
 
 export default apiLink;

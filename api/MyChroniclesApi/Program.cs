@@ -25,7 +25,7 @@ var builder = WebApplication.CreateBuilder(args);
         options.AddPolicy(name: MyAllowSpecificOrigins,
             policy => 
             {
-                policy.WithOrigins("http://localhost:3000", "chrome-extension://keokakefjhiabclbgfleifjbhhbamnbg")
+                policy.WithOrigins("http://localhost:3000", "chrome-extension://keokakefjhiabclbgfleifjbhhbamnbg", "https://my-chronicles.net")
                     .AllowAnyMethod()
                     .AllowAnyHeader()
                     .AllowCredentials();
