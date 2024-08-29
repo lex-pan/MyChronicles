@@ -20,6 +20,7 @@
     "content_scripts":[
         {
             "matches": [
+                "http://example.com/",
                 "https://*.lightnovelcave.com/novel/*/chapter-*",
                 "https://chapmanganato.to/*/*",
                 "https://asuracomic.net/*/",
