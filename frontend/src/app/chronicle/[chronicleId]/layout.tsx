@@ -6,10 +6,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode, params: {chronicleId: string};
 }>) {
+  // since body has auto 1fr auto, for footer center counts as 1fr instead of messing everything up
   return (
     <ValidPage params={params}>
-        <ChronicleNavBar params={params}/>
-        {children}
+        <div className="for-footer-center">
+          <ChronicleNavBar params={params}/>
+          {children}
+        </div>
     </ValidPage>
   );
 }

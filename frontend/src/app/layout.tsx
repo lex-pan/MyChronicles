@@ -6,6 +6,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import StoreProvider from "./StoreProvider";
 import RootNavBar from "./RootNavBar";
+import Footer from "./Footer";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -25,6 +26,7 @@ export default function RootLayout({
           <RootNavBar/>
           <div className="nav-bar-margin">&nbsp;</div>
           {children}
+          <Footer/>
         </StoreProvider>
       </body>
     </html>

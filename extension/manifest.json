@@ -1,5 +1,5 @@
 {
-    "name": "myEntertainment",
+    "name": "MyChronicles Extension",
     "version": "1.0",
     "description": "keep track of what you read or watch online, all without lifting a finger",
     "author": "Lex Pan",
@@ -13,6 +13,11 @@
     ],
     "background": {
         "service_worker": "background.js"
+    },
+    "browser_specific_settings": {
+        "gecko": {
+          "id": "mychronicles@lexsprojects.ca" 
+        }
     },
     "action": {
         "default_popup": "index.html"

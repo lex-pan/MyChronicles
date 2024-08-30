@@ -31,7 +31,7 @@ export default function Search({defaultSearchResults} : {defaultSearchResults : 
 
   useEffect(() => {
     async function onscroll() {
-        if (window.scrollY + window.innerHeight == document.body.scrollHeight && remainingSearch.current && semaphore.current) {
+        if (window.scrollY + window.innerHeight == document.body.scrollHeight && remainingSearch.current && semaphore.current && queryString.current != "") {
             semaphore.current = false;
             searchPageNumber.current = searchPageNumber.current + 1;
             let result : Array<GeneralSearchedChronicleInfo> = await sendAdvancedQueryToDb();

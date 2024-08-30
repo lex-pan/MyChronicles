@@ -1,8 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import React, { useEffect } from 'react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch, useAppStore } from '../globalRedux/hooks';
 import { logout } from '@/globalRedux/features/User/UserChroniclesSlice';
 import apiLink from '@/app/utils/apiLink';
@@ -56,6 +55,15 @@ export default function RootNavBar() {
           <Link href={`/user-profile/${username}`} className="nav-link">Profile</Link> 
           <Link href={`/user-profile/${username}`}><img className="nav-profile" src="/images/default-profile-image.png"/></Link>
           <img onClick={handleLogOut} className="nav-logout" src="/images/logout.png"/>
+          <div className="nav-mobile">  
+            <div style={{height: '3.7em'}}></div>
+            <button className="nav-dropdown"  onClick={handleClick}><img id="nav-dropdown-arrow" src="/images/arrow_icon.png" alt="dropdown arrow" style={{transition: '0.5s', transform: showDropdown ? 'none' : 'rotate(180deg)' }} /></button>
+            <div style={{ display: showDropdown ? 'block' : 'none' }} >
+              <Link style={{width: '100%', transition: '0.5s', top: showDropdown ? '100' : '0' }} href="/search" className="nav-link-m">Search</Link>
+              <Link style={{width: '100%', transition: '0.5s', top: showDropdown ? '200' : '0' }} href="/contribute" className="nav-link-m">Contribute</Link> 
+              <Link style={{width: '100%', transition: '0.5s', top: showDropdown ? '300' : '0' }} href="/login?post=profile" className="nav-link-m">Profile</Link> 
+            </div>
+          </div>
         </nav>
       }
       { !isLoggedIn &&

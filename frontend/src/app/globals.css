@@ -17,7 +17,14 @@
     list-style: none;
     box-sizing: border-box;
     font-family: 'Quicksand';
-}  
+}
+
+body {
+    min-height: 115vh;
+    margin: 0;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+}
 
 .overlay {
     top: 0%;
@@ -35,7 +42,7 @@ textarea {
     padding: 0.5em;
 }
 
-.chronicle-attribute-names, .user-section-attributes, .about-history-subcategories, .search-results-attributes {
+.chronicle-attribute-names, .user-section-attributes, .about-history-subcategories, .search-results-attributes  {
     border-bottom: 1px solid rgb(172, 172, 172);
 }
 
@@ -78,6 +85,7 @@ button, select {
     justify-content: center;
     align-items: center;
     height: 3.7em;
+    z-index: 5;
 }
 
 .nav-bar-title {
@@ -165,6 +173,10 @@ button, select {
     }
     .nav-link-m:hover {
         background-color: rgba(0, 0, 0, 0.2);
+    }
+
+    .nav-bar-margin {
+        margin-top: 6.27em;
     }
 }
 /* END of KEVIN section*/
@@ -379,7 +391,6 @@ button, select {
 .user-profile-container {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
 }
 
@@ -389,6 +400,8 @@ button, select {
     align-items: center;
     border-left: 1px solid rgb(216, 216, 216);
     border-right: 1px solid rgb(216, 216, 216);
+    border-bottom: 1px solid rgb(216, 216, 216);
+    padding-bottom: 3em;
     width: 76em;
     min-height: 56em;
     height: auto;
@@ -986,10 +999,9 @@ button, select {
 }
 
 .login-page {
-    position: absolute;
-    top: 44%;
-    left: 50%;
-    transform: translate(-50%,-50%);
+    position: relative;
+    margin: auto;
+    margin-top: 5em;
     display: flex;
     align-items: center;
     justify-content: flex-start;
@@ -998,6 +1010,7 @@ button, select {
     height: 33em;
     border: 1px solid rgb(172, 172, 172);
     padding: 0.5em;
+    margin-bottom: 21em;
 }
 
 .login-page h1 {
@@ -1188,7 +1201,7 @@ button, select {
 .chronicle-page {
     margin: auto;
     margin-top: 1em;
-    max-width: 60.1%;
+    width: 60.1%;
     display: grid;
     grid-template-columns: 19.5em minmax(250px, 1fr);
     border: 1px solid rgb(172, 172, 172);
@@ -1497,13 +1510,36 @@ button, select {
 }
 
 .started-info {
-    border: 1px solid rgb(232, 116, 255);
     margin-top: 25vh;
     display: flex;
     flex-direction: column;
     align-items: center;
     width: 40em;
     padding-bottom: 2em;
+}
+
+.blue-text {
+    color: rgb(0, 153, 255);
+}
+
+.pink-text {
+    color: rgb(232, 116, 255);
+}
+
+.pink-border {
+    border: 1px solid rgb(232, 116, 255);
+}
+
+.blue-border {
+    border: 1px solid rgb(0, 153, 255);
+}
+
+.blue-bottom {
+    border-bottom: 1px solid rgb(0, 153, 255);
+}
+
+.pink-bottom {
+    border-bottom: 1px solid rgb(232, 116, 255);
 }
 
 .started-info h1 {
@@ -1516,7 +1552,6 @@ button, select {
     align-items: center;
     justify-content: center;
     font-size: 40px;
-    color: rgb(232, 116, 255);
 }
 
 .started-info p {
@@ -1541,4 +1576,21 @@ button, select {
 
 .sakura-link {
     color: rgb(255, 219, 255);
+}
+
+.footer {
+    display: grid;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    height: 9em;
+    bottom: 0%;
+    margin-top: 11em;
+    padding-bottom: 1em;
+    padding-top: 1em;
+}
+
+.footer p, .footer a {
+    font-size: 19px;
+    color: white;
 }
