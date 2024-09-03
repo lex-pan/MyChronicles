@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using System.Reflection;
 using System.Diagnostics;
 using MyChroniclesApi.Models.Chronicles;
+using MyChroniclesApi.Contracts.Users;
 
 public class UsersService : MyChroniclesDbContext {
     public UsersService(DbContextOptions<MyChroniclesDbContext> options) : base(options) {
@@ -209,5 +210,35 @@ public class UsersService : MyChroniclesDbContext {
             .ToListAsync();
         
         return ErrorOr<List<RetrievedUserHistory>>.Success(recentUserHistory);
+    }
+
+    public async Task<ErrorOr<string>> mergeUCandImport(Dictionary<Guid, ImportedChronicle> mappedChronicleImports, string user_id) {
+        foreach (var kvp in mappedChronicleImports) {
+            Guid chronicleGuid = kvp.Key;
+            ImportedChronicle userChronicleInfo = kvp.Value;
+
+            // find user chronicle through chronicle ID and user id
+            // if it already exists ignore
+            // otherwise we add it
+            UserChronicles userChronicleExists = await this.Set<UserChronicles>().FindAsync(user_id, chronicleGuid); 
+
+            if (userChronicleExists is null) {
+                UserChronicles newImportedUC = new UserChronicles(
+                    UserId: user_id,
+                    BookID: chronicleGuid,
+                    Episode: userChronicleInfo.episodes_watched,
+                    EntertainmentCategory: userChronicleInfo.category,
+                    Status: userChronicleInfo.user_status,
+                    Rating: userChronicleInfo.user_rating,
+                    Review: userChronicleInfo.comments 
+                );
+                
+                await this.Set<UserChronicles>().AddAsync(newImportedUC);
+            } 
+        }
+
+        await this.SaveChangesAsync();
+
+        return ErrorOr<string>.Success("Successfully added");
     }
 }

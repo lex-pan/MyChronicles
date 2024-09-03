@@ -7,11 +7,3 @@ public record ManualExtensionUpdate(
     string? review,
     string? notes
 );
-
-/*
-        "chronicle_id" : userChronicleInfo.book_id,
-        "status": status,
-        "rating": rating,
-        "review": review,
-        "notes": notes
-*/

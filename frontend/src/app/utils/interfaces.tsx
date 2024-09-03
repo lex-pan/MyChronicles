@@ -179,3 +179,15 @@ export interface tagsAndGenres {
 export interface allChronicleInfoProps{
     allInfo: allChronicleInfo
 };
+
+export interface importedChronicle {
+    title: string,
+    category: string,
+    num_episodes: string | null,
+    episodes_watched: string | null,
+    user_rating: string | null,
+    user_start_date: string | null,
+    user_last_watched: string | null,
+    user_status: string | null,
+    comments: string | null
+}

@@ -27,7 +27,7 @@ body {
 }
 
 .overlay {
-    top: 0%;
+    inset: 0;
     height: 100vh;
     z-index: 5;
     position: fixed;
@@ -429,15 +429,16 @@ button, select {
     left: 50%; 
     transform: translate(-50%, -50%);
     width: 36em;
+    border: 1px solid rgb(172, 172, 172);
+    padding-top: 2.5em;
+    padding-bottom: 2.5em;
+}
+
+.delete-chronicle {
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgb(172, 172, 172);
-}
-
-.delete-chronicle {
-    height: 22em;
 }
 
 .add-searched-chronicle {
@@ -528,7 +529,7 @@ button, select {
     text-align: center;
 }
 
-.overlay-container button {
+.overlay-container-button {
     font-weight: 600;
     width: 12em;
     height: 3.2em;
@@ -587,6 +588,54 @@ button, select {
     font-size: 16px;
 }
 
+.drop-zone {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1em;
+    width: 80%;
+    text-align: center;
+}
+
+.import-preview {
+    min-height: 5em;
+    max-height: 15em;
+    overflow-y: scroll;
+    background-color: white;
+    text-align: start;
+    border: 1px solid rgb(172, 172, 172);
+    padding-left: 5em;
+    padding-right: 5em;
+}
+
+.drop-zone p {
+    font-size: 18px;
+}
+
+.indent-one {
+    margin-left: 2em;
+}
+
+.indent-two {
+    margin-left: 4em;
+    margin-bottom: 0.2em;
+}
+
+.drop-zone input {
+    width: 50%;
+    margin: auto;
+    font-size: 18px;
+    background-color: white;
+    margin-bottom: 1.5em;
+    cursor: pointer;
+}
+
+.drop-zone input[type=file]::file-selector-button {
+    background-color: white;
+    border: 1px solid rgb(172, 172, 172);
+    padding: 0.4em;
+    font-weight: 100;
+}
+
 .filter-category-name {
     display: flex;
     justify-content: right;
@@ -607,15 +656,10 @@ button, select {
 }
 
 .add-chronicles-page {
-    position: absolute;
-    top: 50%; 
-    left: 50%; 
-    transform: translate(-50%, -50%);
     padding: 1.4em;
+    padding-bottom: 2.4em;
     z-index: 2;
-    width: 76em;
-    background-color: white;
-    border: 1px solid rgb(172, 172, 172);
+    width: 50em;
     height: 40em;
 }
 
@@ -628,14 +672,14 @@ button, select {
     border: 1px solid rgb(119, 119, 119);
     padding: 0.8em;
     font-size: 16px;
-    width: 30%;
+    width: 35%;
     margin-left: 0.5em;
     height: 2.5em;
 }
 
 .close-chronicles-options {
     position: absolute;
-    right: 2.5%;
+    right: 3.9%;
     height: 3.2em;
     width: 3.2em;
 }
@@ -667,6 +711,8 @@ button, select {
     margin-left: 0.5em;
     margin-right: 0.5em;
     overflow-y: scroll;
+    padding-left: 4em;
+    padding-right: 3em;
 }
 
 .add-chronicles-section h1{
@@ -691,7 +737,7 @@ button, select {
 
 .add-chronicle-item {
     display: grid;
-    grid-template-columns: 19em 8em 1fr 1fr;
+    grid-template-columns: 19em 8em 7em 1fr;
     grid-template-rows: minmax(2.7em, 2.7em);
 }
 
@@ -699,13 +745,13 @@ button, select {
     position: relative;
     left: -0.5%;
     border: 1px solid rgb(172, 172, 172);
-    width: 159.7%;
+    width: 179.2%;
     margin-bottom: -1px;
 }
 
 .add-chronicle-additional-info {
     padding-top: 1em;
-    padding-left: 1em;
+    padding-left: 1.4em;
     display: grid;
     grid-template-columns: 1fr 1fr;
 }
@@ -734,8 +780,8 @@ button, select {
 
 .add-chronicle-bottom-first {
     display: grid;
-    margin-left: 0.7em;
-    grid-template-columns: 3.5em 8em 4em 5em 4em 4em;
+    margin-left: 1.4em;
+    grid-template-columns: 3.5em 9.2em 4em 6em 4em 4em;
     margin-top: 1em;
 }
 
@@ -764,15 +810,15 @@ button, select {
 
 .add-chronicle-item-middle {
     font-size: 16px;
-    margin-left: 0.7em;
+    margin-left: 1.4em;
     margin-top: 1em;
     margin-bottom: 0.3em;
 }
 
 .add-chronicle-textarea {
-    width: 95%;
+    width: 91.5%;
     height: 8em;
-    margin-left: 0.7em;
+    margin-left: 1.4em;
     font-size: 16px;
     outline: none;
 }
@@ -854,6 +900,7 @@ button, select {
     margin-left: 1px;
     width: 19%;
     background-color: white;
+    text-overflow: ellipsis;
 }
 
 .user-chronicle-info-small {
@@ -1542,7 +1589,7 @@ button, select {
     border-bottom: 1px solid rgb(232, 116, 255);
 }
 
-.started-info h1 {
+.page-title {
     font-family: 'coffee';
     margin-top: 1em;
     padding-top: 0.5em;
@@ -1593,4 +1640,12 @@ button, select {
 .footer p, .footer a {
     font-size: 19px;
     color: white;
+}
+
+.no-top-margin {
+    margin-top: 0px;
+}
+
+.invisible {
+    visibility: hidden;
 }

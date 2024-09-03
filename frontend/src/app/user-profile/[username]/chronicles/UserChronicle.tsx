@@ -167,6 +167,7 @@ export default function UserChronicle({item, confirmDelete, profileUsername, pro
         {viewersUsername != profileUsername &&
         <li className='user-container-item'>
             <div className='user-container-overview'>
+                <button className='chronicle-list-broader invisible'></button>
                 <p className='chronicle-title user-chronicle-info'>{item.book_name}</p>
                 <input className="user-chronicle-info-small" defaultValue={item.rating ?? ""} placeholder="-" disabled/>
                 <input className="user-chronicle-info-small" defaultValue={item.episode ?? ""} placeholder="-" disabled/>

@@ -5,7 +5,7 @@ using MyChroniclesApi.Models.Chronicles;
 
 public class UserChronicles {
     [ForeignKey("user_id")]
-    public string user_id { get; set; } 
+    public string user_id { get; set; }     // should be the Id in the User.cs
     [ForeignKey("book_id")]
     public Guid book_id { get; set; } 
     public float? episode { get; set; }

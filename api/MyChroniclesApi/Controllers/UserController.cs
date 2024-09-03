@@ -479,6 +479,38 @@ public class UserController : ControllerBase {
         }
     }
 
+    [HttpPost("import")]
+    public async Task<IActionResult> importUserChronicles(List<ImportedChronicle> importedChronicles) {
+        // check if chronicles exist, if they don't create new ones (send to services) 
+        // retrieve the chronicle id and store them in a list
+        Dictionary<Guid, ImportedChronicle> mappingChronicleIDs = new Dictionary<Guid, ImportedChronicle>();
+        for (int i = 0; i < importedChronicles.Count; i++) {
+            // if chronicle with name does not exist, create a copy of it with only the name initalized, return guid of chronicle
+            ErrorOr<Guid> chronicleId = await chronicleID(importedChronicles[i].title, importedChronicles[i].category , "FROM IMPORT, NO URL");
+            
+            if (chronicleId.error.Description == "No Error") {
+                mappingChronicleIDs.Add(chronicleId.value, importedChronicles[i]);
+            }
+        }
+
+        // check if the user is logged in, if the user isn't logged in, well you can't apply changes
+        // check if user chronicle with chronicle id exists, if it does don't do anything
+        // if it doesn't create new UC, store it in a list and add it to that user's UC once all imports have been iterated through (send to services)
+
+        bool isSignedIn = _signInManager.IsSignedIn(User);
+        if (!isSignedIn) {
+            return StatusCode(300, "User must be logged in to import chronicles");
+        }
+
+        ErrorOr<string> result = await _user.mergeUCandImport(mappingChronicleIDs, User.FindFirst(ClaimTypes.NameIdentifier)?.Value);
+        
+        if (result.error.Description == "No Error") {
+            return Ok(result.value);
+        } else {
+            return StatusCode(400, result.error);
+        }
+    }
+
     private bool invalidEmail(string email) {
         var emailAttribute = new EmailAddressAttribute();
         if (emailAttribute.IsValid(email)) {
@@ -574,11 +606,16 @@ public class UserController : ControllerBase {
             // check if there are other chronicles with this name
             // if there are, then the chronicle_id of this title might not be accurate
             // therefore must check if there is a corresponding url
-            if (alt_title.isUnique == false) {
-                ErrorOr<Guid> matching_url = await _chronicles.matchUrls(url);
-                if (matching_url.error.Description == "No Error") {
-                    return matching_url;
-                }
+        
+            // since we have an import feature, they won't have an URL
+            // so we just want to return the ID
+            if (url == "FROM IMPORT, NO URL") {
+                return ErrorOr<Guid>.Success(alt_title.chronicle_id);
+            }
+
+            ErrorOr<Guid> matching_url = await _chronicles.matchUrls(url);
+            if (matching_url.error.Description == "No Error") {
+                return matching_url;
             }
 
             return ErrorOr<Guid>.Success(alt_title.chronicle_id);

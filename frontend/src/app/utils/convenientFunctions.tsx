@@ -2,6 +2,10 @@ import React from "react";
 
 // converts ISO8601 to something like Feb 10, 2004
 export default function convertDatetoReadble(dateString: string) {
+    if (dateString == null) {
+        return null
+    }
+
     const date = new Date(dateString);
     const options: Intl.DateTimeFormatOptions = { year: 'numeric', month: 'long', day: '2-digit' };
     let formatted_date = date.toLocaleDateString('en-US', options)

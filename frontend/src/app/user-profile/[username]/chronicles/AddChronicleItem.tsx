@@ -4,6 +4,7 @@ import { useAppStore, useAppDispatch } from "@/globalRedux/hooks";
 import { addUC } from "@/globalRedux/features/User/UserChroniclesSlice";
 import { UserChronicle } from "@/app/utils/interfaces";
 import apiLink from '@/app/utils/apiLink';
+import convertDatetoReadble from "@/app/utils/convenientFunctions";
 
 export default function AddChronicleItem({searched_chronicle, setCategorizedChronicles, sortByStatus, profileUC} : SearchedChronicle) {
     const [toggledChronicle, setToggledChronicle] = useState(false);
@@ -88,7 +89,7 @@ export default function AddChronicleItem({searched_chronicle, setCategorizedChro
         <div className='add-chronicle-item'>
             <p className='add-chronicle-item-top'>{searched_chronicle.chronicle_title}</p>
             <p className='add-chronicle-item-top'>{searched_chronicle.entertainment_category}</p>
-            <p className='add-chronicle-item-top'>{searched_chronicle.year ?? "N/A"}</p>
+            <p className='add-chronicle-item-top'>{convertDatetoReadble(searched_chronicle.year) ?? "N/A"}</p>
             <button className='add-chronicle-item-top-button' onClick={toggleChronicle}>+</button>
             {toggledChronicle &&
                 <form className="add-chronicle-additional" onSubmit={(e) => addUserChronicle(e)}>
