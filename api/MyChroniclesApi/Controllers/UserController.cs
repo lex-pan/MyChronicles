@@ -480,15 +480,16 @@ public class UserController : ControllerBase {
     }
 
     [HttpPost("import")]
-    public async Task<IActionResult> importUserChronicles(List<ImportedChronicle> importedChronicles) {
+    public async Task<IActionResult> importUserChronicles(ImportedChroniclesList input) {
         // check if chronicles exist, if they don't create new ones (send to services) 
         // retrieve the chronicle id and store them in a list
+        List<ImportedChronicle> importedChronicles = input.importedChronicles;
         Dictionary<Guid, ImportedChronicle> mappingChronicleIDs = new Dictionary<Guid, ImportedChronicle>();
         for (int i = 0; i < importedChronicles.Count; i++) {
             // if chronicle with name does not exist, create a copy of it with only the name initalized, return guid of chronicle
             ErrorOr<Guid> chronicleId = await chronicleID(importedChronicles[i].title, importedChronicles[i].category , "FROM IMPORT, NO URL");
             
-            if (chronicleId.error.Description == "No Error") {
+            if (chronicleId.error.Description == "No Error" && !mappingChronicleIDs.ContainsKey(chronicleId.value)) {
                 mappingChronicleIDs.Add(chronicleId.value, importedChronicles[i]);
             }
         }

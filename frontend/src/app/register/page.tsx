@@ -1,6 +1,7 @@
 'use client';
 import Link from "next/link";
 import apiLink from "../utils/apiLink";
+import toast, { Toaster } from 'react-hot-toast';
 
 export default function Register() {
     
@@ -23,20 +24,34 @@ export default function Register() {
             })
         });
 
-        // const payload = await registerUserResult.text();
+        const payload = await registerUserResult.text();
+        notify(payload);
+    }
 
-        console.log(registerUserResult);
+    function notify(result: string) {
+        console.log(result);
+        switch (result) {
+            case 'Invalid email format.':
+                toast.error(result);
+                break;
+        }
     }
 
     return ( 
-      <form className="login-page" onSubmit={handleRegistration}>
-        <h1>Welcome</h1>
-        <textarea placeholder="Username" name="username"></textarea>
-        <textarea placeholder="Email" name="email"></textarea>
-        <input placeholder="Password" type="password" name="password"></input>
-        <button>Register</button> 
-        <Link href={"/login?post=profile"} className="loginRegisterSwitch">Have an account? Sign in here.</Link>
-      </form>
+        <>
+        <form className="login-page" onSubmit={handleRegistration}>
+            <h1>Welcome</h1>
+            <textarea placeholder="Username" name="username"></textarea>
+            <textarea placeholder="Email" name="email"></textarea>
+            <input placeholder="Password" type="password" name="password"></input>
+            <button>Register</button> 
+            <Link href={"/login?post=profile"} className="loginRegisterSwitch">Have an account? Sign in here.</Link>
+        </form>
+        <div>
+            <p>*Usernames should be between 3-30 characters</p>
+            <p>*Passwords should have: <br></br>a number, <br></br>a uppercase letter, <br></br>a non-alphanumeric character <br></br>be between 8-32 characters</p>
+        </div>
+        <Toaster position="bottom-right"/>
+        </>
     );
 }
-  

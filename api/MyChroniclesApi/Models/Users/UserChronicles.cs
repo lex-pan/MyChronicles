@@ -33,6 +33,8 @@ public class UserChronicles {
             float? Rating = null,
             string? Review = null,
             string? Notes = null,
+            DateTime? StartDate = null,
+            DateTime? LastRead = null,
             DateTime? ReviewDate = null
         )
     {
@@ -43,8 +45,8 @@ public class UserChronicles {
         rating = Rating;
         review = Review;
         private_review = true;
-        start_date = DateTime.UtcNow;
-        last_read = DateTime.UtcNow;
+        start_date = StartDate ?? DateTime.UtcNow;
+        last_read = LastRead ?? DateTime.UtcNow;
         notes = Notes;
         entertainment_category = EntertainmentCategory;
         review_date = ReviewDate;

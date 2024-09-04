@@ -223,6 +223,24 @@ public class UsersService : MyChroniclesDbContext {
             UserChronicles userChronicleExists = await this.Set<UserChronicles>().FindAsync(user_id, chronicleGuid); 
 
             if (userChronicleExists is null) {
+                // convert string dates into actual dates
+                DateTime start_date;
+                DateTime last_read;
+
+                if (userChronicleInfo.user_start_date == "" || userChronicleInfo.user_start_date is null) {
+                    start_date = new DateTime(1, 1, 1);
+                } else {
+                    DateTime castValue = DateTime.Parse(userChronicleInfo.user_start_date).ToUniversalTime();
+                    start_date = castValue;
+                }
+
+                if (userChronicleInfo.user_last_watched == "" || userChronicleInfo.user_last_watched is null) {
+                    last_read = new DateTime(1, 1, 1);
+                } else {
+                    DateTime castValue = DateTime.Parse(userChronicleInfo.user_last_watched).ToUniversalTime();
+                    last_read = castValue;
+                }
+
                 UserChronicles newImportedUC = new UserChronicles(
                     UserId: user_id,
                     BookID: chronicleGuid,
@@ -230,7 +248,9 @@ public class UsersService : MyChroniclesDbContext {
                     EntertainmentCategory: userChronicleInfo.category,
                     Status: userChronicleInfo.user_status,
                     Rating: userChronicleInfo.user_rating,
-                    Review: userChronicleInfo.comments 
+                    Review: userChronicleInfo.comments,
+                    StartDate: start_date,
+                    LastRead: last_read
                 );
                 
                 await this.Set<UserChronicles>().AddAsync(newImportedUC);

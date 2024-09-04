@@ -16,6 +16,7 @@ import AddChroniclesPage from './AddChroniclesPage';
 import { useAppSelector, useAppDispatch, useAppStore } from '../../../../globalRedux/hooks';
 import { clearChanges, deleteUC } from '@/globalRedux/features/User/UserChroniclesSlice';
 import apiLink from '@/app/utils/apiLink';
+import ImportChronicles from './ImportChronicles';
 
 export default function UserChroniclesLayout({ssProfileUC, profileUsername, profileExists} : UserChronicleData) {
     let viewerUCredux = useAppStore();
@@ -32,7 +33,6 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
     const [toggleConfirmDelete, setToggleConfirmDelete] = useState(false);
     const [toggleAddChronicles, setToggleAddChronicles] = useState(false);
     const [toggleImport, setToggleImport] = useState(false);
-    const [chroniclesToImport, setChroniclesToImport] = useState<Array<importedChronicle>>([]);
 
     useEffect(() => {
         const handleUCvisibilityChange = () => {
@@ -41,10 +41,9 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
 
         function sendUCchanges(dismount: boolean) {
             let listOfUserChronicleChangesToDb = viewerUCredux.getState().UserChronicles.listOfChanges;
-            let viewers_username = viewerUCredux.getState().UserChronicles.username;
             
-            if ((document.visibilityState === "hidden" || dismount) && Object.keys(listOfUserChronicleChangesToDb).length > 0 && viewers_username != "") {
-              var url = `${apiLink}/user/${viewers_username}/chronicles/update`;
+            if ((document.visibilityState === "hidden" || dismount) && Object.keys(listOfUserChronicleChangesToDb).length > 0 && viewerUsername != "") {
+              var url = `${apiLink}/user/${viewerUsername}/chronicles/update`;
               var data = JSON.stringify({
                 "listOfChanges": listOfUserChronicleChangesToDb
               });
@@ -65,16 +64,23 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         }
     }, [dispatch, viewerUCredux]);
 
+    useEffect(() => {
+        if (viewerUsername != profileUsername) {
+            setEditAllowed(false);
+        } else {
+            setEditAllowed(true);
+        }
+    }, [viewerUsername])
+
+    // this is used so that I don't have to wait for page to load (which is what happens in useeffect) before setting up, 
     function profileViewSetup() {
         if ((viewerUsername == profileUsername && profileUC.current != undefined && "!!!UninitializedReduxStore!!!" in profileUC.current)) {
-            setEditAllowed(true);
             profileUC.current = structuredClone(viewerUCredux.getState().UserChronicles.userChronicles);
             console.log(profileUC.current);
             setCategorizedChronicles(sortByStatus(profileUC.current ? profileUC.current : {}));
         } 
 
         if (profileUC.current == undefined) {
-            setEditAllowed(false);
             if (ssProfileUC == undefined) {
                 profileUC.current = {"!!!UninitializedReduxStore!!!": {book_id: "", book_name: "", entertainment_category: "", episode: -1, last_read: "", rating: 0, userChronicleForDelete: null, status:""}};
                 setCategorizedChronicles([]);
@@ -82,7 +88,6 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
                 profileUC.current = ssProfileUC;
                 setCategorizedChronicles(sortByStatus(profileUC.current));
             }
-
         }
     }
     
@@ -251,160 +256,6 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         setToggleImport(value => !value);
     }   
 
-    function handleFile(e: React.ChangeEvent<HTMLInputElement>) {
-        let filteredImportedChronicles : Array<importedChronicle> = [];
-        if (e.target.files != null) {
-            let file = e.target.files[0];
-            const reader = new FileReader();
-
-            // This will be called when the reading operation is complete
-            reader.onload = (event) => {
-                if (event.target && event.target.result) {
-                    // contents of the file
-                    const fileContent = event.target.result as string;
-                    
-                    console.log(fileContent);
-                    // Parse the XML content
-                    // The parser essentially converts XML into DOM, and then you can get element by tag name
-                    const parser = new DOMParser();
-                    const xmlDoc = parser.parseFromString(fileContent, "application/xml");
-
-                    // check if it's anime or manga
-                    let chroniclesType = "anime";
-                    let chronicles = xmlDoc.getElementsByTagName("user_total_anime")[0];
-
-                    if (chronicles == undefined) {
-                        chronicles = xmlDoc.getElementsByTagName("user_total_manga")[0];
-                        chroniclesType = "manga";
-                    }
-
-                    // Get all <anime> elements
-                    const chronicleElements = xmlDoc.getElementsByTagName(chroniclesType);
-
-                    // Loop through each <anime> or <manga> element
-                    for (let i = 0; i < chronicleElements.length; i++) {
-                        const chronicle = chronicleElements[i];
-
-                        let title;
-                        let entertainment_category;
-                        let num_of_episodes;
-                        let user_watched_or_read;
-
-                        if (chroniclesType == "anime") {
-                            title = chronicle.getElementsByTagName("series_title")[0].textContent;
-                            entertainment_category = chronicle.getElementsByTagName("series_type")[0].textContent;
-                            num_of_episodes = chronicle.getElementsByTagName("series_episodes")[0].textContent;
-                            user_watched_or_read = chronicle.getElementsByTagName("my_watched_episodes")[0].textContent;
-                        } else {
-                            title = chronicle.getElementsByTagName("manga_title")[0].textContent;
-                            entertainment_category = "Graphic Novel";
-                            num_of_episodes = chronicle.getElementsByTagName("manga_chapters")[0].textContent;
-                            user_watched_or_read = chronicle.getElementsByTagName("my_read_chapters")[0].textContent;
-                        }
-
-                        const user_start_date = chronicle.getElementsByTagName("my_start_date")[0].textContent;
-                        const user_finish_date = chronicle.getElementsByTagName("my_finish_date")[0].textContent;
-                        const user_rating = chronicle.getElementsByTagName("my_score")[0].textContent;
-                        const user_status = chronicle.getElementsByTagName("my_status")[0].textContent;
-                        const user_comments = chronicle.getElementsByTagName("my_comments")[0].textContent;
-
-                        if (title == ("" || undefined || null) || entertainment_category == ("" || undefined || null)) {
-                            continue;
-                        }
-
-                        const imported_chronicle : importedChronicle = {
-                            title: title,
-                            category: entertainment_category,
-                            num_episodes: num_of_episodes,
-                            episodes_watched: user_watched_or_read,
-                            user_rating: user_rating,
-                            user_start_date: user_start_date,
-                            user_last_watched: user_finish_date,
-                            user_status: user_status,
-                            comments: user_comments
-                        }
-
-                        let cleaned_chronicle : importedChronicle = chronicleDataMapping(imported_chronicle);
-                        filteredImportedChronicles.push(cleaned_chronicle);
-                    }
-
-                    setChroniclesToImport(prevValue => filteredImportedChronicles);
-                };
-            }
-
-            // Read the file as text
-            reader.readAsText(file);
-        }
-    }
-
-    function chronicleDataMapping(raw_chronicle: importedChronicle) {
-        let current_category = raw_chronicle.category;
-        switch (current_category) {
-            case 'TV': 
-            case 'ONA':
-            case 'OVA':
-                raw_chronicle.category = "Show";
-                break;
-            case 'Movie':
-                raw_chronicle.category = "Film";
-                break;
-        }
-        
-        let start_date = raw_chronicle.user_start_date;
-        if (start_date == "0000-00-00") {
-            raw_chronicle.user_start_date = "";
-        }
-
-        let end_date = raw_chronicle.user_last_watched;
-        if (end_date == "0000-00-00") {
-            raw_chronicle.user_last_watched = "";
-        }
-
-        let user_status = raw_chronicle.user_status;
-        switch (user_status) {
-            case 'Watching':
-                raw_chronicle.user_status = "Reading";
-                break;
-            case 'Plan to Watch':
-                raw_chronicle.user_status = "Plan to Read";
-            case 'On-Hold':
-                raw_chronicle.user_status = "Paused";
-        }
-
-        if (raw_chronicle.user_rating != null) {
-            let user_rating = parseFloat(raw_chronicle.user_rating);
-
-            if (Number.isNaN(user_rating)) {
-                raw_chronicle.user_rating = null;
-            }
-
-            // divide by 2, then round to one decimal point to match myChronicle rating scheme
-            let myChroniclesRating = Math.round((user_rating/2) * 10)/10;
-
-            raw_chronicle.user_rating = myChroniclesRating.toString();
-        }
-        
-        return raw_chronicle;
-    }
-
-    async function sendImports() {
-        const importUserChroniclesResult = await fetch(`${apiLink}/user/import`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/text' // Example: Accept JSON responses
-            },
-            credentials: 'include',
-            body: JSON.stringify({
-                "chroniclesToImport": chroniclesToImport,
-            })
-        });
-    }
-
-    function exportChronicles() {
-        // should just download a file to user's browser
-    }
-
   // when users edit, save changes to session storage
   // when the user closes the browser/reloads the browser update the database 
   return (
@@ -437,44 +288,13 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
                     <>
                     <button className='user-chronicle-filters-button' onClick={toggleSearch}>Add Chronicle</button>                
                     <button className='user-chronicle-filters-button' onClick={toggleImportChronicles}>Import</button>                
-                    <button className='user-chronicle-filters-button' onClick={exportChronicles}>Export</button>        
                     </>        
                 }
                 {/*Add the other filters back here when implemented*/}
             </div>
-            {toggleImport && 
-            <div className='overlay'>
-                <div className='overlay-container delete-chronicle'>
-                    <h1 className='no-top-margin page-title blue-text'>Import</h1>
-                    <div className="drop-zone">
-                        <input name="myFile" type="file" onChange={handleFile}></input>
-                        <div className='import-preview'>
-                            <p>&#91;</p>
-                            {chroniclesToImport.map((importInfo, index) => (
-                                <div key={index}>
-                                    <p className='indent-one'>&#123;</p>
-                                    <div className='import-chronicle-list'>
-                                        <p className='indent-two'>Title: {importInfo.title},</p>
-                                        <p className='indent-two'>Episodes Watched: {importInfo.episodes_watched == "" ? "-" : importInfo.episodes_watched}</p>
-                                        <p className='indent-two'>Start Date: {importInfo.user_start_date == "" ? "-" : importInfo.user_start_date },</p>
-                                        <p className='indent-two'>Last Watched: {importInfo.user_last_watched == "" ? "-" : importInfo.user_start_date},</p>
-                                        <p className='indent-two'>Status: {importInfo.user_status == "" ? "-" : importInfo.user_status},</p>
-                                        <p className='indent-two'>Comments: {importInfo.comments == "" ? "-" : importInfo.comments}</p>
-                                    </div>
-                                    <p className='indent-one'> &#125;,</p>
-                                </div>
-                            ))}
-                            <p>&#93;</p>
-                        </div>
-                        <p>Currently supports XML imports from <a className='blue-bottom' href='https://malscraper.azurewebsites.net/'>malscraper</a> and <a href='https://myanimelist.net/panel.php?go=export' className='blue-bottom'>MAL</a>.</p>
-                    </div>
-                    <div className='overlay-container-button-container'>
-                        <button onClick={toggleImportChronicles} className='no overlay-container-button'>Cancel</button>
-                        <button onClick={sendImports} className='no overlay-container-button'>Submit</button>
-                    </div>
-                </div>
-            </div>
-            }   
+            {toggleImport &&
+                <ImportChronicles toggleImportChronicles={toggleImportChronicles}/>
+            }
             {toggleConfirmDelete &&
             <div className='overlay'>
                 <div className='overlay-container delete-chronicle'>
