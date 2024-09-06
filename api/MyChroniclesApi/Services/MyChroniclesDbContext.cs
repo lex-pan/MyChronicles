@@ -84,10 +84,5 @@ public class MyChroniclesDbContext : IdentityDbContext<User>
 
         modelBuilder.Entity<ChroniclesCast>()
             .HasKey(cg => new { cg.chronicle_id, cg.character_id });
-
-        modelBuilder.Entity<ChronicleChanges>()
-            .HasOne(u => u.edits)
-            .WithOne(c => c.changes)
-            .HasForeignKey<ChronicleEditsLog>(c => c.changes_id);
     }
 }

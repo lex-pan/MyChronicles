@@ -133,7 +133,6 @@ public class ChroniclesController : ControllerBase {
                 validatedChronicle.value.chronicle_id,
                 "Create",
                 "Website user",
-                null,
                 newInfo,
                 DateTime.UtcNow
             );

@@ -1,27 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-
-/*
-    string? author,
-    float? episodes,
-    string? length,
-    string? country,
-    string status,
-    string? start_date,
-    string? end_date,
-    string? synopsis,
-    List<string> genres,
-    List<string> tags,
-    List<string> other_creators,
-    List<string> alt_titles
-*/
 namespace MyChroniclesApi.Models.Logs;
 public class ChronicleChanges {
     [Key]
     public Guid id { get; set; }
-    [ForeignKey("editLogId")]
-    public Guid editLogId { get; set; }
     public string? title { get; set; }
     public string? author { get; set; }
     public string? category { get; set; }
@@ -36,7 +19,6 @@ public class ChronicleChanges {
     public string[] tags { get; set; }
     public string[] other_creators { get; set; }
     public string[] alt_titles { get; set; }
-    public ChronicleEditsLog edits { get; set; }
     public ChronicleChanges() {}
     public ChronicleChanges(
         string? Title = null,
@@ -48,7 +30,11 @@ public class ChronicleChanges {
         string? Status = null,
         DateTime? StartDate = null,
         DateTime? EndDate = null,
-        string? Synopsis = null
+        string? Synopsis = null,
+        string[]? Genres = null,
+        string[]? Tags = null,
+        string[]? OtherCreators = null,
+        string[]? AltTitles = null
     ) 
     {
         id = Guid.NewGuid();
@@ -62,5 +48,9 @@ public class ChronicleChanges {
         start_date = StartDate;
         end_date = EndDate;
         synopsis = Synopsis;
+        genres = Genres ?? [];
+        tags = Tags ?? [];
+        other_creators = OtherCreators ?? [];
+        alt_titles = AltTitles ?? [];
     }
 }

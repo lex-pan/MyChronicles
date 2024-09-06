@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MyChroniclesApi.Services;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MyChroniclesApi.Migrations
 {
     [DbContext(typeof(MyChroniclesDbContext))]
-    partial class MyChroniclesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240906214346_ChronicleChangesEdit")]
+    partial class ChronicleChangesEdit
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -337,6 +340,9 @@ namespace MyChroniclesApi.Migrations
                     b.Property<string>("country")
                         .HasColumnType("text");
 
+                    b.Property<Guid>("editLogId")
+                        .HasColumnType("uuid");
+
                     b.Property<DateTime?>("end_date")
                         .HasColumnType("timestamp with time zone");
 
@@ -372,6 +378,8 @@ namespace MyChroniclesApi.Migrations
 
                     b.HasKey("id");
 
+                    b.HasIndex("editLogId");
+
                     b.ToTable("ChronicleChanges");
                 });
 
@@ -388,6 +396,9 @@ namespace MyChroniclesApi.Migrations
                     b.Property<Guid>("changed_dataid")
                         .HasColumnType("uuid");
 
+                    b.Property<Guid>("changesid")
+                        .HasColumnType("uuid");
+
                     b.Property<Guid>("chronicle_id")
                         .HasColumnType("uuid");
 
@@ -401,6 +412,8 @@ namespace MyChroniclesApi.Migrations
                     b.HasKey("id");
 
                     b.HasIndex("changed_dataid");
+
+                    b.HasIndex("changesid");
 
                     b.ToTable("ChronicleEditsLog");
                 });
@@ -721,6 +734,17 @@ namespace MyChroniclesApi.Migrations
                     b.Navigation("chronicles");
                 });
 
+            modelBuilder.Entity("MyChroniclesApi.Models.Logs.ChronicleChanges", b =>
+                {
+                    b.HasOne("MyChroniclesApi.Models.Logs.ChronicleEditsLog", "edits")
+                        .WithMany()
+                        .HasForeignKey("editLogId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("edits");
+                });
+
             modelBuilder.Entity("MyChroniclesApi.Models.Logs.ChronicleEditsLog", b =>
                 {
                     b.HasOne("MyChroniclesApi.Models.Logs.ChronicleChanges", "changed_data")
@@ -729,7 +753,15 @@ namespace MyChroniclesApi.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("MyChroniclesApi.Models.Logs.ChronicleChanges", "changes")
+                        .WithMany()
+                        .HasForeignKey("changesid")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("changed_data");
+
+                    b.Navigation("changes");
                 });
 
             modelBuilder.Entity("MyChroniclesApi.Models.Urls.DecipherUrlSteps", b =>
