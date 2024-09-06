@@ -62,7 +62,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
             sendUCchanges(true);
             document.removeEventListener('visibilitychange', handleUCvisibilityChange);
         }
-    }, [dispatch, viewerUCredux]);
+    }, [dispatch, viewerUCredux, viewerUsername]);
 
     useEffect(() => {
         if (viewerUsername != profileUsername) {
@@ -70,7 +70,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         } else {
             setEditAllowed(true);
         }
-    }, [viewerUsername])
+    }, [viewerUsername, profileUsername])
 
     // this is used so that I don't have to wait for page to load (which is what happens in useeffect) before setting up, 
     function profileViewSetup() {

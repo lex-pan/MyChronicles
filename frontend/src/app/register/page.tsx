@@ -1,9 +1,11 @@
 'use client';
 import Link from "next/link";
 import apiLink from "../utils/apiLink";
-import toast, { Toaster } from 'react-hot-toast';
+import toast from 'react-hot-toast';
+import { useRouter } from 'next/navigation';
 
 export default function Register() {
+    const router = useRouter();
     
     async function handleRegistration(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -25,15 +27,24 @@ export default function Register() {
         });
 
         const payload = await registerUserResult.text();
+        
         notify(payload);
+        console.log(payload);
+        console.log(payload == 'User created');
+        if (payload == 'User created') {
+            router.back();
+        }
     }
 
     function notify(result: string) {
-        console.log(result);
         switch (result) {
             case 'Invalid email format.':
+            case 'Username already in use':
+            case 'Passwords must contain between 8-32 characters with at least one uppercase letter, one number, and one non special character':
                 toast.error(result);
                 break;
+            case 'User created':
+                toast.success("Account successfully created");
         }
     }
 
@@ -47,11 +58,14 @@ export default function Register() {
             <button>Register</button> 
             <Link href={"/login?post=profile"} className="loginRegisterSwitch">Have an account? Sign in here.</Link>
         </form>
-        <div>
+        <div className="register-requirements">
             <p>*Usernames should be between 3-30 characters</p>
-            <p>*Passwords should have: <br></br>a number, <br></br>a uppercase letter, <br></br>a non-alphanumeric character <br></br>be between 8-32 characters</p>
+            <p>*Passwords should contain:</p>
+            <p className="indent-one">- a number,</p>
+            <p className="indent-one">- a uppercase letter</p>
+            <p className="indent-one">- a non-alphanumeric character</p>
+            <p className="indent-one">- be between 8-32 characters</p>
         </div>
-        <Toaster position="bottom-right"/>
         </>
     );
 }

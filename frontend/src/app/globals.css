@@ -1098,6 +1098,17 @@ button, select {
     margin-bottom: 2em;
 }
 
+.register-requirements {
+    width: 30%;
+    margin: auto;
+    margin-top: 0.5em;
+}
+
+.register-requirements p {
+    color: rgb(119, 119, 119);
+    
+}
+
 .loginRegisterSwitch {
     position: absolute;
     bottom: 3%;
@@ -1586,6 +1597,13 @@ button, select {
 
 .pink-bottom {
     border-bottom: 1px solid rgb(232, 116, 255);
+}
+
+.extension-link {
+    margin-top: 0.3em;
+    font-size: 20px;
+    text-align: start;
+    width: 24%;
 }
 
 .page-title {

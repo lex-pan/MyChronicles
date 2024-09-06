@@ -5,6 +5,7 @@ import { addUC } from "@/globalRedux/features/User/UserChroniclesSlice";
 import { UserChronicle } from "@/app/utils/interfaces";
 import apiLink from '@/app/utils/apiLink';
 import convertDatetoReadble from "@/app/utils/convenientFunctions";
+import toast from "react-hot-toast";
 
 export default function AddChronicleItem({searched_chronicle, setCategorizedChronicles, sortByStatus, profileUC} : SearchedChronicle) {
     const [toggledChronicle, setToggledChronicle] = useState(false);
@@ -55,6 +56,9 @@ export default function AddChronicleItem({searched_chronicle, setCategorizedChro
             })
         });
 
+        let result = await addChronicleToUC.status;
+        notify(result);
+
         let converted_rating = rating?.toString();
         let converted_episode = episode?.toString();
 
@@ -81,8 +85,14 @@ export default function AddChronicleItem({searched_chronicle, setCategorizedChro
         setCategorizedChronicles(sortByStatus(profileUC));
 
         toggleChronicle();
-        // send api call to database to save 
-        // unable to update current entries because we don't have a generated UserChroniclesId unless we create one ourselves  
+    }
+
+    function notify(statusCode: number) {
+        if (statusCode == 200) {
+            toast.success("Succesfully added/modified");
+        } else {
+            toast.error("Something went wrong");
+        }
     }
 
     return(

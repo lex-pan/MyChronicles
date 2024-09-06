@@ -7,6 +7,7 @@ import "./globals.css";
 import StoreProvider from "./StoreProvider";
 import RootNavBar from "./RootNavBar";
 import Footer from "./Footer";
+import { Toaster } from 'react-hot-toast';
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -27,6 +28,7 @@ export default function RootLayout({
           <div className="nav-bar-margin">&nbsp;</div>
           {children}
           <Footer/>
+          <Toaster position="bottom-right"/>
         </StoreProvider>
       </body>
     </html>

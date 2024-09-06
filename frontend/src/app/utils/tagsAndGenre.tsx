@@ -82,4 +82,5 @@ const tags: string[] = [
     "Wuxia"
 ];
 
-export default {tags, genres};
+const data = {tags, genres};
+export default data;

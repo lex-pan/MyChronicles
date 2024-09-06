@@ -2,7 +2,7 @@ import React from "react";
 
 // converts ISO8601 to something like Feb 10, 2004
 export default function convertDatetoReadble(dateString: string) {
-    if (dateString == null) {
+    if (dateString == null || dateString== "") {
         return null
     }
 

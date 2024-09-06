@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { useAppSelector, useAppDispatch } from "@/globalRedux/hooks";
 import { updateExistingId, clearChanges } from "@/globalRedux/features/User/UserChroniclesSlice";
 import apiLink from '@/app/utils/apiLink';
+import Image from "next/image";
 
 // add option that allows users to view the entire review when they click on it
 
@@ -75,9 +76,9 @@ export default function Review({review_data, chronicleID} : {review_data: UserRe
                 <button className="chronicle-review-size" onClick={expandCollapse}>Collapse</button>
             }
             <div className="agree-disagree">
-                <img className="review-arrow down" src="/images/arrow.svg"/>
+                <Image className="review-arrow down" height={100} width={100} src="/images/arrow.svg" alt=""/>
                 <p className="score">0</p>
-                <img className="review-arrow up" src="/images/arrow.svg"/>
+                <Image className="review-arrow up" height={100} width={100} src="/images/arrow.svg" alt=""/>
             </div>
         </li>
     )

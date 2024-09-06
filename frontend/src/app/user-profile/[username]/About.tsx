@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 import { ChangeEvent } from "react";
 import { updateBio, clearBioUpdate } from "@/globalRedux/features/User/UserOtherSlice";
 import apiLink from '@/app/utils/apiLink';
+import Image from "next/image";
 
 interface UserAboutProps {
     data: UserProfileFetch;

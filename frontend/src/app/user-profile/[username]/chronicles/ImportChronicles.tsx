@@ -1,6 +1,7 @@
 import { importedChronicle } from "@/app/utils/interfaces";
 import { useState } from "react";
 import apiLink from "@/app/utils/apiLink";
+import toast from "react-hot-toast";
 
 export default function ImportChronicles({toggleImportChronicles} : {toggleImportChronicles : () => void}) {
     const [chroniclesToImport, setChroniclesToImport] = useState<Array<importedChronicle>>([]);
@@ -249,6 +250,18 @@ export default function ImportChronicles({toggleImportChronicles} : {toggleImpor
                 "importedChronicles": chroniclesToImport,
             })
         });
+
+        let result = await importUserChroniclesResult.status;
+        notify(result);
+        toggleImportChronicles();
+    }
+
+    function notify(statusCode: number) {
+        if (statusCode == 200) {
+            toast.success("successfully added");
+        } else {
+            toast.error("Something went wrong");
+        }
     }
 
     return(

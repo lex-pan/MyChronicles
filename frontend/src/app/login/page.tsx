@@ -5,6 +5,7 @@ import { login } from '@/globalRedux/features/User/UserChroniclesSlice';
 import Link from 'next/link';
 import apiLink from '@/app/utils/apiLink';
 import { useSearchParams } from 'next/navigation';
+import toast from 'react-hot-toast';
 
 export default function Login() {
   const router = useRouter();
@@ -36,8 +37,7 @@ export default function Login() {
     });
     
     const userInfo = await loginUserResult.json();
-    console.log(userInfo);
-
+    notify(loginUserResult.status);
 
     if (loginUserResult.status == 200) {
       dispatch(login({username: userInfo.username, userChronicles: userInfo.userChronicles}));
@@ -48,8 +48,21 @@ export default function Login() {
       } else {
         router.back();
       }
-    }  else {
-      // display error message
+    } 
+  }
+
+  function notify(statusCode: number) {
+    switch (statusCode) {
+        case 200:
+            toast.success("Successfully logged in");
+            break;
+        case 400:
+            toast.error("Invalid username or email");
+            break;
+        case 500:
+            console.log(statusCode == 500);
+            toast.error("Internal server error");
+            break;
     }
   }
 

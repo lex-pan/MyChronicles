@@ -210,7 +210,7 @@ export default function Chronicle({allInfo}: allChronicleInfoProps) {
                 <p className="chronicle-attributes chronicle-first-column">Rating: {allInfo.rating}</p>
                 <p className="chronicle-attributes chronicle-first-column">Category: {allInfo.entertainment_category}</p>
                 <p className="chronicle-attributes chronicle-first-column">Status: 
-                    <select name="showStatus" defaultValue={allInfo.status ?? ""}>
+                    <select name="showStatus" defaultValue={chroniclePostUpdate ? chroniclePostUpdate.status : (allInfo.status ?? "")}>
                         <option value="Ongoing">Ongoing</option>
                         <option value="Completed">Completed</option>
                         <option value="Paused">Paused</option>
@@ -222,17 +222,17 @@ export default function Chronicle({allInfo}: allChronicleInfoProps) {
                     </select>
                 </p>
                 <p className="chronicle-attributes chronicle-first-column">Country: 
-                    <SelectCountry cssStyling={""} defaultValue={allInfo.country}/>
+                    <SelectCountry cssStyling={""} defaultValue={chroniclePostUpdate ? chroniclePostUpdate.country : allInfo.country}/>
                 </p>
-                <label className="chronicle-attributes chronicle-first-column">Author: <input name="author" defaultValue={allInfo.creator}></input></label>
-                <label className="chronicle-attributes chronicle-first-column">Episodes: <input name="episodes" defaultValue={allInfo.episodes}></input></label>
+                <label className="chronicle-attributes chronicle-first-column">Author: <input name="author" defaultValue={chroniclePostUpdate ? chroniclePostUpdate.creator : allInfo.creator}></input></label>
+                <label className="chronicle-attributes chronicle-first-column">Episodes: <input name="episodes" defaultValue={chroniclePostUpdate ? chroniclePostUpdate.episodes : allInfo.episodes}></input></label>
             </div>
-            <textarea name="synopsis" className="synopsis" defaultValue={allInfo.synopsis}></textarea>
+            <textarea name="synopsis" className="synopsis" defaultValue={chroniclePostUpdate ? chroniclePostUpdate.synopsis : (allInfo.synopsis ?? "")}></textarea>
             <div className="stats-detailed">
                 <div className="stats-detailed-minor">
-                    <p>Length: <input className="minor-text-input" name="length" defaultValue={allInfo.length}></input></p>
-                    <p>Start Date: <input type="date" name="start date" defaultValue={convertDatetoReadble(allInfo.start_date)}></input></p>
-                    <p>End Date: <input type="date" name="end date" defaultValue={convertDatetoReadble(allInfo.end_date)}></input></p>
+                    <p>Length: <input className="minor-text-input" name="length" defaultValue={chroniclePostUpdate ? chroniclePostUpdate.length : allInfo.length}></input></p>
+                    <p>Start Date: <input type="date" name="start date" defaultValue={chroniclePostUpdate ? (convertDatetoReadble(chroniclePostUpdate.start_date) || "") : convertDatetoReadble(allInfo.start_date) ?? ""}></input></p>
+                    <p>End Date: <input type="date" name="end date" defaultValue={chroniclePostUpdate ? (convertDatetoReadble(chroniclePostUpdate.end_date) || "") : convertDatetoReadble(allInfo.end_date) ?? ""}></input></p>
                 </div>
                 <div>Genre
                 <input onChange={(e) => filterAttributes(e, chronicleInfo.current.genres, setSearchedGenres)} onKeyDown={(e) => addAttributeOnEnter(e, setCurrentGenre, setSearchedGenres, "genre")}></input>
@@ -299,12 +299,12 @@ export default function Chronicle({allInfo}: allChronicleInfoProps) {
                 <p className="chronicle-attributes chronicle-first-column chronicle-first-row">Members: {allInfo.members}</p>
                 <p className="chronicle-attributes chronicle-first-column">Rating: {allInfo.rating}</p>
                 <p className="chronicle-attributes chronicle-first-column">Category: {allInfo.entertainment_category}</p>
-                <p className="chronicle-attributes chronicle-first-column">Status: {allInfo.status}</p>
-                <p className="chronicle-attributes chronicle-first-column">Country: {allInfo.country}</p>
-                <p className="chronicle-attributes chronicle-first-column">Author: {allInfo.creator}</p>
-                <p className="chronicle-attributes chronicle-first-column">Episodes: {allInfo.episodes}</p>
+                <p className="chronicle-attributes chronicle-first-column">Status: {chroniclePostUpdate ? chroniclePostUpdate.status : allInfo.status}</p>
+                <p className="chronicle-attributes chronicle-first-column">Country: {chroniclePostUpdate ? chroniclePostUpdate.country : allInfo.country}</p>
+                <p className="chronicle-attributes chronicle-first-column">Author: {chroniclePostUpdate ? chroniclePostUpdate.creator : allInfo.creator}</p>
+                <p className="chronicle-attributes chronicle-first-column">Episodes: {chroniclePostUpdate ? chroniclePostUpdate.episodes : allInfo.episodes}</p>
             </div>
-            <textarea disabled className="synopsis" value={allInfo.synopsis}></textarea>
+            <textarea disabled className="synopsis" value={chroniclePostUpdate ? chroniclePostUpdate.synopsis : allInfo.synopsis}></textarea>
             <div className="stats-detailed">
                 <div className="stats-detailed-minor">
                     <p>Length: {chroniclePostUpdate ? chroniclePostUpdate.length : allInfo.length}</p>
@@ -334,7 +334,7 @@ export default function Chronicle({allInfo}: allChronicleInfoProps) {
                 {chroniclePostUpdate && chroniclePostUpdate.other_creators.length > 0 && chroniclePostUpdate.other_creators.map((creator, index) =>
                         <li key={index}>{creator}</li>
                 )}
-                {!chroniclePostUpdate && allInfo.creator && allInfo.creator.length > 0 && allInfo.alternative_titles.map((creator, index) =>
+                {!chroniclePostUpdate && allInfo.other_creators && allInfo.other_creators.length > 0 && allInfo.other_creators.map((creator, index) =>
                             <li key={index}>{creator}</li>
                 )}
                 </ul>
@@ -343,7 +343,7 @@ export default function Chronicle({allInfo}: allChronicleInfoProps) {
                     {chroniclePostUpdate && chroniclePostUpdate.alternative_titles.length > 0 && chroniclePostUpdate.alternative_titles.map((alt_title, index) =>
                         <li key={index}>{alt_title}</li>
                     )}
-                    {allInfo.alternative_titles.length > 0 && allInfo.alternative_titles.map((alt_title, index) =>
+                    {!chroniclePostUpdate && allInfo.alternative_titles.length > 0 && allInfo.alternative_titles.map((alt_title, index) =>
                             <li key={index}>{alt_title}</li>
                     )}
                 </ul>

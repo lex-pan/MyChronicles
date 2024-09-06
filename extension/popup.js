@@ -1,6 +1,6 @@
 // Note that the appropriate information will not be loaded when the user presses the back key, because the content script is not executed
 // when setting innherHTML use document.addeventlistener if you want to add functions to elements
-const apiLink = 'http://localhost:5172';
+const apiLink = 'https://my-chronicles.net/api';
 
 async function getActiveTabURL() {
   const tabs = await chrome.tabs.query({

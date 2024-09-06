@@ -11,10 +11,12 @@ export default function AddChroniclesPage({toggle, setCategorizedChronicles, sor
         console.log(e.target.value);
         let queryString = e.target.value;
         // once db is set up, send queryString to db to fetch search results
-        const data = await chroniclesQuery(queryString);
-        console.log(data);
-
-        setSearchedChronicles(data);
+        if (queryString != "") {
+            const data = await chroniclesQuery(queryString);
+            console.log(data);
+    
+            setSearchedChronicles(data);
+        }
     }
 
     async function chroniclesQuery(queryString: string) {
@@ -26,7 +28,8 @@ export default function AddChroniclesPage({toggle, setCategorizedChronicles, sor
             }
         });
         
-        return request.json()
+        const result = await request.json();
+        return result;
     }
 
     // by setting processSearch to debounce(), everytime processSearch is shown it'd call debounce()

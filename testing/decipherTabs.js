@@ -55,7 +55,6 @@ const tabDecipherMethod = {
             ["Novel", -2, -2, "Novel", -2, -2]
         ]
     },
-
     "chapmanganato.to" :  {
         "decipher_method": ["title", "title", "title"],
         "title_start_end": [  
@@ -65,6 +64,18 @@ const tabDecipherMethod = {
         "chapter_start_end": [  
             ["Chapter ", 1, 8, " -", 1, 0],
             ["", 1, 0, ":",1 , 0]
+        ],
+        "entertainment_category": [
+            ["Graphic Novel", -2, -2, "Graphic Novel", -2, -2]
+        ]
+    },
+    "mangadex.org" : {
+        "decipher_method": ["title", "title", "title"],
+        "title_start_end": [
+            ["-", 1, 2, "-", 1, -1]
+        ],
+        "chapter_start_end": [
+            ["Chapter", 1, 8, "-", 1, -1]
         ],
         "entertainment_category": [
             ["Graphic Novel", -2, -2, "Graphic Novel", -2, -2]

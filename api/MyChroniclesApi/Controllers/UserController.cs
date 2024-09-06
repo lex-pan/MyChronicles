@@ -95,7 +95,7 @@ public class UserController : ControllerBase {
         bool validPassword;
 
         if (user == null) {
-            return BadRequest("Invalid username or email");
+            return BadRequest(new {response = "Invalid username or email"});
         } else {
             validPassword = await _userManager.CheckPasswordAsync(user, request.password);
         }
@@ -113,14 +113,14 @@ public class UserController : ControllerBase {
                 if (retrievedChronicles.error.Description == "No Error") {
                     return Ok(new {userChronicles = convertedUC, username = user.UserName });
                 } else {
-                    return Ok("logged in successfully but error retrieving chronicles");
+                    return Ok(new {response = "logged in successfully but error retrieving chronicles"});
                 }
             } catch {
-                return StatusCode(500, "internal server error");
+                return StatusCode(500, new {response = "internal server error"});
             }
 
         } else {
-            return BadRequest("Invalid password");
+            return BadRequest(new {response = "Invalid password"});
         }
     }
 

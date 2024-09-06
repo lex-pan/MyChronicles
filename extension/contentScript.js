@@ -1,5 +1,4 @@
-console.log("script is being run");
-console.log(window.location.href);
+console.log("script is here");
 
 const tabDecipherMethod = {
     "wuxiaworld.site" : {
@@ -72,12 +71,41 @@ const tabDecipherMethod = {
         "entertainment_category": [
             ["Graphic Novel", -2, -2, "Graphic Novel", -2, -2]
         ]
+    },
+    
+    "mangadex.org" : {
+        "decipher_method": ["title", "title", "title"],
+        "title_start_end": [
+            ["-", 1, 2, "-", 1, -1]
+        ],
+        "chapter_start_end": [
+            ["Chapter", 1, 8, "-", 1, -1]
+        ],
+        "entertainment_category": [
+            ["Graphic Novel", -2, -2, "Graphic Novel", -2, -2]
+        ]
     }
 };
 
+let slow_domains = new Set(["mangadex.org"]);
+
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    console.log(message);
+    if (message.action === 'decipherTab') {
+        const title = document.title;
+        console.log('Document title:', title);
+        console.log("script is being run");
+        console.log(window.location.href);
+
+        window.addEventListener('load',
+            decipherTab()
+        );
+    }
+});
+
 // runs the script everytime the user goes to a valid site
 // valid sites are listed in manifest.json
-(async () => {
+async function decipherTab() {
     // this gets the url of the site we're on
     let tabURL = window.location.href;
     // turns url into domain of site ex: https://www.google.com/search/some-parameter into www.google.com 
@@ -89,11 +117,14 @@ const tabDecipherMethod = {
         return "decipher method not found"
     }
 
+    let isSlow = await isSlowDomain(domain);
+    console.log(isSlow);
     // returns the tabUrl, title, chapter, entertainment category
     const result = pageInfo(decipher_method, tabURL);
     console.log(result);
 
     let UCretrieved = false;
+
     // save to session storage, check if userChronicles currently exists in sessionStorage, if it is we can access the popup.js immediately with no downtime
     // if it's not we retrieve the UC when we update what the user is reading
     chrome.runtime.sendMessage({ type: "saveDecipheredTabInfo", decipheredTabInfo: result}, (response) => {
@@ -111,7 +142,33 @@ const tabDecipherMethod = {
             entertainment_category: result[3], 
             UCretrieved: UCretrieved
         });
-})();
+};
+
+async function isSlowDomain(domain) {
+    if (slow_domains.has(domain)) {
+        const checkInterval = 1000; // Time in milliseconds
+        const maxAttempts = 10;
+        let attempts = 0;
+        return new Promise((resolve, reject) => {
+            const intervalId = setInterval(() => {
+                if (document.title !== "Loading... - MangaDex" && document.title !== "") {
+                    console.log("Title has changed:", document.title);
+                    clearInterval(intervalId); // Stop checking
+                    resolve(true); // Resolve the promise when title changes
+                } else if (attempts >= maxAttempts) {
+                    console.log("Max attempts reached, title still not changed.");
+                    clearInterval(intervalId); // Stop checking after max attempts
+                    resolve(false); // Resolve the promise when title changes
+                } else {
+                    attempts++;
+                    console.log("Checking title, attempt:", attempts);
+                }
+            }, checkInterval);
+        });
+    } else {
+        return Promise.resolve(false);
+    }
+}
 
 function getOrigin(tabURL) {
     const start = tabURL.indexOf("//")+2;

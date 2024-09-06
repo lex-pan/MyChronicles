@@ -20,14 +20,13 @@ function pageInfo(decipherInstructions, tabURL, tabTitle, expectedTitle, expecte
         title = cleanUpUrlTitle(title);
     }
 
-    console.log([title, chapter, entertainment_category]);
-
-    if (title == expectedTitle &&
-        chapter == expectedChapter &&
-        entertainment_category == expectedCategory
+    if (title === expectedTitle &&
+        Number(chapter) === expectedChapter &&
+        entertainment_category === expectedCategory
     ) {
         return true
     } else {
+        console.log([title, chapter, entertainment_category]);
         return false
     }
 }
@@ -51,6 +50,9 @@ function extractInstruction(url, instructions) {
             start_index = 0;
         } else {
             while (repeat_start > 0) {
+                // index of finds the first occurence of word_start, starting from start_index+1, and returns the index
+                // however we need to go through n occurences of word_start, so we keep on looping through it
+                // each time we loop we start from the latest index we found that matches + 1
                 start_index = url.indexOf(word_start, start_index+1);
                 repeat_start--;
             }
@@ -139,7 +141,6 @@ console.log(pageInfo(decipherTabs["chapmanganato.to"], "https://chapmanganato.to
 console.log(pageInfo(decipherTabs["chapmanganato.to"], "https://chapmanganato.to/manga-aa951883/chapter-400", "Tower Of God Chapter 400: [Season 2] Ep.320 - Manganelo" , "Tower Of God", 400, "Graphic Novel"));
 console.log(pageInfo(decipherTabs["chapmanganato.to"], "https://chapmanganato.to/manga-mq990225/chapter-141", "I Am The Fated Villain Chapter 141 - Manganelo" , "I Am The Fated Villain", 141, "Graphic Novel"));
 
-
 console.log(pageInfo(decipherTabs["www.lightnovelcave.com"], "https://www.lightnovelcave.com/novel/archean-eon-art-772/chapter-26", "Archean Eon Art - Chapter 26: The Women from Idle Stone Garden | Light Novel Cave" , "Archean Eon Art", 26, "Novel"));
 console.log(pageInfo(decipherTabs["www.lightnovelcave.com"], "https://www.lightnovelcave.com/novel/reincarnation-of-the-strongest-sword-god-16/chapter-3796", "Reincarnation Of The Strongest Sword God (Web Novel) - Chapter 3796: Alternate Ending 870 - Primordial Era's Wealth | Light Novel Cave"  , "Reincarnation Of The Strongest Sword God", 3796, "Novel"));
 console.log(pageInfo(decipherTabs["www.lightnovelcave.com"], "https://www.lightnovelcave.com/novel/shadow-slave-1365/chapter-1354", "Shadow Slave - Chapter 1354: By Grace of Dusk | Light Novel Cave" , "Shadow Slave", 1354, "Novel"));
@@ -150,9 +151,15 @@ console.log(pageInfo(decipherTabs["asuracomic.net"], "https://asuracomic.net/861
 console.log(pageInfo(decipherTabs["asuracomic.net"], "https://asuracomic.net/8612194254-the-regressed-son-of-a-duke-is-an-assassin-chapter-14-reunion/", "The Regressed Son of a Duke is an Assassin chapter 14 – Reunion – Asura Scans" , "The Regressed Son of a Duke is an Assassin", 14, "Graphic Novel"));
 console.log(pageInfo(decipherTabs["asuracomic.net"], "https://asuracomic.net/1908287720-standard-of-reincarnation-chapter-98/", "98 – [S2 END] – Asura Scans"  , "Standard of Reincarnation", 98, "Graphic Novel"));
 
-
 console.log(pageInfo(decipherTabs["asianc.sh"], "https://asianc.sh/goblin-special-episode-2.html", "Watch Goblin Special Episode 2 Online With English sub | Dramacool" , "Goblin Special", 2, "Show"));
 console.log(pageInfo(decipherTabs["asianc.sh"], "https://asianc.sh/zombie-brother-2024-episode-5.html", "Watch Zombie Brother (2024) Episode 5 Online With English sub | Dramacool"  , "Zombie Brother", 5, "Show"));
 console.log(pageInfo(decipherTabs["asianc.sh"], "https://asianc.sh/the-last-cook-2024-episode-10.html", "Watch The Last Cook (2024) Episode 10 Online With English sub | Dramacool" , "The Last Cook", 10, "Show"));
+
+
+console.log(pageInfo(decipherTabs["mangadex.org"], "https://mangadex.org/chapter/ca3ad5ce-69f0-483e-972f-0a8a2bf8f2c6", "1 | Chapter 165 - Solo Leveling - MangaDex", "Solo Leveling", 165, "Graphic Novel"));
+console.log(pageInfo(decipherTabs["mangadex.org"], "https://mangadex.org/chapter/5fc66d64-79e9-4a18-8ed6-307f29fd8e63", "1 | Chapter 108 - Sono Bisque Doll wa Koi o Suru - MangaDex", "Sono Bisque Doll wa Koi o Suru", 108, "Graphic Novel"));
+console.log(pageInfo(decipherTabs["mangadex.org"], "https://mangadex.org/chapter/67b1db23-42f4-4c00-8a68-eab8ad1de02c", "1 | Chapter 66.2 - Kage no Jitsuryokusha ni Naritakute! - MangaDex", "Kage no Jitsuryokusha ni Naritakute!", 66.2, "Graphic Novel"));
+console.log(pageInfo(decipherTabs["mangadex.org"], "https://mangadex.org/chapter/b4321c89-b022-43a4-98ee-d82c9e8399b3", "1 | Chapter 106 - Tensei Shitara Slime Datta Ken - MangaDex" , "Tensei Shitara Slime Datta Ken", 106, "Graphic Novel"));
+console.log(pageInfo(decipherTabs["mangadex.org"], "https://mangadex.org/chapter/87252aa6-75c0-4318-92a8-592778ee400f", "1 | Chapter 138 - Mato Seihei no Slave - MangaDex"  , "Mato Seihei no Slave", 138, "Graphic Novel"));
 
 // function pageInfo(decipherInstructions, tabURL, tabTitle, expectedTitle, expectedChapter, expectedCategory) {

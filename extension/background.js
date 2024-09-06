@@ -1,6 +1,6 @@
 // to get chrome.storage.session, use the following command
 // chrome.storage.session.get(null, function(data) { console.log(data); })
-const apiLink = 'http://localhost:5172';
+const apiLink = 'https://my-chronicles.net/api';
 
 // we want to remove entries that are no longer relevant (the user closed the page for example)
 chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
@@ -48,18 +48,6 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 });
 
-/*
-    chrome.runtime.sendMessage(
-        {
-            type: "sendToDb", 
-            tabURL: result[0], 
-            title: result[1], 
-            chapter: result[2], 
-            entertainment_category: result[3], 
-            UCretrieved: UCretrieved
-        });
-*/
-
 // send to db what the user has read, if UC has not been retrieved, retrieve it
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     if (message.type === "sendToDb") {
@@ -102,4 +90,45 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     }
 
     return true;
+});
+
+// Define the list of URL patterns
+const urlPatterns = [
+    "http://example.com/",
+    "https://*.lightnovelcave.com/novel/*/chapter-*",
+    "https://chapmanganato.to/*/*",
+    "https://asuracomic.net/*/",
+    "https://asianc.sh/*episode*",
+    "https://wuxiaworld.site/novel/*/chapter*",
+    "https://mangadex.org/chapter*"
+  ];
+  
+  // Function to check if the URL matches any pattern
+  function matchesPattern(url) {
+    return urlPatterns.some(pattern => {
+      // Replace wildcard '*' with regex equivalents
+      const regexPattern = new RegExp(pattern.replace(/\*/g, '.*'));
+      return regexPattern.test(url);
+    });
+  }
+
+let matchStatus = {};
+
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+    // checks if the page is valid 
+    if (changeInfo.url && matchesPattern(changeInfo.url)) {
+        matchStatus[tabId] = true;  // Store match for this specific tabId
+    } 
+
+    // content script is generally not loaded before changeInfo.status is complete
+    // so we wait for that and if it's complete and valid, we send it to the valid one
+    // this is only sent to a page with a valid tab ID preventing race conditions
+    if (changeInfo.status === 'complete' && matchStatus[tabId]) {
+        console.log("sending message to content script for tab", tabId);
+        chrome.tabs.sendMessage( tabId, {
+            action: "decipherTab"
+        })
+
+        delete matchStatus[tabId];
+    }
 });
