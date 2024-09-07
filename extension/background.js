@@ -114,6 +114,8 @@ const urlPatterns = [
 
 let matchStatus = {};
 
+// Since websites use SPA, content script won't load even when link changes
+// this code is used to detect url changes that match the deciphering we want
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     // checks if the page is valid 
     if (changeInfo.url && matchesPattern(changeInfo.url)) {
@@ -132,3 +134,22 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
         delete matchStatus[tabId];
     }
 });
+
+/*
+A flaw in the code is that it's currently unable to detect changes in title
+when there is no changes to url, there is currently a band-aid solution using 
+setinterval in content script but when you have the time, here's how to 
+implement it:
+    - use changeinfo.status to check for pages in title
+    - if previous title is invalid such as "Loading - Mangadex" we know that it'll change to a valid one soon so save it as a boolean
+        - remember to ignore useless changeinfo.status such as undefined
+    - to fix error where url doesn't change but title changes
+        - keep track of previous title
+        - check if decipherTab action has been sent, if not then set to true
+        - if previous title and a valid current title don't match and our 
+          decipherTab action hasn't been set, then we send a decipherTab
+          action, effectively solving the problem
+
+Ex of flaw: mangadex.org selecting different chapter from menu will not result in url change
+but will result in a chapter change with same name, but my script can't identify it
+*/

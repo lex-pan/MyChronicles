@@ -20,3 +20,4 @@ public class ChronicleEditsLog {
         date_of_action = DateOfAction;
     }
 }
+
