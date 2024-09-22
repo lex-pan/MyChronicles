@@ -162,4 +162,11 @@ console.log(pageInfo(decipherTabs["mangadex.org"], "https://mangadex.org/chapter
 console.log(pageInfo(decipherTabs["mangadex.org"], "https://mangadex.org/chapter/b4321c89-b022-43a4-98ee-d82c9e8399b3", "1 | Chapter 106 - Tensei Shitara Slime Datta Ken - MangaDex" , "Tensei Shitara Slime Datta Ken", 106, "Graphic Novel"));
 console.log(pageInfo(decipherTabs["mangadex.org"], "https://mangadex.org/chapter/87252aa6-75c0-4318-92a8-592778ee400f", "1 | Chapter 138 - Mato Seihei no Slave - MangaDex"  , "Mato Seihei no Slave", 138, "Graphic Novel"));
 
+/*
+console.log(pageInfo(decipherTabs["galaxytranslations11.com"], "https://galaxytranslations11.com/manga/what-the-wives-in-my-dreams-are-real/chapter-152/", "What! The Wives in My Dreams Are Real? - Chapter 152 - Galaxy Translations" , "What! The Wives in My Dreams Are Real?", 152, "Novel"));
+console.log(pageInfo(decipherTabs["galaxytranslations11.com"], "https://mangadex.org/chapter/5fc66d64-79e9-4a18-8ed6-307f29fd8e63", "1 | Chapter 108 - Sono Bisque Doll wa Koi o Suru - MangaDex", "Sono Bisque Doll wa Koi o Suru", 108, "Graphic Novel"));
+*/
+
+
+
 // function pageInfo(decipherInstructions, tabURL, tabTitle, expectedTitle, expectedChapter, expectedCategory) {

@@ -101,16 +101,16 @@ const urlPatterns = [
     "https://asianc.sh/*episode*",
     "https://wuxiaworld.site/novel/*/chapter*",
     "https://mangadex.org/chapter*"
-  ];
+];
   
-  // Function to check if the URL matches any pattern
-  function matchesPattern(url) {
-    return urlPatterns.some(pattern => {
-      // Replace wildcard '*' with regex equivalents
-      const regexPattern = new RegExp(pattern.replace(/\*/g, '.*'));
-      return regexPattern.test(url);
-    });
-  }
+// Function to check if the URL matches any pattern
+function matchesPattern(url) {
+return urlPatterns.some(pattern => {
+    // Replace wildcard '*' with regex equivalents
+    const regexPattern = new RegExp(pattern.replace(/\*/g, '.*'));
+    return regexPattern.test(url);
+});
+}
 
 let matchStatus = {};
 

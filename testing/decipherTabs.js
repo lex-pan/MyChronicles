@@ -80,7 +80,22 @@ const tabDecipherMethod = {
         "entertainment_category": [
             ["Graphic Novel", -2, -2, "Graphic Novel", -2, -2]
         ]
-    }
+    },
 }
 
 export default tabDecipherMethod;
+
+/*
+"galaxytranslations11.com": {
+        "decipher_method": ["title", "title", "title"],
+        "title_start_end": [
+            ["", 1, 0, "- Chapter", 1, -1]
+        ], 
+        "chapter_start_end": [
+            ["Chapter", 1, 8, " - Galaxy Translations", -1]
+        ],
+        "entertainment_category": [
+            ["Novel", -2, -2, "Novel", -2, -2]
+        ]
+    }
+*/

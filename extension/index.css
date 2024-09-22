@@ -15,8 +15,8 @@
 }
 
 #extension-popup {
-    width: 32em;
-    height: 45em;
+    width: 32em;        /*32em for edge, 26em for firefox*/
+    height: 45em;       /*45em for edge, 37em for firefox*/
     display: flex;
     flex-direction: column;
 }
@@ -112,6 +112,8 @@
     height: 1.8em;
     font-size: 16px;
     width: 8em;
+    background-color: white;
+    border: 1px solid rgb(172, 172, 172);
 }
 
 .extension-options {
@@ -144,12 +146,30 @@
     margin: 5px;
 }
 
-.invalid-message {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%); 
-    font-size: 24px;
+.invalid-page-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1em;
+    font-size: 16px;
+}
+
+.search-urls {
+    width: 90%;
+    height: 2em;
+}
+
+.valid-urls {
+    border: 1px solid rgb(172, 172, 172);
+    height: 10em;
+    width: 90%;
+    overflow-y: auto;
+    padding: 0.5em;
+}
+
+.margin-bottom {
+    margin-bottom: 1em;
 }
 
 .invalid-options {
@@ -169,8 +189,8 @@
     align-items: center;
     justify-content: flex-start;
     flex-direction: column;
-    width: 30em;
-    height: 39em;
+    width: 30em;        /*30em in edge, 24.5em in firefox*/
+    height: 39em;       /*39em in edge, 31em in firefox*/
     border: 1px solid rgb(172, 172, 172);
     padding: 0.5em;
 }

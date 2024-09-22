@@ -2,6 +2,17 @@
 // when setting innherHTML use document.addeventlistener if you want to add functions to elements
 const apiLink = 'https://my-chronicles.net/api';
 
+// Define the list of URL patterns
+const urlPatterns = [
+  "http://example.com/",
+  "https://*.lightnovelcave.com/novel/*/chapter-*",
+  "https://chapmanganato.to/*/*",
+  "https://asuracomic.net/*/",
+  "https://asianc.sh/*episode*",
+  "https://wuxiaworld.site/novel/*/chapter*",
+  "https://mangadex.org/chapter*"
+];
+
 async function getActiveTabURL() {
   const tabs = await chrome.tabs.query({
       currentWindow: true,
@@ -101,6 +112,23 @@ async function register(event) {
   } else {
     notification(payload);
   }
+}
+
+function patternMatchUrls() {
+  let userInput = this.value;
+  let matchingURLS = [];
+
+  for (let i = 0; i < urlPatterns.length; i++) {
+    if (urlPatterns[i].includes(userInput)) {
+      matchingURLS.push(urlPatterns[i]);
+    }
+  }
+
+  let displayUrls = document.getElementsByClassName("valid-urls")[0];
+  displayUrls.innerHTML = matchingURLS.map((url) => {
+    return `<li>${url}</li>`;
+  }).join('');
+
 }
 
 
@@ -276,10 +304,20 @@ async function retrieveDataSetUpExtension() {
         // Check if the key exists in the retrieved data
         if (data[activeTabId] === undefined) {
           let extensionHtml = document.getElementById("extension-popup");
+
           extensionHtml.innerHTML = `
             <h3 class="grid-website">MyChronicles</h3>
             <div class="grid-info">
-                <p class="invalid-message">Invalid page or refresh</p>
+              <div class="invalid-page-container">
+                <h4 class="margin-bottom">Invalid page or refresh</h4>
+                <p>Look for your domain here:</p>
+                <p>(If it appears, the site is supported)</p>
+                <input type="text" class="search-urls margin-bottom">
+                <p>Your URL should match the following regex:</p>
+                <ul class="valid-urls"></ul>
+                <p>Valid URL's not checked since it'd</p>
+                <p>be displayed instead of this page</p>
+              </div>
             </div>
             <div class="invalid-options">
               <button class="extension-button">Log Out</button>
@@ -288,6 +326,12 @@ async function retrieveDataSetUpExtension() {
             <div id="notification"></div>
           `;
           document.getElementsByClassName("extension-button")[0].addEventListener('click', logout);
+          document.getElementsByClassName("search-urls")[0].addEventListener('input', patternMatchUrls);
+          
+          let displayUrls = document.getElementsByClassName("valid-urls")[0];
+          displayUrls.innerHTML = urlPatterns.map((url) => {
+            return `<li>${url}</li>`;
+          }).join('');
         } else {
           setUpExtension(data[activeTabId]);
         }
