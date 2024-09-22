@@ -30,6 +30,20 @@ async function logout() {
   setupLoginPage();
 }
 
+// create a notification div with styling and msg
+// add it to the extension bottom and fade after 2 seconds 
+function notification(message) {
+  let extensionHtml = document.getElementById("extension-popup");
+  let notification = document.createElement("div");
+  let text = document.createTextNode(message);
+  notification.appendChild(text);
+  notification.classList.add("notification");
+  extensionHtml.appendChild(notification);
+  setTimeout(() => {
+    extensionHtml.removeChild(notification);
+  }, 4000);
+}
+
 async function login(event) {
   event.preventDefault();
   const loginForm = document.getElementsByClassName("login-page")[0];
@@ -53,12 +67,9 @@ async function login(event) {
   const result = await loginUserResult.text();
   // instead of redirecting to user-profile we want to redirect to user-profile/[username] if they came after clicking login
   // otherwise we want to send them to about page for now change to homepage in future
-
-  if (result == "false") {
-    let extensionHtml = document.getElementById("extension-popup");
-    extensionHtml.innerHTML += `
-      <p class="login-result">Username or password invalid</p>
-    `;
+  console.log(loginUserResult.status);
+  if (loginUserResult.status != 200) {
+    notification(result);
   } else {
     retrieveDataSetUpExtension();
   }
@@ -83,6 +94,13 @@ async function register(event) {
   });
 
   const payload = await registerUserResult.text();
+
+  if (registerUserResult.status == 200) {
+    setupLoginPage();
+    notification("Successfully created account");
+  } else {
+    notification(payload);
+  }
 }
 
 
@@ -122,10 +140,11 @@ function setUpExtension(tabData) {
     </div>
     <div class="extension-options">
       <button class="extension-button">Log Out</button>
-      <button class="extension-button">To Site</button>
+      <a href="https://my-chronicles.net/" target="_blank" class="extension-button button-link">To Site</a>
       <button class="extension-button">Update</button>
     </div>
     <a class="extension-attribution" href="https://www.freepik.com/icon/book_13960454#fromView=search&page=1&position=0&uuid=e497bb06-528d-4a63-9e3d-9a09fdb42d7d">Image Attribution: Icon by HideMaru</a>
+    <div id="notification"></div>
     `;
 
     if (userChronicleInfo.rating != null) {
@@ -221,6 +240,7 @@ function setupLoginPage() {
       <button type="submit" class="login-page-submit">Login</button> 
       <p class="register">Don't have an account? Sign up here.</p>
     </form>
+    <div id="notification"></div>
   `;
 
   document.getElementsByClassName("login-page-submit")[0].addEventListener('click', login);
@@ -233,12 +253,13 @@ function setUpRegisterPage() {
     <h3 class="grid-website">MyChronicles</h3>
     <form class="login-page">
       <h1>Welcome</h1>
-      <textarea placeholder="Username" name="username"></textarea>
+      <textarea placeholder="Username (3-30 characters)" name="username"></textarea>
       <textarea placeholder="Email" name="email"></textarea>
       <input placeholder="Password" type="password" name="password"></input>
       <button class="register-page-submit">Register</button> 
       <p class="register">Have an account? Sign in here.</p>
     </form>
+    <div id="notification"></div>
   `;
 
   document.getElementsByClassName("register-page-submit")[0].addEventListener('click', register);
@@ -258,12 +279,13 @@ async function retrieveDataSetUpExtension() {
           extensionHtml.innerHTML = `
             <h3 class="grid-website">MyChronicles</h3>
             <div class="grid-info">
-                <p class="invalid-message">Not a valid page or wait a second because the data might not have loaded</p>
+                <p class="invalid-message">Invalid page or refresh</p>
             </div>
             <div class="invalid-options">
               <button class="extension-button">Log Out</button>
-              <button class="extension-button">To Site</button>
+              <a href="https://my-chronicles.net/" target="_blank" class="extension-button button-link">To Site</a>
             </div>
+            <div id="notification"></div>
           `;
           document.getElementsByClassName("extension-button")[0].addEventListener('click', logout);
         } else {

@@ -115,6 +115,7 @@
 }
 
 .extension-options {
+    display: flex;
     margin: 10px;
     margin-top: 0em;
 }
@@ -129,6 +130,12 @@
     margin-right: 1px;
     border: 1px solid white;
     cursor: pointer;
+}
+
+.button-link {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .extension-attribution {
@@ -209,8 +216,23 @@
 }
 
 .login-page p {
+    cursor: pointer;
     position: absolute;
     bottom: 4%;
     font-size: 16px;
 }
 
+.notification {
+    position: absolute;
+    top: 13%;
+    left: 10%;
+    margin: auto;
+    font-size: 16px;
+    border: 1px solid rgb(172, 172, 172);
+    background-color: white;
+    width: 80%;
+    height: 4em;
+    overflow: auto;
+    padding: 0.8em;
+    text-align: center;
+}
