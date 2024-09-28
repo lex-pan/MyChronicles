@@ -44,15 +44,15 @@ export interface AddChronicleInfo {
 
 export interface SearchedChronicle { 
     searched_chronicle : AddChronicleInfo;
-    setCategorizedChronicles: Dispatch<SetStateAction<Record<string, UserChronicle>[] | undefined>>;
-    sortByStatus: (filteredChronicles: Record<string, UserChronicle>) => Array<Record<string, UserChronicle>>;
+    setCategorizedChronicles: Dispatch<SetStateAction<Array<UserChronicle> | undefined>>;
+    sortByStatus: (filteredChronicles: Record<string, UserChronicle>) => Array<UserChronicle>;
     profileUC: Record<string, UserChronicle> | undefined;
 }
 
 export interface searchChroniclePageProps {
     toggle: () => void;
-    setCategorizedChronicles: Dispatch<SetStateAction<Record<string, UserChronicle>[] | undefined>>;
-    sortByStatus: (filteredChronicles: Record<string, UserChronicle>) => Array<Record<string, UserChronicle>>;
+    setCategorizedChronicles: Dispatch<SetStateAction<Array<UserChronicle> | undefined>>;
+    sortByStatus: (filteredChronicles: Record<string, UserChronicle>) => Array<UserChronicle>;
     profileUC: Record<string, UserChronicle> | undefined;
 }
 

@@ -403,7 +403,6 @@ button, select {
     border-bottom: 1px solid rgb(216, 216, 216);
     padding-bottom: 3em;
     width: 76em;
-    min-height: 56em;
     height: auto;
     margin-top: -12px;
     /*background-color: rgb(109, 186, 207);*/
@@ -844,6 +843,8 @@ button, select {
     width: 85%;
     margin-left: 5%;
     margin: 2em;
+    margin-top: 0em;
+    height: 1000vh;
 }
 
 .user-section-title{
@@ -853,6 +854,7 @@ button, select {
     width: 92.3%;
     margin-left: 2.9%;
     border-bottom: 1px solid rgb(172, 172, 172);
+    margin-top: 1em;
 }
 
 .user-section-attributes {
@@ -866,11 +868,6 @@ button, select {
     margin-top: 1em;
     margin-left: 5px;
     font-size: 18px;
-}
-
-.chronicle-list {
-    grid-row: 3;
-    grid-column: 1/7;
 }
 
 .chronicle-status-list {

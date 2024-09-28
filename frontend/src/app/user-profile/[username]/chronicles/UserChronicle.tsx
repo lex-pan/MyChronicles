@@ -5,7 +5,7 @@ import { updateExistingId, updateNewId } from "@/globalRedux/features/User/UserC
 import Link from "next/link";
 import apiLink from '@/app/utils/apiLink';
 
-export default function UserChronicle({item, confirmDelete, profileUsername, profileUC} : UserChronicleProps) {
+export default function UserChronicleComponent({item, confirmDelete, profileUsername, profileUC} : UserChronicleProps) {
     let listOfChanges = useAppSelector((state) => state.UserChronicles.listOfChanges);
     let viewersUsername = useAppSelector((state) => state.UserChronicles.username);
     const [detailedInfo, setDetailedInfo] = useState(false);

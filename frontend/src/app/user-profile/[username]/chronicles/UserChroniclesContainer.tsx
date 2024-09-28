@@ -8,6 +8,8 @@ Future ToDo's for this section
 */
 
 "use client";
+import { CSSProperties } from 'react';
+import AutoSizer from "react-virtualized-auto-sizer";
 import { useEffect, useRef, useState } from 'react';
 import { MouseEvent } from 'react';
 import StatusContainer from './StatusContainer';
@@ -16,15 +18,18 @@ import AddChroniclesPage from './AddChroniclesPage';
 import { useAppSelector, useAppDispatch, useAppStore } from '../../../../globalRedux/hooks';
 import { clearChanges, deleteUC } from '@/globalRedux/features/User/UserChroniclesSlice';
 import apiLink from '@/app/utils/apiLink';
+import UserChronicleComponent from "./UserChronicle"
 import ImportChronicles from './ImportChronicles';
+import { FixedSizeList as List } from 'react-window';
 
 export default function UserChroniclesLayout({ssProfileUC, profileUsername, profileExists} : UserChronicleData) {
     let viewerUCredux = useAppStore();
     const dispatch = useAppDispatch();
     const [chronicleStatus, setChronicleStatus] = useState(["Reading", "Completed", "Rereading", "Plan to Read", "Paused", "Dropped", "-"]);
+    const categorizedChroniclesIndex = useRef<Record<number, number>>({});
     let viewerUsername = useAppSelector((state) => state.UserChronicles.username); 
     const [editAllowed, setEditAllowed] = useState(false);
-    const [categorizedChronicles, setCategorizedChronicles] = useState<Array<Record<string, UserChronicle>>>();
+    const [categorizedChronicles, setCategorizedChronicles] = useState<Array<UserChronicle>>();
     let profileUC = useRef<Record<string, UserChronicle>>();
     profileViewSetup();
 
@@ -33,6 +38,25 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
     const [toggleConfirmDelete, setToggleConfirmDelete] = useState(false);
     const [toggleAddChronicles, setToggleAddChronicles] = useState(false);
     const [toggleImport, setToggleImport] = useState(false);
+
+    const Row = ({ index, style } : {index : number, style : CSSProperties}) => {
+        if (categorizedChronicles == undefined) return;
+        const item : UserChronicle | undefined = categorizedChronicles[index]; // Get the item for the current index
+
+        // Ensure the item is defined before trying to access its properties
+        if (!item) return null; // Or return a loading state or placeholder
+        return (
+            <div style={style}>
+                <UserChronicleComponent
+                    key={categorizedChronicles[index].book_id}
+                    item={categorizedChronicles[index]}
+                    confirmDelete={toggleDelete}
+                    profileUsername={profileUsername}
+                    profileUC={profileUC.current}
+                />
+            </div>
+        );
+    }
 
     useEffect(() => {
         const handleUCvisibilityChange = () => {
@@ -91,27 +115,36 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         }
     }
     
-    function sortByStatus(filteredChronicles: Record<string, UserChronicle>) {
-        let newArray : Array<Record<string, UserChronicle>> = [];
+    function sortByStatus(filteredChronicles: Record<string, UserChronicle>) : Array<UserChronicle> {
+        // allows us to divide into categories 
+        let newArray : Array<Array<UserChronicle>> = [];
         let statusMap: {[key: string]: number} = {};
         for (let i = 0; i < chronicleStatus.length; i++) {
-            newArray.push({});
-            
+            newArray.push([]);
             statusMap[chronicleStatus[i]] = i;
         }
-        console.log(newArray);
+
         if (filteredChronicles != undefined && Object.keys(filteredChronicles).length > 0) {
             Object.values(filteredChronicles).forEach(chronicle => {                
                 const status = chronicle.status;
                 const index = statusMap[status];
-                
                 if (newArray[index]) { // Ensure the index exists in newArray
-                    newArray[index][chronicle.book_id] = chronicle;
+                    newArray[index].push(chronicle);
                 }
             });
         }        
+        
+        categorizedChroniclesIndex.current = {0: 0};
+        let prevIndex = 0;
+        let oneBigArray : Array<UserChronicle> = [];
+        for (let i = 0; i < newArray.length; i++) {
+            const categoryIndex = prevIndex + newArray[i].length;
+            categorizedChroniclesIndex.current[categoryIndex] = i+1;
+            prevIndex = categoryIndex;
+            oneBigArray = [...oneBigArray, ...newArray[i]];
+        }
 
-        return newArray;
+        return oneBigArray;
     }
 
     function cssFolderEffect(e: MouseEvent<HTMLDivElement, Event>, index: number) {
@@ -307,9 +340,17 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
             </div>
             }
             {toggleAddChronicles && <AddChroniclesPage toggle={toggleSearch} setCategorizedChronicles={setCategorizedChronicles} sortByStatus={sortByStatus} profileUC={profileUC.current}/>} 
-            {categorizedChronicles && chronicleStatus.map((title, index) => (
-                <StatusContainer status={title} key={index} chroniclesStatus={categorizedChronicles[index]} confirmDelete={toggleDelete} profileUsername={profileUsername} profileUC={profileUC.current}/>
-            ))}
+            <div className='user-container-section'>
+                <List
+                    height={800} // height of the list container
+                    itemCount={categorizedChronicles?.length ?? 0} // number of items in the list
+                    itemSize={46} // height of each row (adjust as needed)
+                    width={"100%"} // width of the list container
+                >
+                    {Row}
+                </List>
+            </div>
+
         </div>
     </div>
     }
@@ -359,4 +400,35 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
     <p className='filter-category-name'>Year</p>
     <input className='user-chronicle-filters-year' placeholder='ex: 2019-2024'></input>
 </div>
+*/
+
+/*
+                {categorizedChronicles && categorizedChronicles.map((item, index) => (
+                    <>
+                    {index in categorizedChroniclesIndex.current && 
+                        <>
+                        <h1 className='user-section-title'>{chronicleStatus[categorizedChroniclesIndex.current[index]]}</h1>
+                        <div className="user-section-attributes">
+                            <p className='user-container-category'>Title</p>
+                            <p className='user-container-category'>Rating</p>
+                            <p className='user-container-category'>Episodes</p>
+                            <p className='user-container-category'>Status</p>
+                            <p className='user-container-category'>Last Read</p>
+                        </div>
+                        </>
+                    }
+                    <UserChronicleComponent key={item.book_id} item={item} confirmDelete={toggleDelete} profileUsername={profileUsername} profileUC={profileUC.current}/>
+                    </>
+                ))}
+*/
+
+/*
+            <List
+                height={46 * (categorizedChronicles?.length ?? 0) + 400} // height of the list container
+                itemCount={categorizedChronicles?.length ?? 0} // number of items in the list
+                itemSize={46} // height of each row (adjust as needed)
+                width={"100%"} // width of the list container
+            >
+                {Row}
+            </List>
 */
