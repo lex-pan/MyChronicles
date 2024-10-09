@@ -16,13 +16,14 @@
     --primary-pink: rgb(232, 116, 255); /* Default pink background */
     --primary-blue: rgb(0, 153, 255); /* Default blue background */
     --black-text: rgb(0, 0, 0); /* Default black text */
-    
+
     /* These colors might not need to change, testing pending*/
     --border-color: rgb(172, 172, 172);
     --white-text: rgb(255, 255, 255); 
     --black-bg: rgb(0, 0, 0); 
 }
 
+/* CSS FOR BUTTON */
 .darkmode-switch {
     display: block;
     right: 0;
