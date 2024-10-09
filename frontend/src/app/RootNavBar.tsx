@@ -9,7 +9,7 @@ import Image from 'next/image';
 
 export default function RootNavBar() {
   const pathname = usePathname();
-  const [navBarColor, setNavBarColor] = useState(pathname === '/' ? 'rgb(232, 116, 255)' : 'rgb(0, 153, 255)');
+  const [navBarColor, setNavBarColor] = useState(pathname === '/' ? 'var(--primary-pink)' : 'var(--primary-blue)');
   const [showDropdown, setShowDropdown] = useState(false);
   let isLoggedIn = useAppSelector((state) => state.UserChronicles.loggedIn);
   let username = useAppSelector((state) => state.UserChronicles.username);
@@ -17,11 +17,10 @@ export default function RootNavBar() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    setNavBarColor(pathname === '/' ? 'rgb(232, 116, 255)' : 'rgb(0, 153, 255)');
+    setNavBarColor(pathname === '/' ? 'var(--primary-pink)' : 'var(--primary-blue)');
   }, [pathname]);
 
-  function handleClick() {
-    console.log('working');
+  function handleDropDownClick() {
     if (showDropdown){
       setShowDropdown(false);
     }else{
@@ -58,7 +57,7 @@ export default function RootNavBar() {
           <Image onClick={handleLogOut} className="nav-logout" width={100} height={100} src="/images/logout.png" alt=''/>
           <div className="nav-mobile">  
             <div style={{height: '3.7em'}}></div>
-            <button className="nav-dropdown"  onClick={handleClick}><Image id="nav-dropdown-arrow" src="/images/arrow_icon.png" width={40} height={40} alt="dropdown arrow" style={{transition: '0.5s', transform: showDropdown ? 'none' : 'rotate(180deg)' }} /></button>
+            <button className="nav-dropdown"  onClick={handleDropDownClick}><Image id="nav-dropdown-arrow" src="/images/arrow_icon.png" width={40} height={40} alt="dropdown arrow" style={{transition: '0.5s', transform: showDropdown ? 'none' : 'rotate(180deg)' }} /></button>
             <div style={{ display: showDropdown ? 'block' : 'none' }} >
               <Link style={{width: '100%', transition: '0.5s', top: showDropdown ? '100' : '0' }} href="/search" className="nav-link-m">Search</Link>
               <Link style={{width: '100%', transition: '0.5s', top: showDropdown ? '200' : '0' }} href="/contribute" className="nav-link-m">Contribute</Link> 
@@ -79,7 +78,7 @@ export default function RootNavBar() {
           <Image onClick={handleLogOut} width={100} height={100} className="nav-logout" src="/images/logout.png" alt=''/>
           <div className="nav-mobile">  
             <div style={{height: '3.7em'}}></div>
-            <button className="nav-dropdown"  onClick={handleClick}><Image id="nav-dropdown-arrow" src="/images/arrow_icon.png" width={40} height={40} alt="dropdown arrow" style={{transition: '0.5s', transform: showDropdown ? 'none' : 'rotate(180deg)' }} /></button>
+            <button className="nav-dropdown"  onClick={handleDropDownClick}><Image id="nav-dropdown-arrow" src="/images/arrow_icon.png" width={40} height={40} alt="dropdown arrow" style={{transition: '0.5s', transform: showDropdown ? 'none' : 'rotate(180deg)' }} /></button>
             <div style={{ display: showDropdown ? 'block' : 'none' }} >
               <Link style={{width: '100%', transition: '0.5s', top: showDropdown ? '100' : '0' }} href="/search" className="nav-link-m">Search</Link>
               <Link style={{width: '100%', transition: '0.5s', top: showDropdown ? '200' : '0' }} href="/contribute" className="nav-link-m">Contribute</Link> 
