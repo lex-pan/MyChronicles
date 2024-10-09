@@ -16,12 +16,11 @@
     --primary-pink: rgb(232, 116, 255); /* Default pink background */
     --primary-blue: rgb(0, 153, 255); /* Default blue background */
     --black-text: rgb(0, 0, 0); /* Default black text */
-    /* These colors might be fine if they stay the same, need more testing:
-    --border-color: rgb(172, 172, 172);
     
-    */
+    /* These colors might not need to change, testing pending*/
+    --border-color: rgb(172, 172, 172);
     --white-text: rgb(255, 255, 255); 
-    --black-bg: rgb(0, 0, 0); /* Default white background */
+    --black-bg: rgb(0, 0, 0); 
 }
 
 .darkmode-switch {
@@ -110,31 +109,31 @@ body {
 /* Repeating patterns */
 textarea {
     resize: none;
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
     padding: 0.5em;
 }
 
 .chronicle-attribute-names, .user-section-attributes, .about-history-subcategories, .search-results-attributes  {
-    border-bottom: 1px solid rgb(172, 172, 172);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .chronicle-attributes, .user-chronicle-info, .user-chronicle-info-small, .about-history-item, .about-stat, .about-stats-extra, .searched-chronicle-text, .search-container-stat {
     border: 1px solid transparent;
-    border-right: 1px solid rgb(172, 172, 172);
-    border-bottom: 1px solid rgb(172, 172, 172);
+    border-right: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .chronicle-first-column, .about-history-item, .about-stat, .about-stats-extra, .search-container-stat {
-    border-left: 1px solid rgb(172, 172, 172);
+    border-left: 1px solid var(--border-color);
 }
 
 .chronicle-first-row {
-    border-top: 1px solid rgb(172, 172, 172);
+    border-top: 1px solid var(--border-color);
 }
 
 button, select {
     background-color: var(--white-bg);
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
 }
 
 /* about page*/
@@ -319,7 +318,7 @@ button, select {
 }
 
 .nav-category-options-container:hover {
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
 }
 
 /* Nav Category End */
@@ -366,14 +365,14 @@ button, select {
 .about-history {
     margin-top: 1.5em;
     grid-row: 3/5;
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
     padding: 1.4em;
     overflow: hidden;
 }
 
 .about-history-title {
     font-size: 20px;
-    border-bottom: 1px solid rgb(172, 172, 172)
+    border-bottom: 1px solid var(--border-color)
 }
 
 .about-history-subcategories {
@@ -407,7 +406,7 @@ button, select {
 
 .about-stats p {
     font-size: 20px;
-    border-bottom: 1px solid rgb(172, 172, 172);
+    border-bottom: 1px solid var(--border-color);
 }
 
 .about-section-stats {
@@ -500,7 +499,7 @@ button, select {
     left: 50%; 
     transform: translate(-50%, -50%);
     width: 36em;
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
     padding-top: 2.5em;
     padding-bottom: 2.5em;
 }
@@ -535,7 +534,7 @@ button, select {
 .add-searched-chronicle-attributes {
     width: 80%;
     height: 69.4%;
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
     margin-top: 1em;
     padding: 1em;
     padding-left: 1.5em;
@@ -579,7 +578,7 @@ button, select {
     width: 9.8em;
     height: 2.5em;
     background-color: var(--white-bg);
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
     margin-left: 1em;
     padding-left: 0.8em;
     font-size: 16px;
@@ -673,7 +672,7 @@ button, select {
     overflow-y: scroll;
     background-color: var(--white-bg);
     text-align: start;
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
     padding-left: 5em;
     padding-right: 5em;
 }
@@ -702,7 +701,7 @@ button, select {
 
 .drop-zone input[type=file]::file-selector-button {
     background-color: var(--white-bg);
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
     padding: 0.4em;
     font-weight: 100;
 }
@@ -720,7 +719,7 @@ button, select {
     height: 2.5em;
     width: 9em;
     background-color: var(--white-bg);
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
     font-size: 16px;
     text-align: center;
     padding-left: 0.4em;
@@ -777,7 +776,7 @@ button, select {
 }
 
 .add-chronicles-section {
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
     width: 100%;
     margin-left: 0.5em;
     margin-right: 0.5em;
@@ -815,7 +814,7 @@ button, select {
 .add-chronicle-additional {
     position: relative;
     left: -0.5%;
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
     width: 179.2%;
     margin-bottom: -1px;
 }
@@ -828,7 +827,7 @@ button, select {
 }
 
 .add-chronicle-item-top {
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
     padding-left: 0.6em;
     padding-right: 0.6em;
     display: flex;
@@ -868,7 +867,7 @@ button, select {
     height: 2.5em;
     font-size: 14px;
     background-color: var(--white-bg);
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
     padding: 0.4em;
 }
 
@@ -895,7 +894,7 @@ button, select {
 }
 
 .add-chronicle-textarea::selection {
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
 }
 
 .add-chronicles-item-bottom {
@@ -925,7 +924,7 @@ button, select {
     grid-column: 1/7;
     width: 92.3%;
     margin-left: 2.9%;
-    border-bottom: 1px solid rgb(172, 172, 172);
+    border-bottom: 1px solid var(--border-color);
     margin-top: 1em;
 }
 
@@ -1035,7 +1034,7 @@ button, select {
     padding-right: 1em;
     padding-top: 0.2em;
     padding-bottom: 2em;
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
     border-top: 1px solid transparent;
     margin-bottom: -1px;
 }
@@ -1053,7 +1052,7 @@ button, select {
 }
 
 .chronicle-title {
-    border-left: 1px solid rgb(172, 172, 172);
+    border-left: 1px solid var(--border-color);
     width: 40%;
 }
 
@@ -1124,7 +1123,7 @@ button, select {
     flex-direction: column;
     width: 25em;
     height: 33em;
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
     padding: 0.5em;
 }
 
@@ -1148,7 +1147,7 @@ button, select {
     margin: 1em;
     border: 1px solid transparent;
     outline: none;
-    border-bottom: 1px solid rgb(172, 172, 172);
+    border-bottom: 1px solid var(--border-color);
     font-size: 18px;
 }
 
@@ -1320,7 +1319,7 @@ button, select {
     color: var(--black-text);
     width: 16em;
     height: 2em;
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
     margin-left: -1px;
 }
 
@@ -1330,7 +1329,7 @@ button, select {
     width: 60.1%;
     display: grid;
     grid-template-columns: 19.5em minmax(250px, 1fr);
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
     margin-bottom: 4em;
 }
 
@@ -1384,7 +1383,7 @@ button, select {
     resize: none;
     font-size: 16px;
     padding: 0.4em;
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
     height: 14.8em;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1392,7 +1391,7 @@ button, select {
 }
 
 .stats-detailed {
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
     margin: 1.5em;
     margin-top: 0em;
     margin-bottom: 1.2em;
@@ -1414,7 +1413,7 @@ button, select {
 
 .stats-detailed input {
     border: none;
-    border-bottom: 1px solid rgb(172, 172, 172);
+    border-bottom: 1px solid var(--border-color);
     margin-left: 1em;
     outline: none;
     font-size: 17px;
@@ -1429,7 +1428,7 @@ button, select {
     margin-bottom: 0.5em;
     overflow: scroll;
     background-color: var(--white-bg);    
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
     padding: 0.8em;
     margin-top: 1em;
     margin-bottom: 1em;
@@ -1499,8 +1498,8 @@ button, select {
     display: grid;
     width: 100%;
     grid-template-columns: 4fr 1fr;
-    border-top: 1px solid rgb(172, 172, 172);
-    border-bottom: 1px solid rgb(172, 172, 172);
+    border-top: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color);
     padding: 1.5em;
     padding-bottom: 0.5em;
     margin-bottom: -1px;
@@ -1517,7 +1516,7 @@ button, select {
     display: flex;
     justify-content: center;
     align-items: center;
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
     width: 12em;
     height: 2.5em;
     margin-top: 0.55em;
@@ -1543,7 +1542,7 @@ button, select {
     resize: none;
     padding: 0.6em;
     font-size: 17px;
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
     overflow: hidden;
     height: auto;
     text-overflow: ellipsis;
@@ -1597,7 +1596,7 @@ button, select {
     padding: 0.5em;
     padding-top: 1.2em;
     padding-bottom: 1.2em;
-    border: 1px solid rgb(172, 172, 172);
+    border: 1px solid var(--border-color);
     display: grid;
     grid-template-columns: 10em 1fr;
     grid-auto-rows: auto;
