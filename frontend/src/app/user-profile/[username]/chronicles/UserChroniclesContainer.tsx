@@ -8,12 +8,8 @@ Future ToDo's for this section
 */
 
 "use client";
-import { CSSProperties } from 'react';
-import AutoSizer from "react-virtualized-auto-sizer";
-import { useEffect, useRef, useState } from 'react';
-import { MouseEvent } from 'react';
-import StatusContainer from './StatusContainer';
-import { UserChronicle, UserChronicleData, importedChronicle } from '@/app/utils/interfaces';
+import { useEffect, useRef, useState, MouseEvent, CSSProperties, forwardRef } from 'react';
+import { UserChronicle, UserChronicleData } from '@/app/utils/interfaces';
 import AddChroniclesPage from './AddChroniclesPage';
 import { useAppSelector, useAppDispatch, useAppStore } from '../../../../globalRedux/hooks';
 import { clearChanges, deleteUC } from '@/globalRedux/features/User/UserChroniclesSlice';
@@ -22,6 +18,79 @@ import UserChronicleComponent from "./UserChronicle"
 import ImportChronicles from './ImportChronicles';
 import { FixedSizeList as List } from 'react-window';
 
+const outerElementType = forwardRef<HTMLDivElement, React.HTMLProps<HTMLDivElement>>(
+    (props, ref) => {
+      // Move useRef outside the return statement
+      const scrollableRef = useRef<HTMLDivElement | null>(null);
+
+      useEffect(() => {
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'PageDown') {
+                event.preventDefault(); // Prevent the default page scroll
+                if (window.scrollY < 152) {
+                    window.scrollTo({
+                        top: 152,
+                        behavior: 'smooth'
+                    });
+                } else {
+                    if (scrollableRef.current) {
+                        if (scrollableRef.current.scrollHeight - scrollableRef.current.scrollTop < 750) {
+                            window.scrollTo({
+                                top: 900,
+                                behavior: 'smooth'
+                            })   
+                        } else {
+                            scrollableRef.current.scrollBy({
+                                top: 600, // Adjust this value to control the scroll amount
+                                behavior: 'smooth', // Optional: for smooth scrolling
+                            });
+                        }
+                    }
+                }
+            }
+
+            if (event.key === 'PageUp') {
+                event.preventDefault(); // Prevent the default page scroll
+                if (window.scrollY > 400) {
+                    window.scrollTo({
+                        top: 152,
+                        behavior: 'smooth'
+                    });
+                } else {
+                    if (scrollableRef.current) {
+                        if (scrollableRef.current.scrollTop < 100) {
+                            window.scrollTo({
+                                top: 0,
+                                behavior: 'smooth'
+                            })   
+                        } else {
+                            scrollableRef.current.scrollBy({
+                                top: -600, // Adjust this value to control the scroll amount
+                                behavior: 'smooth', // Optional: for smooth scrolling
+                            });
+                        }
+                    }
+                }
+            }
+        };
+
+        // Attach the event listener
+        window.addEventListener('keydown', handleKeyDown);
+
+        // Clean up the event listener on unmount
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        };
+    }, []);
+        
+      return (
+        <div ref={scrollableRef} {...props} className='UC-react-window' />
+      );
+    }
+);
+
+outerElementType.displayName = 'OuterElementType';
+ 
 export default function UserChroniclesLayout({ssProfileUC, profileUsername, profileExists} : UserChronicleData) {
     let viewerUCredux = useAppStore();
     const dispatch = useAppDispatch();
@@ -31,8 +100,12 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
     const [editAllowed, setEditAllowed] = useState(false);
     const [categorizedChronicles, setCategorizedChronicles] = useState<Array<UserChronicle>>();
     let profileUC = useRef<Record<string, UserChronicle>>();
+    const scrollableRef = useRef<HTMLDivElement | null>(null);
+    const [UCindex, setUCindex] = useState(0);
+    const [scrollIndex, setScrollIndex] = useState(0);
+    // {categorizedChronicles ? categorizedChronicles[UCindex].status : "Reading"}
     profileViewSetup();
-
+    console.log("rerendered");
     // page interactivity
     const [deleteChronicleName, setDeleteChronicleName] = useState<UserChronicle | null>(null);
     const [toggleConfirmDelete, setToggleConfirmDelete] = useState(false);
@@ -114,7 +187,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
             }
         }
     }
-    
+
     function sortByStatus(filteredChronicles: Record<string, UserChronicle>) : Array<UserChronicle> {
         // allows us to divide into categories 
         let newArray : Array<Array<UserChronicle>> = [];
@@ -341,11 +414,22 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
             }
             {toggleAddChronicles && <AddChroniclesPage toggle={toggleSearch} setCategorizedChronicles={setCategorizedChronicles} sortByStatus={sortByStatus} profileUC={profileUC.current}/>} 
             <div className='user-container-section'>
-                <List
-                    height={800} // height of the list container
+                <div className="user-section-attributes">
+                    <p className='user-container-category'>Title</p>
+                    <p className='user-container-category'>Rating</p>
+                    <p className='user-container-category'>Episodes</p>
+                    <p className='user-container-category'>Status</p>
+                    <p className='user-container-category'>Last Read</p>
+                </div>
+                <List 
+                    useIsScrolling 
+                    height={692} // height of the list container
                     itemCount={categorizedChronicles?.length ?? 0} // number of items in the list
                     itemSize={46} // height of each row (adjust as needed)
                     width={"100%"} // width of the list container
+                    outerElementType={outerElementType}
+                    onItemsRendered={({ visibleStartIndex, visibleStopIndex }) => {
+                    }}
                 >
                     {Row}
                 </List>
@@ -400,35 +484,4 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
     <p className='filter-category-name'>Year</p>
     <input className='user-chronicle-filters-year' placeholder='ex: 2019-2024'></input>
 </div>
-*/
-
-/*
-                {categorizedChronicles && categorizedChronicles.map((item, index) => (
-                    <>
-                    {index in categorizedChroniclesIndex.current && 
-                        <>
-                        <h1 className='user-section-title'>{chronicleStatus[categorizedChroniclesIndex.current[index]]}</h1>
-                        <div className="user-section-attributes">
-                            <p className='user-container-category'>Title</p>
-                            <p className='user-container-category'>Rating</p>
-                            <p className='user-container-category'>Episodes</p>
-                            <p className='user-container-category'>Status</p>
-                            <p className='user-container-category'>Last Read</p>
-                        </div>
-                        </>
-                    }
-                    <UserChronicleComponent key={item.book_id} item={item} confirmDelete={toggleDelete} profileUsername={profileUsername} profileUC={profileUC.current}/>
-                    </>
-                ))}
-*/
-
-/*
-            <List
-                height={46 * (categorizedChronicles?.length ?? 0) + 400} // height of the list container
-                itemCount={categorizedChronicles?.length ?? 0} // number of items in the list
-                itemSize={46} // height of each row (adjust as needed)
-                width={"100%"} // width of the list container
-            >
-                {Row}
-            </List>
 */
