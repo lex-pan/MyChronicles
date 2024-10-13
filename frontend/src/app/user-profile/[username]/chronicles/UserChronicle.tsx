@@ -5,10 +5,10 @@ import { updateExistingId, updateNewId } from "@/globalRedux/features/User/UserC
 import Link from "next/link";
 import apiLink from '@/app/utils/apiLink';
 
-export default function UserChronicleComponent({item, confirmDelete, profileUsername, profileUC} : UserChronicleProps) {
+export default function UserChronicleComponent({item, confirmDelete, profileUsername, profileUC, dropdownStatus, changeDropdownStatus, index} : UserChronicleProps) {
     let listOfChanges = useAppSelector((state) => state.UserChronicles.listOfChanges);
     let viewersUsername = useAppSelector((state) => state.UserChronicles.username);
-    const [detailedInfo, setDetailedInfo] = useState(false);
+    const [detailedInfo, setDetailedInfo] = useState(dropdownStatus[index]);
     const [additional_info, set_additional_info] = useState<AdditionalInfoUC | null>(null);
     let dispatch = useAppDispatch();
     // get the id
@@ -117,6 +117,7 @@ export default function UserChronicleComponent({item, confirmDelete, profileUser
         }
         
         setDetailedInfo(state => !state);
+        changeDropdownStatus(index);
     }
 
     async function retrieveAdditionalInfo() {

@@ -23,6 +23,9 @@ export interface UserChronicleProps {
     confirmDelete: (userChronicleForDelete: UserChronicle | null) => void;
     profileUsername: string;
     profileUC: Record<string, UserChronicle> | undefined;
+    dropdownStatus: Array<boolean>;
+    changeDropdownStatus: (index: number) => void;
+    index: number;
 }
 
 export interface StatusContainerProps {
