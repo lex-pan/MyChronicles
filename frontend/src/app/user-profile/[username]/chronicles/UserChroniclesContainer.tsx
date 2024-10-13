@@ -17,6 +17,8 @@ import apiLink from '@/app/utils/apiLink';
 import UserChronicleComponent from "./UserChronicle"
 import ImportChronicles from './ImportChronicles';
 import { WindowScroller, List } from "react-virtualized";
+import DeleteChronicle from './DeleteChronicle';
+import MediumChange from './MediumChange';
 
 export default function UserChroniclesLayout({ssProfileUC, profileUsername, profileExists} : UserChronicleData) {
     let viewerUCredux = useAppStore();
@@ -182,9 +184,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
                 profileUC.current = ssProfileUC;
                 setCategorizedChronicles(sortByStatus(profileUC.current));
             }
-        }
-
-        
+        }   
     }
     
     function sortByStatus(filteredChronicles: Record<string, UserChronicle>) : Array<UserChronicle> {
@@ -221,65 +221,6 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         return oneBigArray;
     }
 
-    function cssFolderEffect(e: MouseEvent<HTMLDivElement, Event>, index: number) {
-        const chronicleOptions = e?.currentTarget.parentNode;
-        if (chronicleOptions && chronicleOptions.children) {
-            for (let i = 0; i < chronicleOptions?.children.length; i++ && e.currentTarget.firstChild) {
-                if (index == i) {
-                    chronicleOptions?.children[i].classList.add('selected-chronicle-category'); 
-                } else {
-                    chronicleOptions?.children[i].classList.remove('selected-chronicle-category'); 
-                }
-            }
-        } else {
-            console.log("error selecting css");
-        }
-    }
-
-    function filterUserChronicles(entertainment_category : string) {
-        let desiredMedium : Record<string, UserChronicle> = {};
-
-        if (profileUC.current == undefined) {
-            return {}
-        }
-
-        for (const key in profileUC.current) {
-            if (profileUC.current[key].entertainment_category == entertainment_category) {
-                desiredMedium[key] = profileUC.current[key];
-            }
-        }
-
-        return desiredMedium;
-    }
-
-    function filterChroniclesByMedium(mediumType: string) {
-        switch(mediumType){
-            case 'Novels':
-                const novelsOnly : Record<string, UserChronicle> = filterUserChronicles("Novel");
-                return novelsOnly;
-            case 'Graphic Novels':
-                const graphicNovelsOnly : Record<string, UserChronicle> = filterUserChronicles("Graphic Novel");
-                return graphicNovelsOnly;
-            case 'Films':
-                const filmsOnly : Record<string, UserChronicle> = filterUserChronicles("Film");
-                return filmsOnly;
-            case 'Shows':
-                const showsOnly : Record<string, UserChronicle> = filterUserChronicles("Show");
-                return showsOnly;
-            default: 
-                return profileUC.current;
-        }
-    }
-
-    function mediumChange(e: MouseEvent<HTMLDivElement, Event>, index: number, medium: string) {
-        cssFolderEffect(e, index);
-        let filteredChronicles = filterChroniclesByMedium(medium);
-        if (filteredChronicles !=  undefined) {
-            let sortedChronicles = sortByStatus(filteredChronicles);
-            setCategorizedChronicles(prevChronicles => sortedChronicles);
-        }
-    }
-
     // current algo time complexity for searching items is shit
     // create generalized suffix tree using Ukkonens algo O(n*m) where n is the number of chronicles and m is the avg length
     // can return results for each query in O(n) where n is length of query string
@@ -314,51 +255,6 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         setToggleConfirmDelete(value => !value);
     }
 
-    async function deleteChronicle() {
-        if (categorizedChronicles == undefined) {
-            return
-        }
-
-        let index = 0;
-        
-        for (let i = 0; i < chronicleStatus.length; i++) {
-            // will need a way to dynamically switch based on how it's categorized
-            // we retrieve the index of the categorized array that we want to remove from
-            if (chronicleStatus[i] == deleteChronicleName?.status) {
-                index = i;
-            }
-        }   
-        console.log(index);
-        console.log(deleteChronicleName);
-        const updatedCategorizedChronicles = categorizedChronicles.map((categoryChronicles, i) => {
-            if (i === index) {
-                console.log(deleteChronicleName?.book_id);
-                console.log(deleteChronicleName?.book_id != null);
-                if (deleteChronicleName?.book_id != null) {
-                    console.log(categoryChronicles);
-                    delete categoryChronicles[deleteChronicleName.book_id]
-                }
-
-                return categoryChronicles;
-            }
-            return categoryChronicles;
-        });
-
-        setCategorizedChronicles(updatedCategorizedChronicles);
-        toggleDelete(null);
-
-        dispatch(deleteUC(deleteChronicleName?.book_id));
-        // send to db for delete
-        await fetch(`${apiLink}/user/chronicles/delete/${deleteChronicleName?.book_id}`, {
-            method: 'DELETE',
-            headers: {
-                'Accept': 'application/text' // Example: Accept JSON responses
-            },
-            credentials: 'include'
-        });
-         
-    }
-
     function toggleImportChronicles() {
         setToggleImport(value => !value);
     }   
@@ -369,25 +265,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
     <>
     {profileExists && 
     <div className='chronicles-section'>
-        <div className='chronicle-category-options'>
-            <div className='chronicle-category-option selected-chronicle-category' onClick={(e) => mediumChange(e, 0, "")}>
-                <p className=''>All</p>
-            </div>
-            <div className='chronicle-category-option' onClick={(e) => mediumChange(e, 1, "Novels")}>
-                <p className=''>Novels</p>
-            </div>
-            <div className='chronicle-category-option' onClick={(e) => mediumChange(e, 2, "Graphic Novels")}>
-                <p className=''>Graphic Novels</p>
-            </div>
-            <div className='chronicle-category-option' onClick={(e) => mediumChange(e, 3, "Films")}>
-                <p className=''>Films</p>
-            </div>
-            <div className='chronicle-category-option' onClick={(e) => mediumChange(e, 4, "Shows")}>
-                <p className=''>Shows</p>
-            </div>
-        </div>
-        <div className='sidebar-options'>
-        </div>
+        <MediumChange profileUC={profileUC.current} sortByStatus={sortByStatus} setCategorizedChronicles={setCategorizedChronicles}/>
         <div className='user-container'>            
             <div className='user-chronicle-filters'>
                 <input className='user-chronicle-filters-search' placeholder='search bar' onChange={searchChronicleTitles}></input>
@@ -403,15 +281,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
                 <ImportChronicles toggleImportChronicles={toggleImportChronicles}/>
             }
             {toggleConfirmDelete &&
-            <div className='overlay'>
-                <div className='overlay-container delete-chronicle'>
-                    <h1 className='overlay-container-title'>Delete {deleteChronicleName?.book_name}?</h1>
-                    <div className='overlay-container-button-container'>
-                        <button onClick={() => toggleDelete(null)} className='no overlay-container-button'>No</button>
-                        <button onClick={deleteChronicle} className='yes overlay-container-button'>Yes</button>
-                    </div>
-                </div>
-            </div>
+                <DeleteChronicle categorizedChronicles={categorizedChronicles} chronicleStatus={chronicleStatus} setCategorizedChronicles={setCategorizedChronicles} toggleDelete={toggleDelete} deleteChronicleName={deleteChronicleName}/>
             }
             {toggleAddChronicles && <AddChroniclesPage toggle={toggleSearch} setCategorizedChronicles={setCategorizedChronicles} sortByStatus={sortByStatus} profileUC={profileUC.current}/>} 
             <div className='user-container-section'>

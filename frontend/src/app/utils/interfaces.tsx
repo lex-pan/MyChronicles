@@ -194,3 +194,17 @@ export interface importedChronicle {
     user_status: string | null,
     comments: string | null
 }
+
+export interface DeleteUCprops {
+    categorizedChronicles: Array<UserChronicle> | undefined;
+    chronicleStatus: Array<string>;
+    setCategorizedChronicles: Dispatch<SetStateAction<Array<UserChronicle> | undefined>>;
+    toggleDelete: (userChronicleForDelete : UserChronicle | null) => void;
+    deleteChronicleName: UserChronicle | null;
+}
+
+export interface MediumChangeProps {
+    profileUC: Record<string, UserChronicle> | undefined;
+    sortByStatus: (filteredChronicles: Record<string, UserChronicle>) => Array<UserChronicle>;
+    setCategorizedChronicles: Dispatch<SetStateAction<Array<UserChronicle> | undefined>>;   
+}
