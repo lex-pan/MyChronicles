@@ -8,31 +8,31 @@ Future ToDo's for this section
 */
 
 "use client";
-import { CSSProperties } from 'react';
-import AutoSizer from "react-virtualized-auto-sizer";
-import { useEffect, useRef, useState } from 'react';
-import { MouseEvent } from 'react';
-import StatusContainer from './StatusContainer';
-import { UserChronicle, UserChronicleData, importedChronicle } from '@/app/utils/interfaces';
+import { useEffect, useRef, useState, MouseEvent, CSSProperties, LegacyRef } from 'react';
+import { UserChronicle, UserChronicleData } from '@/app/utils/interfaces';
 import AddChroniclesPage from './AddChroniclesPage';
 import { useAppSelector, useAppDispatch, useAppStore } from '../../../../globalRedux/hooks';
 import { clearChanges, deleteUC } from '@/globalRedux/features/User/UserChroniclesSlice';
 import apiLink from '@/app/utils/apiLink';
 import UserChronicleComponent from "./UserChronicle"
 import ImportChronicles from './ImportChronicles';
-import { FixedSizeList as List } from 'react-window';
+import { WindowScroller, List } from "react-virtualized";
+import DeleteChronicle from './DeleteChronicle';
+import MediumChange from './MediumChange';
 
 export default function UserChroniclesLayout({ssProfileUC, profileUsername, profileExists} : UserChronicleData) {
     let viewerUCredux = useAppStore();
     const dispatch = useAppDispatch();
     const [chronicleStatus, setChronicleStatus] = useState(["Reading", "Completed", "Rereading", "Plan to Read", "Paused", "Dropped", "-"]);
-    const categorizedChroniclesIndex = useRef<Record<number, number>>({});
+    const [categorizedChroniclesIndex, setCategorizedChroniclesIndex] = useState<Record<number, number>>({});
     let viewerUsername = useAppSelector((state) => state.UserChronicles.username); 
     const [editAllowed, setEditAllowed] = useState(false);
     const [categorizedChronicles, setCategorizedChronicles] = useState<Array<UserChronicle>>();
     let profileUC = useRef<Record<string, UserChronicle>>();
-    profileViewSetup();
+    const bindListRef = useRef<List | null>(null);
+    const [UCdropdownStatus, setUCdropdownStatus] = useState<Array<boolean>>([]);
 
+    profileViewSetup();
     // page interactivity
     const [deleteChronicleName, setDeleteChronicleName] = useState<UserChronicle | null>(null);
     const [toggleConfirmDelete, setToggleConfirmDelete] = useState(false);
@@ -45,18 +45,64 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
 
         // Ensure the item is defined before trying to access its properties
         if (!item) return null; // Or return a loading state or placeholder
-        return (
-            <div style={style}>
-                <UserChronicleComponent
-                    key={categorizedChronicles[index].book_id}
-                    item={categorizedChronicles[index]}
-                    confirmDelete={toggleDelete}
-                    profileUsername={profileUsername}
-                    profileUC={profileUC.current}
-                />
-            </div>
-        );
+
+        if (categorizedChroniclesIndex[index] != undefined) {
+            return (
+                <div style={{...style, top: style.top ? (typeof style.top == "string" ? parseInt(style.top) + 25 : style.top + 25) : 25}} key={index} className='category'>
+                    <h1 className='user-section-title'>{chronicleStatus[categorizedChroniclesIndex[index]]}</h1>
+                    <div className="user-section-attributes">
+                        <p className='user-container-category'>Title</p>
+                        <p className='user-container-category'>Rating</p>
+                        <p className='user-container-category'>Episodes</p>
+                        <p className='user-container-category'>Status</p>
+                        <p className='user-container-category'>Last Read</p>
+                    </div>
+                    
+                    <UserChronicleComponent
+                        key={categorizedChronicles[index].book_id}
+                        item={categorizedChronicles[index]}
+                        confirmDelete={toggleDelete}
+                        profileUsername={profileUsername}
+                        profileUC={profileUC.current}
+                        dropdownStatus={UCdropdownStatus}
+                        changeDropdownStatus={changeDropdownStatus}
+                        index={index}
+                    />
+                </div>
+            )
+        } else {
+            return (            
+                <div style={style} key={index}>
+                    <UserChronicleComponent
+                        key={categorizedChronicles[index].book_id}
+                        item={categorizedChronicles[index]}
+                        confirmDelete={toggleDelete}
+                        profileUsername={profileUsername}
+                        profileUC={profileUC.current}
+                        dropdownStatus={UCdropdownStatus}
+                        changeDropdownStatus={changeDropdownStatus}
+                        index={index}
+                    />
+                </div>
+            );
+        }
     }
+
+    function changeDropdownStatus(index: number) {
+        const updatedDropdown = UCdropdownStatus.map((dropdownStatus, dropdownIndex) => dropdownIndex == index ? !dropdownStatus : dropdownStatus);
+        setUCdropdownStatus(updatedDropdown);
+        if (bindListRef.current) {
+            bindListRef.current.recomputeRowHeights();
+        }
+    }
+
+    // when toggling between mediums (novels, films, shows, etc)
+    // row height between title (reading, completed) and row is different compared to row so we need to recalculate row heights 
+    useEffect(() => {
+        if (bindListRef.current) {
+            bindListRef.current.recomputeRowHeights();
+        }
+    }, [categorizedChronicles])
 
     useEffect(() => {
         const handleUCvisibilityChange = () => {
@@ -96,6 +142,32 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         }
     }, [viewerUsername, profileUsername])
 
+    useEffect(() => {
+        const handleKey = (event : KeyboardEvent) => {
+            if (event.key === 'PageUp' || event.key === 'PageDown') {
+                event.preventDefault(); // Prevent the default scroll behavior
+                const scrollAmount = 500; // Amount to scroll in pixels
+                const direction = event.key === 'PageUp' ? -1 : 1; // Determine the scroll direction
+    
+                // Scroll the page by a specified amount
+                window.scrollBy({
+                    top: direction * scrollAmount,
+                    behavior: 'smooth', // Smooth scrolling
+                });
+            }
+        };
+    
+        // Add the event listener
+        window.addEventListener('keydown', handleKey);
+        window.addEventListener('keyup', handleKey);
+    
+        // Cleanup the event listener on component unmount
+        return () => {
+            window.removeEventListener('keydown', handleKey);
+            window.addEventListener('keyup', handleKey);
+        };
+    }, []);
+
     // this is used so that I don't have to wait for page to load (which is what happens in useeffect) before setting up, 
     function profileViewSetup() {
         if ((viewerUsername == profileUsername && profileUC.current != undefined && "!!!UninitializedReduxStore!!!" in profileUC.current)) {
@@ -112,7 +184,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
                 profileUC.current = ssProfileUC;
                 setCategorizedChronicles(sortByStatus(profileUC.current));
             }
-        }
+        }   
     }
     
     function sortByStatus(filteredChronicles: Record<string, UserChronicle>) : Array<UserChronicle> {
@@ -134,76 +206,19 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
             });
         }        
         
-        categorizedChroniclesIndex.current = {0: 0};
+        let indexes : Record<number, number> = {0: 0};
         let prevIndex = 0;
         let oneBigArray : Array<UserChronicle> = [];
         for (let i = 0; i < newArray.length; i++) {
             const categoryIndex = prevIndex + newArray[i].length;
-            categorizedChroniclesIndex.current[categoryIndex] = i+1;
+            indexes[categoryIndex] = i+1;
             prevIndex = categoryIndex;
             oneBigArray = [...oneBigArray, ...newArray[i]];
         }
 
+        setCategorizedChroniclesIndex(indexes);
+        setUCdropdownStatus(Array(oneBigArray.length).fill(false)); // Initialize with all dropdowns closed);
         return oneBigArray;
-    }
-
-    function cssFolderEffect(e: MouseEvent<HTMLDivElement, Event>, index: number) {
-        const chronicleOptions = e?.currentTarget.parentNode;
-        if (chronicleOptions && chronicleOptions.children) {
-            for (let i = 0; i < chronicleOptions?.children.length; i++ && e.currentTarget.firstChild) {
-                if (index == i) {
-                    chronicleOptions?.children[i].classList.add('selected-chronicle-category'); 
-                } else {
-                    chronicleOptions?.children[i].classList.remove('selected-chronicle-category'); 
-                }
-            }
-        } else {
-            console.log("error selecting css");
-        }
-    }
-
-    function filterUserChronicles(entertainment_category : string) {
-        let desiredMedium : Record<string, UserChronicle> = {};
-
-        if (profileUC.current == undefined) {
-            return {}
-        }
-
-        for (const key in profileUC.current) {
-            if (profileUC.current[key].entertainment_category == entertainment_category) {
-                desiredMedium[key] = profileUC.current[key];
-            }
-        }
-
-        return desiredMedium;
-    }
-
-    function filterChroniclesByMedium(mediumType: string) {
-        switch(mediumType){
-            case 'Novels':
-                const novelsOnly : Record<string, UserChronicle> = filterUserChronicles("Novel");
-                return novelsOnly;
-            case 'Graphic Novels':
-                const graphicNovelsOnly : Record<string, UserChronicle> = filterUserChronicles("Graphic Novel");
-                return graphicNovelsOnly;
-            case 'Films':
-                const filmsOnly : Record<string, UserChronicle> = filterUserChronicles("Film");
-                return filmsOnly;
-            case 'Shows':
-                const showsOnly : Record<string, UserChronicle> = filterUserChronicles("Show");
-                return showsOnly;
-            default: 
-                return profileUC.current;
-        }
-    }
-
-    function mediumChange(e: MouseEvent<HTMLDivElement, Event>, index: number, medium: string) {
-        cssFolderEffect(e, index);
-        let filteredChronicles = filterChroniclesByMedium(medium);
-        if (filteredChronicles !=  undefined) {
-            let sortedChronicles = sortByStatus(filteredChronicles);
-            setCategorizedChronicles(sortedChronicles);
-        }
     }
 
     // current algo time complexity for searching items is shit
@@ -240,51 +255,6 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         setToggleConfirmDelete(value => !value);
     }
 
-    async function deleteChronicle() {
-        if (categorizedChronicles == undefined) {
-            return
-        }
-
-        let index = 0;
-        
-        for (let i = 0; i < chronicleStatus.length; i++) {
-            // will need a way to dynamically switch based on how it's categorized
-            // we retrieve the index of the categorized array that we want to remove from
-            if (chronicleStatus[i] == deleteChronicleName?.status) {
-                index = i;
-            }
-        }   
-        console.log(index);
-        console.log(deleteChronicleName);
-        const updatedCategorizedChronicles = categorizedChronicles.map((categoryChronicles, i) => {
-            if (i === index) {
-                console.log(deleteChronicleName?.book_id);
-                console.log(deleteChronicleName?.book_id != null);
-                if (deleteChronicleName?.book_id != null) {
-                    console.log(categoryChronicles);
-                    delete categoryChronicles[deleteChronicleName.book_id]
-                }
-
-                return categoryChronicles;
-            }
-            return categoryChronicles;
-        });
-
-        setCategorizedChronicles(updatedCategorizedChronicles);
-        toggleDelete(null);
-
-        dispatch(deleteUC(deleteChronicleName?.book_id));
-        // send to db for delete
-        await fetch(`${apiLink}/user/chronicles/delete/${deleteChronicleName?.book_id}`, {
-            method: 'DELETE',
-            headers: {
-                'Accept': 'application/text' // Example: Accept JSON responses
-            },
-            credentials: 'include'
-        });
-         
-    }
-
     function toggleImportChronicles() {
         setToggleImport(value => !value);
     }   
@@ -295,25 +265,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
     <>
     {profileExists && 
     <div className='chronicles-section'>
-        <div className='chronicle-category-options'>
-            <div className='chronicle-category-option selected-chronicle-category' onClick={(e) => mediumChange(e, 0, "")}>
-                <p className=''>All</p>
-            </div>
-            <div className='chronicle-category-option' onClick={(e) => mediumChange(e, 1, "Novels")}>
-                <p className=''>Novels</p>
-            </div>
-            <div className='chronicle-category-option' onClick={(e) => mediumChange(e, 2, "Graphic Novels")}>
-                <p className=''>Graphic Novels</p>
-            </div>
-            <div className='chronicle-category-option' onClick={(e) => mediumChange(e, 3, "Films")}>
-                <p className=''>Films</p>
-            </div>
-            <div className='chronicle-category-option' onClick={(e) => mediumChange(e, 4, "Shows")}>
-                <p className=''>Shows</p>
-            </div>
-        </div>
-        <div className='sidebar-options'>
-        </div>
+        <MediumChange profileUC={profileUC.current} sortByStatus={sortByStatus} setCategorizedChronicles={setCategorizedChronicles}/>
         <div className='user-container'>            
             <div className='user-chronicle-filters'>
                 <input className='user-chronicle-filters-search' placeholder='search bar' onChange={searchChronicleTitles}></input>
@@ -329,26 +281,31 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
                 <ImportChronicles toggleImportChronicles={toggleImportChronicles}/>
             }
             {toggleConfirmDelete &&
-            <div className='overlay'>
-                <div className='overlay-container delete-chronicle'>
-                    <h1 className='overlay-container-title'>Delete {deleteChronicleName?.book_name}?</h1>
-                    <div className='overlay-container-button-container'>
-                        <button onClick={() => toggleDelete(null)} className='no overlay-container-button'>No</button>
-                        <button onClick={deleteChronicle} className='yes overlay-container-button'>Yes</button>
-                    </div>
-                </div>
-            </div>
+                <DeleteChronicle categorizedChronicles={categorizedChronicles} chronicleStatus={chronicleStatus} setCategorizedChronicles={setCategorizedChronicles} toggleDelete={toggleDelete} deleteChronicleName={deleteChronicleName}/>
             }
             {toggleAddChronicles && <AddChroniclesPage toggle={toggleSearch} setCategorizedChronicles={setCategorizedChronicles} sortByStatus={sortByStatus} profileUC={profileUC.current}/>} 
             <div className='user-container-section'>
-                <List
-                    height={800} // height of the list container
-                    itemCount={categorizedChronicles?.length ?? 0} // number of items in the list
-                    itemSize={46} // height of each row (adjust as needed)
-                    width={"100%"} // width of the list container
-                >
-                    {Row}
-                </List>
+                <WindowScroller>
+                    {({ height, isScrolling, onChildScroll, scrollTop, registerChild }) => (
+                    <div ref={registerChild as LegacyRef<HTMLDivElement>}>
+                        <List 
+                            autoHeight
+                            height={height}
+                            isScrolling={isScrolling}
+                            onScroll={onChildScroll}
+                            rowCount={categorizedChronicles?.length ?? 0}
+                            rowHeight={({ index }) =>
+                                (categorizedChroniclesIndex[index] !== undefined ? 153 : 46) + (UCdropdownStatus[index] ? 433 : 0)
+                            }
+                            ref={bindListRef}
+                            rowRenderer={Row}
+                            scrollTop={scrollTop}
+                            width={1033}
+                        />
+                    </div>
+
+                    )}
+                </WindowScroller>
             </div>
 
         </div>
@@ -400,35 +357,4 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
     <p className='filter-category-name'>Year</p>
     <input className='user-chronicle-filters-year' placeholder='ex: 2019-2024'></input>
 </div>
-*/
-
-/*
-                {categorizedChronicles && categorizedChronicles.map((item, index) => (
-                    <>
-                    {index in categorizedChroniclesIndex.current && 
-                        <>
-                        <h1 className='user-section-title'>{chronicleStatus[categorizedChroniclesIndex.current[index]]}</h1>
-                        <div className="user-section-attributes">
-                            <p className='user-container-category'>Title</p>
-                            <p className='user-container-category'>Rating</p>
-                            <p className='user-container-category'>Episodes</p>
-                            <p className='user-container-category'>Status</p>
-                            <p className='user-container-category'>Last Read</p>
-                        </div>
-                        </>
-                    }
-                    <UserChronicleComponent key={item.book_id} item={item} confirmDelete={toggleDelete} profileUsername={profileUsername} profileUC={profileUC.current}/>
-                    </>
-                ))}
-*/
-
-/*
-            <List
-                height={46 * (categorizedChronicles?.length ?? 0) + 400} // height of the list container
-                itemCount={categorizedChronicles?.length ?? 0} // number of items in the list
-                itemSize={46} // height of each row (adjust as needed)
-                width={"100%"} // width of the list container
-            >
-                {Row}
-            </List>
 */

@@ -430,7 +430,7 @@ button, select {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 5em;
+    height: 4em;
     cursor: pointer;
 }
 
@@ -438,7 +438,7 @@ button, select {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 3.5em;
+    height: 3.3em;
     width: 15.2em;
     border: 1px solid rgb(216, 216, 216);
     border-top-left-radius: 40%;
@@ -475,6 +475,7 @@ button, select {
     border-bottom: 1px solid rgb(216, 216, 216);
     padding-bottom: 3em;
     width: 76em;
+    min-height: 100vh;
     height: auto;
     margin-top: -12px;
     /*background-color: rgb(109, 186, 207);*/
@@ -621,7 +622,7 @@ button, select {
 }
 
 .user-chronicle-filters {
-    margin-top: 3em;
+    margin-top: 2em;
     width: 84%;
     display: grid;
     justify-content: center;
@@ -916,7 +917,6 @@ button, select {
     margin-left: 5%;
     margin: 2em;
     margin-top: 0em;
-    height: 1000vh;
 }
 
 .user-section-title{
@@ -933,7 +933,7 @@ button, select {
     display: grid;
     margin-left: 2em;
     grid-template-columns: 368px 114px 112px 178px 120px;
-    width: 92.3%;
+    width: 90.7%;
 }
 
 .user-container-category {
@@ -957,6 +957,7 @@ button, select {
     display: flex;
     align-items: stretch;
     justify-content: center;
+    margin-right: 1em;
 }
 
 .user-chronicle-info {
@@ -1029,7 +1030,7 @@ button, select {
 }
 
 .chronicle-list-more-info {
-    width: 92.2%;
+    width: 90.6%;
     margin-left: 2em;
     padding-left: 1em;
     padding-right: 1em;
@@ -1038,6 +1039,9 @@ button, select {
     border: 1px solid var(--border-color);
     border-top: 1px solid transparent;
     margin-bottom: -1px;
+    position: relative;
+    z-index: 5;
+    background-color: white;
 }
 
 .more-info-first-line {

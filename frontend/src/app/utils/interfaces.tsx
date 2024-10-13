@@ -23,6 +23,9 @@ export interface UserChronicleProps {
     confirmDelete: (userChronicleForDelete: UserChronicle | null) => void;
     profileUsername: string;
     profileUC: Record<string, UserChronicle> | undefined;
+    dropdownStatus: Array<boolean>;
+    changeDropdownStatus: (index: number) => void;
+    index: number;
 }
 
 export interface StatusContainerProps {
@@ -190,4 +193,18 @@ export interface importedChronicle {
     user_last_watched: string | null,
     user_status: string | null,
     comments: string | null
+}
+
+export interface DeleteUCprops {
+    categorizedChronicles: Array<UserChronicle> | undefined;
+    chronicleStatus: Array<string>;
+    setCategorizedChronicles: Dispatch<SetStateAction<Array<UserChronicle> | undefined>>;
+    toggleDelete: (userChronicleForDelete : UserChronicle | null) => void;
+    deleteChronicleName: UserChronicle | null;
+}
+
+export interface MediumChangeProps {
+    profileUC: Record<string, UserChronicle> | undefined;
+    sortByStatus: (filteredChronicles: Record<string, UserChronicle>) => Array<UserChronicle>;
+    setCategorizedChronicles: Dispatch<SetStateAction<Array<UserChronicle> | undefined>>;   
 }
