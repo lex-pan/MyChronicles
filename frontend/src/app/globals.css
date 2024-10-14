@@ -473,7 +473,6 @@ button, select {
     border-left: 1px solid rgb(216, 216, 216);
     border-right: 1px solid rgb(216, 216, 216);
     border-bottom: 1px solid rgb(216, 216, 216);
-    padding-bottom: 3em;
     width: 76em;
     min-height: 100vh;
     height: auto;
@@ -486,6 +485,10 @@ button, select {
     justify-content: center;
     align-items: center;
     margin-left: 1em;
+}
+
+.filter-sort-options {
+    grid-column: 2/4;
 }
 
 .filter-category-bottom {
@@ -654,9 +657,9 @@ button, select {
 }
 
 .user-chronicle-filters-button {
-    margin-left: 2.5em;
-    width: 80%;
-    height: 64.6%;
+    margin-left: 0.5em;
+    width: 91%;
+    height: 2.4em;
     font-size: 16px;
 }
 
@@ -714,17 +717,19 @@ button, select {
     align-items: center;
     margin-right: 0.5em;
     margin-left: 1em;
+    font-size: 17px;
 }
 
 .user-chronicle-filters select {
     display: flex;
     height: 2.5em;
-    width: 9em;
+    width: 10.5em;
     background-color: var(--white-bg);
     border: 1px solid var(--border-color);
     font-size: 16px;
     text-align: center;
     padding-left: 0.4em;
+    margin-left: 0.5em;
 }
 
 .add-chronicles-page {
@@ -917,6 +922,7 @@ button, select {
     margin-left: 5%;
     margin: 2em;
     margin-top: 0em;
+    margin-bottom: 0em;
 }
 
 .user-section-title{

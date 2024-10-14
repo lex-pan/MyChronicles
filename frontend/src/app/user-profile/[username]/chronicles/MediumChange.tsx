@@ -1,12 +1,12 @@
 import { UserChronicle, MediumChangeProps } from "@/app/utils/interfaces";
 import { MouseEvent } from "react";
 
-export default function MediumChange({profileUC, sortByStatus, setCategorizedChronicles} : MediumChangeProps) {
+export default function MediumChange({profileUC, sortUC, setCategorizedChronicles} : MediumChangeProps) {
     function mediumChange(e: MouseEvent<HTMLDivElement, Event>, index: number, medium: string) {
         cssFolderEffect(e, index);
         let filteredChronicles = filterChroniclesByMedium(medium);
         if (filteredChronicles !=  undefined) {
-            let sortedChronicles = sortByStatus(filteredChronicles);
+            let sortedChronicles = sortUC(filteredChronicles);
             setCategorizedChronicles(sortedChronicles);
         }
     }

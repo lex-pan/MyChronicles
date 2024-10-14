@@ -23,6 +23,12 @@ import MediumChange from './MediumChange';
 export default function UserChroniclesLayout({ssProfileUC, profileUsername, profileExists} : UserChronicleData) {
     let viewerUCredux = useAppStore();
     const dispatch = useAppDispatch();
+    const sortCategories = {
+        status: ["Reading", "Completed", "Rereading", "Plan to Read", "Paused", "Dropped", "-"],
+        rating: ["5", "4", "3", "2", "1"],
+        last_read: ["Today", "Yesterday", "One week ago", "One month ago", "A long time ago"]
+    }
+    const [sortBy, setSortBy] = useState(["rating", "episodes"])
     const [chronicleStatus, setChronicleStatus] = useState(["Reading", "Completed", "Rereading", "Plan to Read", "Paused", "Dropped", "-"]);
     const [categorizedChroniclesIndex, setCategorizedChroniclesIndex] = useState<Record<number, number>>({});
     let viewerUsername = useAppSelector((state) => state.UserChronicles.username); 
@@ -48,7 +54,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
 
         if (categorizedChroniclesIndex[index] != undefined) {
             return (
-                <div style={{...style, top: style.top ? (typeof style.top == "string" ? parseInt(style.top) + 25 : style.top + 25) : 25}} key={index} className='category'>
+                <div style={{...style, top: style.top ? (typeof style.top == "string" ? parseInt(style.top) + 15 : style.top + 15) : 15}} key={index} className='category'>
                     <h1 className='user-section-title'>{chronicleStatus[categorizedChroniclesIndex[index]]}</h1>
                     <div className="user-section-attributes">
                         <p className='user-container-category'>Title</p>
@@ -173,7 +179,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         if ((viewerUsername == profileUsername && profileUC.current != undefined && "!!!UninitializedReduxStore!!!" in profileUC.current)) {
             profileUC.current = structuredClone(viewerUCredux.getState().UserChronicles.userChronicles);
             console.log(profileUC.current);
-            setCategorizedChronicles(sortByStatus(profileUC.current ? profileUC.current : {}));
+            setCategorizedChronicles(sortUC(profileUC.current ? profileUC.current : {}));
         } 
 
         if (profileUC.current == undefined) {
@@ -182,13 +188,13 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
                 setCategorizedChronicles([]);
             } else {
                 profileUC.current = ssProfileUC;
-                setCategorizedChronicles(sortByStatus(profileUC.current));
+                setCategorizedChronicles(sortUC(profileUC.current));
             }
         }   
     }
     
-    function sortByStatus(filteredChronicles: Record<string, UserChronicle>) : Array<UserChronicle> {
-        // allows us to divide into categories 
+    function sortUC(filteredChronicles: Record<string, UserChronicle>) : Array<UserChronicle> {
+        // divide into categories (the different sections of status, or last read, or rating) 
         let newArray : Array<Array<UserChronicle>> = [];
         let statusMap: {[key: string]: number} = {};
         for (let i = 0; i < chronicleStatus.length; i++) {
@@ -240,7 +246,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
             }
         }
 
-        let sortedChronicles = sortByStatus(searchResults);
+        let sortedChronicles = sortUC(searchResults);
         setCategorizedChronicles(sortedChronicles);
     }
     
@@ -265,13 +271,31 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
     <>
     {profileExists && 
     <div className='chronicles-section'>
-        <MediumChange profileUC={profileUC.current} sortByStatus={sortByStatus} setCategorizedChronicles={setCategorizedChronicles}/>
+        <MediumChange profileUC={profileUC.current} sortUC={sortUC} setCategorizedChronicles={setCategorizedChronicles}/>
         <div className='user-container'>            
             <div className='user-chronicle-filters'>
                 <input className='user-chronicle-filters-search' placeholder='search bar' onChange={searchChronicleTitles}></input>
+                <div className='filter-category filter-sort-options'>
+                    <p className='filter-category-name'>Sort By</p>
+                    <select className="status-options">
+                        <option value="status">Status</option>
+                        <option value="rating">Rating</option>
+                        <option value="last read">Last Read</option>
+                    </select>
+                    {/* title A-Z, last updated, start date, start date, avg score, popularity*/}
+                    <select className="status-options">
+                        <option value="none">None</option>
+                        <option value="status">Status</option>
+                        <option value="completed">Rating</option>
+                        <option value="paused">Episodes</option>
+                        <option value="dropped">Last Read</option>
+                    </select>
+                </div>
                 {editAllowed &&
                     <>
-                    <button className='user-chronicle-filters-button' onClick={toggleSearch}>Add Chronicle</button>                
+                    <div className='filter-category'>
+                        <button className='user-chronicle-filters-button' onClick={toggleSearch}>Add Chronicle</button>                
+                    </div>
                     <button className='user-chronicle-filters-button' onClick={toggleImportChronicles}>Import</button>                
                     </>        
                 }
@@ -283,7 +307,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
             {toggleConfirmDelete &&
                 <DeleteChronicle categorizedChronicles={categorizedChronicles} chronicleStatus={chronicleStatus} setCategorizedChronicles={setCategorizedChronicles} toggleDelete={toggleDelete} deleteChronicleName={deleteChronicleName}/>
             }
-            {toggleAddChronicles && <AddChroniclesPage toggle={toggleSearch} setCategorizedChronicles={setCategorizedChronicles} sortByStatus={sortByStatus} profileUC={profileUC.current}/>} 
+            {toggleAddChronicles && <AddChroniclesPage toggle={toggleSearch} setCategorizedChronicles={setCategorizedChronicles} sortUC={sortUC} profileUC={profileUC.current}/>} 
             <div className='user-container-section'>
                 <WindowScroller>
                     {({ height, isScrolling, onChildScroll, scrollTop, registerChild }) => (
@@ -293,9 +317,9 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
                             height={height}
                             isScrolling={isScrolling}
                             onScroll={onChildScroll}
-                            rowCount={categorizedChronicles?.length ?? 0}
+                            rowCount={categorizedChronicles?.length ? categorizedChronicles.length + 1 : 1}
                             rowHeight={({ index }) =>
-                                (categorizedChroniclesIndex[index] !== undefined ? 153 : 46) + (UCdropdownStatus[index] ? 433 : 0)
+                                (categorizedChroniclesIndex[index] !== undefined ? 175 : 46) + (UCdropdownStatus[index] ? 433 : 0)
                             }
                             ref={bindListRef}
                             rowRenderer={Row}

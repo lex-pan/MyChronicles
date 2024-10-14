@@ -4,7 +4,7 @@ import { searchChroniclePageProps, AddChronicleInfo } from "@/app/utils/interfac
 import { debounce } from "@/app/utils/convenientFunctions";
 import apiLink from '@/app/utils/apiLink';
 
-export default function AddChroniclesPage({toggle, setCategorizedChronicles, sortByStatus, profileUC} : searchChroniclePageProps) {
+export default function AddChroniclesPage({toggle, setCategorizedChronicles, sortUC, profileUC} : searchChroniclePageProps) {
     const [searchedChronicles, setSearchedChronicles] = useState<Array<AddChronicleInfo>>([]);
 
     async function saveInput(e : React.ChangeEvent<any>){
@@ -54,7 +54,7 @@ export default function AddChroniclesPage({toggle, setCategorizedChronicles, sor
                         </div>
                         <div className='add-chronicles-content'>
                             {searchedChronicles.map(item => (
-                                <AddChronicleItem key={item.chronicle_id} searched_chronicle={item} setCategorizedChronicles={setCategorizedChronicles} sortByStatus={sortByStatus} profileUC={profileUC}/>
+                                <AddChronicleItem key={item.chronicle_id} searched_chronicle={item} setCategorizedChronicles={setCategorizedChronicles} sortUC={sortUC} profileUC={profileUC}/>
                             ))}
                         </div>    
                     </div>

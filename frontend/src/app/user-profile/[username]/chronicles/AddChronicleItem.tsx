@@ -7,7 +7,7 @@ import apiLink from '@/app/utils/apiLink';
 import convertDatetoReadble from "@/app/utils/convenientFunctions";
 import toast from "react-hot-toast";
 
-export default function AddChronicleItem({searched_chronicle, setCategorizedChronicles, sortByStatus, profileUC} : SearchedChronicle) {
+export default function AddChronicleItem({searched_chronicle, setCategorizedChronicles, sortUC, profileUC} : SearchedChronicle) {
     const [toggledChronicle, setToggledChronicle] = useState(false);
     const [inLibrary, setInLibrary] = useState(false);
     const reduxLibrary = useAppStore();
@@ -82,7 +82,7 @@ export default function AddChronicleItem({searched_chronicle, setCategorizedChro
             profileUC[searched_chronicle.chronicle_id] = newUC; 
         }
 
-        setCategorizedChronicles(sortByStatus(profileUC));
+        setCategorizedChronicles(sortUC(profileUC));
 
         toggleChronicle();
     }
