@@ -23,13 +23,13 @@ import MediumChange from './MediumChange';
 export default function UserChroniclesLayout({ssProfileUC, profileUsername, profileExists} : UserChronicleData) {
     let viewerUCredux = useAppStore();
     const dispatch = useAppDispatch();
-    const sortCategories = {
+    const sortCategories : Record<string, Array<string>> = {
         status: ["Reading", "Completed", "Rereading", "Plan to Read", "Paused", "Dropped", "-"],
-        rating: ["5", "4", "3", "2", "1"],
-        last_read: ["Today", "Yesterday", "One week ago", "One month ago", "A long time ago"]
-    }
-    const [sortBy, setSortBy] = useState(["rating", "episodes"])
-    const [chronicleStatus, setChronicleStatus] = useState(["Reading", "Completed", "Rereading", "Plan to Read", "Paused", "Dropped", "-"]);
+        rating: ["5", "4", "3", "2", "1", "-"],
+        last_read: ["Today", "Yesterday", "This week", "This month", "This year", "A long time ago", "-"]
+    };
+    const primarySortBy = useRef<string>("status");
+    const secondarySortBy = useRef<string>("none");
     const [categorizedChroniclesIndex, setCategorizedChroniclesIndex] = useState<Record<number, number>>({});
     let viewerUsername = useAppSelector((state) => state.UserChronicles.username); 
     const [editAllowed, setEditAllowed] = useState(false);
@@ -55,7 +55,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         if (categorizedChroniclesIndex[index] != undefined) {
             return (
                 <div style={{...style, top: style.top ? (typeof style.top == "string" ? parseInt(style.top) + 15 : style.top + 15) : 15}} key={index} className='category'>
-                    <h1 className='user-section-title'>{chronicleStatus[categorizedChroniclesIndex[index]]}</h1>
+                    <h1 className='user-section-title'>{sortCategories[primarySortBy.current][categorizedChroniclesIndex[index]]}</h1>
                     <div className="user-section-attributes">
                         <p className='user-container-category'>Title</p>
                         <p className='user-container-category'>Rating</p>
@@ -196,22 +196,69 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
     function sortUC(filteredChronicles: Record<string, UserChronicle>) : Array<UserChronicle> {
         // divide into categories (the different sections of status, or last read, or rating) 
         let newArray : Array<Array<UserChronicle>> = [];
-        let statusMap: {[key: string]: number} = {};
-        for (let i = 0; i < chronicleStatus.length; i++) {
+        let category : {[key: string]: number} = {};
+        for (let i = 0; i < sortCategories[primarySortBy.current].length; i++) {
             newArray.push([]);
-            statusMap[chronicleStatus[i]] = i;
+            category[sortCategories[primarySortBy.current][i]] = i;
         }
 
         if (filteredChronicles != undefined && Object.keys(filteredChronicles).length > 0) {
             Object.values(filteredChronicles).forEach(chronicle => {                
-                const status = chronicle.status;
-                const index = statusMap[status];
+                let index = 0;
+                switch (primarySortBy.current) {
+                    case 'status': 
+                        const status = chronicle.status;
+                        index = category[status];
+                        break;
+                    case 'rating': 
+                        let rating = chronicle.rating;
+                        if (rating) {
+                            rating = Math.floor(rating);
+                            index = category[rating];
+                        } else {
+                            index = 5;
+                        }
+                        break;
+                    case 'last_read':
+                        const last_read = chronicle.last_read;
+                        if (last_read) {
+                            const last_read_date = last_read.split('T')[0]; // "2024-07-06"
+                            // Create Date objects
+                            const givenDate = new Date(last_read_date);
+                            const currentDate = new Date();
+
+                            // Calculate the difference in time
+                            const timeDifference = currentDate.getTime() - givenDate.getTime();
+                            // Convert time difference to days
+                            const daysDifference = Math.floor(timeDifference / (1000 * 60 * 60 * 24));
+                            if (daysDifference == 0) {
+                                index = 0;
+                            } else if (daysDifference == 1) {
+                                index = 1;
+                            } else if (daysDifference < 8) {
+                                index = 2;
+                            } else if (daysDifference < 32) {
+                                index = 3;
+                            } else if (daysDifference < 366) {
+                                index = 4
+                            } else if (daysDifference != 739177){
+                                index = 5;
+                            } else {
+                                index = 6;
+                            }
+                        } else {
+                            index = 6; 
+                        }
+                        break;
+                }
                 if (newArray[index]) { // Ensure the index exists in newArray
                     newArray[index].push(chronicle);
                 }
             });
         }        
         
+        sortSecondaryArrays(newArray);
+
         let indexes : Record<number, number> = {0: 0};
         let prevIndex = 0;
         let oneBigArray : Array<UserChronicle> = [];
@@ -224,6 +271,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
 
         setCategorizedChroniclesIndex(indexes);
         setUCdropdownStatus(Array(oneBigArray.length).fill(false)); // Initialize with all dropdowns closed);
+
         return oneBigArray;
     }
 
@@ -265,6 +313,52 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         setToggleImport(value => !value);
     }   
 
+    function changeSort(e: string, sortType: string) {
+        if (sortType == "primary") {
+            primarySortBy.current = e;
+        } else {
+            secondarySortBy.current = e;
+        }
+
+        if (profileUC.current) {
+            setCategorizedChronicles(sortUC(profileUC.current));
+        }
+
+        bindListRef.current?.recomputeRowHeights();
+    }
+
+    function sortSecondaryArrays(arrayToSort: Array<Array<UserChronicle>>) {
+        for (let i = 0; i < arrayToSort.length; i++) {
+            switch (secondarySortBy.current) {
+                case "none":
+                    return arrayToSort;
+                case "rating":
+                    arrayToSort[i] = arrayToSort[i].sort((a, b) => {
+                        if (a.rating == null) return 1;
+                        if (b.rating == null) return -1;
+                        return b.rating - a.rating;
+                    })
+                    break;
+                case "episodes":
+                    arrayToSort[i] = arrayToSort[i].sort((a, b) => {
+                        if (a.episode == null) return 1;
+                        if (b.episode == null) return -1;
+                        return b.episode - a.episode;
+                    })
+                    break;
+                case "last read":
+                    arrayToSort[i] = arrayToSort[i].sort((a, b) => {
+                        if (a.last_read == null) return 1;
+                        if (b.last_read == null) return -1;
+                        let a_last_read = new Date(a.last_read.split('T')[0]);
+                        let b_last_read = new Date(b.last_read.split('T')[0]);
+                        return b_last_read.getTime() - a_last_read.getTime();
+                    })
+                    break;
+            }
+        }
+    }
+
   // when users edit, save changes to session storage
   // when the user closes the browser/reloads the browser update the database 
   return (
@@ -277,18 +371,17 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
                 <input className='user-chronicle-filters-search' placeholder='search bar' onChange={searchChronicleTitles}></input>
                 <div className='filter-category filter-sort-options'>
                     <p className='filter-category-name'>Sort By</p>
-                    <select className="status-options">
+                    <select className="status-options" onChange={(e) => changeSort(e.target.value, "primary")}>
                         <option value="status">Status</option>
                         <option value="rating">Rating</option>
-                        <option value="last read">Last Read</option>
+                        <option value="last_read">Last Read</option>
                     </select>
                     {/* title A-Z, last updated, start date, start date, avg score, popularity*/}
-                    <select className="status-options">
+                    <select className="status-options" onChange={(e) => changeSort(e.target.value, "secondary")}>
                         <option value="none">None</option>
-                        <option value="status">Status</option>
-                        <option value="completed">Rating</option>
-                        <option value="paused">Episodes</option>
-                        <option value="dropped">Last Read</option>
+                        <option value="rating">Rating</option>
+                        <option value="episodes">Episodes</option>
+                        <option value="last read">Last Read</option>
                     </select>
                 </div>
                 {editAllowed &&
@@ -305,7 +398,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
                 <ImportChronicles toggleImportChronicles={toggleImportChronicles}/>
             }
             {toggleConfirmDelete &&
-                <DeleteChronicle categorizedChronicles={categorizedChronicles} chronicleStatus={chronicleStatus} setCategorizedChronicles={setCategorizedChronicles} toggleDelete={toggleDelete} deleteChronicleName={deleteChronicleName}/>
+                <DeleteChronicle categorizedChronicles={categorizedChronicles} chronicleStatus={sortCategories[primarySortBy.current]} setCategorizedChronicles={setCategorizedChronicles} toggleDelete={toggleDelete} deleteChronicleName={deleteChronicleName}/>
             }
             {toggleAddChronicles && <AddChroniclesPage toggle={toggleSearch} setCategorizedChronicles={setCategorizedChronicles} sortUC={sortUC} profileUC={profileUC.current}/>} 
             <div className='user-container-section'>
