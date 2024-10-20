@@ -3,6 +3,7 @@ import UserChronicles from './features/User/UserChroniclesSlice';
 import UserOther from "./features/User/UserOtherSlice";
 import ChronicleUpdates from "./features/Chronicles/ChronicleUpdateSlice";
 import SearchQueries from "./features/Chronicles/ChroniclesQuerySlice";
+import { UserChronicleReduxInterface } from "./features/User/UserChroniclesSlice";
 import {
     persistStore,
     persistReducer,
@@ -14,33 +15,12 @@ import {
     REGISTER,
   } from 'redux-persist'
 import storage from 'redux-persist/lib/storage';
-import { UserChronicle } from "@/app/utils/interfaces";
-
-const persistConfig = {
-    key: 'root', // defines the key which the persisted state will be stored in localstorage
-    storage, //specifies the storage engine used such as local, session, or custom
-    whitelist: ['UserChronicles'] // Persist only the UserChronicles reducer
-};
 
 const userChroniclesPersistConfig = {
     key: 'userChroniclesChanges',
     storage,
-    whitelist: ['listOfChanges'], // Only persist the specified fields
+    whitelist: ['listOfChanges', 'sortByChanges'], // Only persist the specified fields
 };
-
-interface UserChronicleReduxInterface {
-    userChronicles: Record<string, UserChronicle>;
-    loggedIn: boolean;
-    username: string;
-    listOfChanges: Record<string, any>;
-  }
-  
-  const initialState : UserChronicleReduxInterface = {
-      userChronicles: {},
-      loggedIn: false,
-      username: "",
-      listOfChanges: {},
-  }
 
 export const makeStore = () => {
     let store: any =  configureStore({

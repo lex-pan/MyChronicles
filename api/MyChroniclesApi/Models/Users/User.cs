@@ -31,6 +31,8 @@ public class User : IdentityUser {
     public string preferred_language { get; set; }
     public int num_watched_read { get; set; }
     public float? avg_rating { get; set; }
+    public string primary_sort_by { get; set; }
+    public string secondary_sort_by { get; set; }
 
     // Parameterless constructor
     public User() 
@@ -38,6 +40,8 @@ public class User : IdentityUser {
         account_creation_time = DateTime.UtcNow;
         last_online = DateTime.UtcNow;
         preferred_language = "English";
+        primary_sort_by = "status";
+        secondary_sort_by = "none";
     }
     public User(string username, string email) {
         UserName = username;
@@ -47,5 +51,7 @@ public class User : IdentityUser {
         preferred_language = "English"; // Default language can be set as needed
         num_watched_read = 0;
         avg_rating = null;
+        primary_sort_by = "status";
+        secondary_sort_by = "none";
     }
 }

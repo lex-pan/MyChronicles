@@ -48,7 +48,7 @@ public class UserController : ControllerBase {
         _signInManager = signInManager;
         _chronicles = Chronicles;
     }
-
+    
     // my goal is to allow users to register
     [HttpPost("register")]
     public async Task<IActionResult> CreateValidUser(RegisterUser request) {
@@ -232,9 +232,11 @@ public class UserController : ControllerBase {
         string user_id = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         ErrorOr<List<RetrievedUserChronicle>> retrievedChronicles = await _user.retrieveUCByName(user_id);
         Dictionary<Guid, RetrievedUserChronicle> convertedUC = UCarrayToDictionary(retrievedChronicles.value);
+        ErrorOr<List<string>> sortSettings = await _user.retrieveUserSortSettings(user_id);
 
         if (retrievedChronicles.error.Description == "No Error") {
-            return Ok(new {username = User.FindFirst(ClaimTypes.Name)?.Value,  userChronicles = convertedUC});
+            //PayloadAction<{username: string, userChronicles: Record<string, UserChronicle>, primarySortBy: string, secondarySortBy: string}>) => {
+            return Ok(new {username = User.FindFirst(ClaimTypes.Name)?.Value,  userChronicles = convertedUC, primarySortBy = sortSettings.value[0], secondarySortBy = sortSettings.value[1]});
         } else {
             return StatusCode(500, retrievedChronicles.error);
         }
@@ -258,7 +260,7 @@ public class UserController : ControllerBase {
             string user_id = userExists.Id;
             ErrorOr<List<RetrievedUserChronicle>> retrievedChronicles = await _user.retrieveUCByName(user_id);
             Dictionary<Guid, RetrievedUserChronicle> convertedUC = UCarrayToDictionary(retrievedChronicles.value);
-
+            
             return Ok(new {convertedUC, username, isSignedIn, User.FindFirst(ClaimTypes.Name)?.Value});
         } else {
             return NotFound("username does not exist");
@@ -389,7 +391,8 @@ public class UserController : ControllerBase {
         }   
 
         ErrorOr<string> updateChronicleAttributes = await _user.updateFlexibleUserChronicles(chroniclesToUpdate, user.Id);
-        if (updateChronicleAttributes.error.Description == "No Error") {
+        ErrorOr<string> updateSort = await _user.updateUserSortPreference(changes.sortChanges, user.Id);
+        if (updateChronicleAttributes.error.Description == "No Error" && updateSort.error.Description == "No Error") {
             return Ok(chroniclesToUpdate);
         } else {
             return StatusCode(400, new {chroniclesToUpdate, updateChronicleAttributes.error});

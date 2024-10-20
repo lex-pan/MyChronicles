@@ -4,11 +4,14 @@ import { createSlice, createAsyncThunk, PayloadAction } from "@reduxjs/toolkit";
 import { UserChronicle, UserchronicleFetch } from "@/app/utils/interfaces";
 import apiLink from '@/app/utils/apiLink';
 
-interface UserChronicleReduxInterface {
+export interface UserChronicleReduxInterface {
   userChronicles: Record<string, UserChronicle>;
   loggedIn: boolean;
   username: string;
   listOfChanges: Record<string, any>;
+  primarySortBy: string;
+  secondarySortBy: string;
+  sortByChanges: Record<string, string>;
 }
 
 const initialState : UserChronicleReduxInterface = {
@@ -16,6 +19,9 @@ const initialState : UserChronicleReduxInterface = {
     loggedIn: false,
     username: "",
     listOfChanges: {},
+    primarySortBy: "status",
+    secondarySortBy: "none",
+    sortByChanges: {}
 }
 
 export const UserChroniclesSlice = createSlice({
@@ -31,7 +37,8 @@ export const UserChroniclesSlice = createSlice({
       state.userChronicles[action.payload.id][action.payload.chronicleDetail] = action.payload.changedAttributeValue;
     },
     clearChanges: (state) => {
-      state.listOfChanges= {};
+      state.listOfChanges = {};
+      state.sortByChanges = {};
     },
     deleteUC: (state, action: PayloadAction<string | undefined>) => {
       if (action.payload != null) {
@@ -51,26 +58,27 @@ export const UserChroniclesSlice = createSlice({
       state.loggedIn = true;
       state.username = action.payload.username;
       state.userChronicles = action.payload.userChronicles;
-    }
+    },
+    updateSort: (state, action: PayloadAction<{sortType: string, sortValue: string}>) => {
+      if (action.payload.sortType == "primary") {
+        state.primarySortBy = action.payload.sortValue;
+      } else {
+        state.secondarySortBy = action.payload.sortValue;
+      }
+      state.sortByChanges[action.payload.sortType] = action.payload.sortValue;
+    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(initializeUserChronicles.fulfilled, 
-        (state : UserChronicleReduxInterface, action: PayloadAction<{username: string, userChronicles: Record<string, UserChronicle>}>) => {
+        (state : UserChronicleReduxInterface, action: PayloadAction<{username: string, userChronicles: Record<string, UserChronicle>, primarySortBy: string, secondarySortBy: string}>) => {
             state.loggedIn = true;
             state.username = action.payload.username;
             state.userChronicles = action.payload.userChronicles;
+            state.primarySortBy = action.payload.primarySortBy;
+            state.secondarySortBy = action.payload.secondarySortBy;
         }
       )
-      .addMatcher(
-      (action) => action.type === initializeUserChronicles.fulfilled.type && typeof action.payload === 'string',
-      (state) => {
-        // Handle unexpected payload type here
-        state.loggedIn = false;
-        state.username = "";
-        state.userChronicles = {};
-      }
-    );
   }
 })
 
@@ -90,6 +98,6 @@ export const initializeUserChronicles = createAsyncThunk(
   }
 );
 
-export const { updateExistingId, updateNewId, addUC, deleteUC, clearChanges, logout, login } = UserChroniclesSlice.actions;
+export const { updateExistingId, updateNewId, addUC, deleteUC, clearChanges, logout, login, updateSort } = UserChroniclesSlice.actions;
 
 export default UserChroniclesSlice.reducer;

@@ -12,7 +12,7 @@ import { useEffect, useRef, useState, MouseEvent, CSSProperties, LegacyRef } fro
 import { UserChronicle, UserChronicleData } from '@/app/utils/interfaces';
 import AddChroniclesPage from './AddChroniclesPage';
 import { useAppSelector, useAppDispatch, useAppStore } from '../../../../globalRedux/hooks';
-import { clearChanges, deleteUC } from '@/globalRedux/features/User/UserChroniclesSlice';
+import { clearChanges, updateSort } from '@/globalRedux/features/User/UserChroniclesSlice';
 import apiLink from '@/app/utils/apiLink';
 import UserChronicleComponent from "./UserChronicle"
 import ImportChronicles from './ImportChronicles';
@@ -28,8 +28,6 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         rating: ["5", "4", "3", "2", "1", "-"],
         last_read: ["Today", "Yesterday", "This week", "This month", "This year", "A long time ago", "-"]
     };
-    const primarySortBy = useRef<string>("status");
-    const secondarySortBy = useRef<string>("none");
     const [categorizedChroniclesIndex, setCategorizedChroniclesIndex] = useState<Record<number, number>>({});
     let viewerUsername = useAppSelector((state) => state.UserChronicles.username); 
     const [editAllowed, setEditAllowed] = useState(false);
@@ -53,9 +51,11 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         if (!item) return null; // Or return a loading state or placeholder
 
         if (categorizedChroniclesIndex[index] != undefined) {
+            let primarySortBy = viewerUCredux.getState().UserChronicles.primarySortBy;
+
             return (
                 <div style={{...style, top: style.top ? (typeof style.top == "string" ? parseInt(style.top) + 15 : style.top + 15) : 15}} key={index} className='category'>
-                    <h1 className='user-section-title'>{sortCategories[primarySortBy.current][categorizedChroniclesIndex[index]]}</h1>
+                    <h1 className='user-section-title'>{sortCategories[primarySortBy][categorizedChroniclesIndex[index]]}</h1>
                     <div className="user-section-attributes">
                         <p className='user-container-category'>Title</p>
                         <p className='user-container-category'>Rating</p>
@@ -117,11 +117,13 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
 
         function sendUCchanges(dismount: boolean) {
             let listOfUserChronicleChangesToDb = viewerUCredux.getState().UserChronicles.listOfChanges;
+            let sortChangesToDb = viewerUCredux.getState().UserChronicles.sortByChanges;
             
-            if ((document.visibilityState === "hidden" || dismount) && Object.keys(listOfUserChronicleChangesToDb).length > 0 && viewerUsername != "") {
+            if ((document.visibilityState === "hidden" || dismount) && (Object.keys(listOfUserChronicleChangesToDb).length > 0 || Object.keys(sortChangesToDb).length > 0) && viewerUsername != "") {
               var url = `${apiLink}/user/${viewerUsername}/chronicles/update`;
               var data = JSON.stringify({
-                "listOfChanges": listOfUserChronicleChangesToDb
+                "listOfChanges": listOfUserChronicleChangesToDb,
+                "sortChanges": sortChangesToDb
               });
               
               console.log("sending changes to db");
@@ -130,6 +132,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
               navigator.sendBeacon(url, blob);
 
             }
+            
         }
 
         document.addEventListener('visibilitychange', handleUCvisibilityChange);
@@ -197,15 +200,17 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         // divide into categories (the different sections of status, or last read, or rating) 
         let newArray : Array<Array<UserChronicle>> = [];
         let category : {[key: string]: number} = {};
-        for (let i = 0; i < sortCategories[primarySortBy.current].length; i++) {
+        let primarySortBy = viewerUCredux.getState().UserChronicles.primarySortBy;
+
+        for (let i = 0; i < sortCategories[primarySortBy].length; i++) {
             newArray.push([]);
-            category[sortCategories[primarySortBy.current][i]] = i;
+            category[sortCategories[primarySortBy][i]] = i;
         }
 
         if (filteredChronicles != undefined && Object.keys(filteredChronicles).length > 0) {
             Object.values(filteredChronicles).forEach(chronicle => {                
                 let index = 0;
-                switch (primarySortBy.current) {
+                switch (primarySortBy) {
                     case 'status': 
                         const status = chronicle.status;
                         index = category[status];
@@ -314,11 +319,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
     }   
 
     function changeSort(e: string, sortType: string) {
-        if (sortType == "primary") {
-            primarySortBy.current = e;
-        } else {
-            secondarySortBy.current = e;
-        }
+        dispatch(updateSort({sortType: sortType, sortValue: e}));
 
         if (profileUC.current) {
             setCategorizedChronicles(sortUC(profileUC.current));
@@ -328,8 +329,9 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
     }
 
     function sortSecondaryArrays(arrayToSort: Array<Array<UserChronicle>>) {
+        let secondarySortBy = viewerUCredux.getState().UserChronicles.secondarySortBy;
         for (let i = 0; i < arrayToSort.length; i++) {
-            switch (secondarySortBy.current) {
+            switch (secondarySortBy) {
                 case "none":
                     return arrayToSort;
                 case "rating":
@@ -371,13 +373,13 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
                 <input className='user-chronicle-filters-search' placeholder='search bar' onChange={searchChronicleTitles}></input>
                 <div className='filter-category filter-sort-options'>
                     <p className='filter-category-name'>Sort By</p>
-                    <select className="status-options" onChange={(e) => changeSort(e.target.value, "primary")}>
+                    <select className="status-options" defaultValue={viewerUCredux.getState().UserChronicles.primarySortBy} onChange={(e) => changeSort(e.target.value, "primary")}>
                         <option value="status">Status</option>
                         <option value="rating">Rating</option>
                         <option value="last_read">Last Read</option>
                     </select>
                     {/* title A-Z, last updated, start date, start date, avg score, popularity*/}
-                    <select className="status-options" onChange={(e) => changeSort(e.target.value, "secondary")}>
+                    <select className="status-options" defaultValue={viewerUCredux.getState().UserChronicles.secondarySortBy} onChange={(e) => changeSort(e.target.value, "secondary")}>
                         <option value="none">None</option>
                         <option value="rating">Rating</option>
                         <option value="episodes">Episodes</option>
@@ -398,7 +400,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
                 <ImportChronicles toggleImportChronicles={toggleImportChronicles}/>
             }
             {toggleConfirmDelete &&
-                <DeleteChronicle categorizedChronicles={categorizedChronicles} chronicleStatus={sortCategories[primarySortBy.current]} setCategorizedChronicles={setCategorizedChronicles} toggleDelete={toggleDelete} deleteChronicleName={deleteChronicleName}/>
+                <DeleteChronicle categorizedChronicles={categorizedChronicles} chronicleStatus={sortCategories[viewerUCredux.getState().UserChronicles.primarySortBy]} setCategorizedChronicles={setCategorizedChronicles} toggleDelete={toggleDelete} deleteChronicleName={deleteChronicleName}/>
             }
             {toggleAddChronicles && <AddChroniclesPage toggle={toggleSearch} setCategorizedChronicles={setCategorizedChronicles} sortUC={sortUC} profileUC={profileUC.current}/>} 
             <div className='user-container-section'>

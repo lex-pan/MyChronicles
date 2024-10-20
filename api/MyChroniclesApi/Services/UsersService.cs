@@ -107,6 +107,26 @@ public class UsersService : MyChroniclesDbContext {
         return ErrorOr<string>.Success("all successfully modified");
     }
 
+    public async Task<ErrorOr<string>> updateUserSortPreference(Dictionary<string, string> sortChanges, string userID) {
+        var user = await this.Set<User>().FindAsync(userID);
+
+        if (user != null) {
+            if (sortChanges.ContainsKey("primary")) {
+                user.primary_sort_by = sortChanges["primary"];
+            }
+
+            if (sortChanges.ContainsKey("secondary")) {
+                user.secondary_sort_by = sortChanges["secondary"];
+            }
+            
+            await this.SaveChangesAsync(); // Save changes asynchronously
+            return ErrorOr<string>.Success("successfully changed");
+        }
+
+        return ErrorOr<string>.Failure(Error.NotFound("", "user does not exist"));
+
+    }
+
     public async Task<ErrorOr<List<RetrievedUserChronicle>>> retrieveUCByName(string userID) {
         try {
             List<RetrievedUserChronicle> retrievedUserChronicles = await this.Set<UserChronicles>()
@@ -127,6 +147,15 @@ public class UsersService : MyChroniclesDbContext {
             return ErrorOr<List<RetrievedUserChronicle>>.Failure(Error.InternalServerError("", "internal server error"));
         }
         
+    }
+
+    public async Task<ErrorOr<List<string>>> retrieveUserSortSettings(string userID) {
+        var user = await this.Set<User>().FindAsync(userID);
+        if (user != null) {
+            return ErrorOr<List<string>>.Success([user.primary_sort_by, user.secondary_sort_by]);
+        }
+        return ErrorOr<List<string>>.Failure(Error.NotFound("", "user not found"));
+
     }
 
     public async Task<ErrorOr<UCAdditonal>> retrieveUCAdditional(string user_id, Guid book_id) {
