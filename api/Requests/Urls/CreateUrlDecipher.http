@@ -2,14 +2,13 @@ POST http://localhost:5172/urls
 Content-Type: application/json
 
 {
-    "domain": "asuracomic.net",
-    "decipher_method": ["url", "url", "url"],
-    "title_start_end": [  
-        ["-", 1, 1, "-chapter", 1, 0]
+    "domain": "mangadex.org",
+    "decipher_method": ["title", "title", "title"],
+    "title_start_end": [
+        ["-", 1, 2, "-", 1, -1]
     ],
-    "chapter_start_end": [  
-        ["chapter-", 1, 8, "", -1, -1],
-        ["", 1, 0, "-", 1, 0]
+    "chapter_start_end": [
+        ["Chapter", 1, 8, "-", 1, -1]
     ],
     "entertainment_category": [
         ["Graphic Novel", -2, -2, "Graphic Novel", -2, -2]

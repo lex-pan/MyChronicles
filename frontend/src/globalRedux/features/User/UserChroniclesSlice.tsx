@@ -71,12 +71,14 @@ export const UserChroniclesSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(initializeUserChronicles.fulfilled, 
-        (state : UserChronicleReduxInterface, action: PayloadAction<{username: string, userChronicles: Record<string, UserChronicle>, primarySortBy: string, secondarySortBy: string}>) => {
+        (state : UserChronicleReduxInterface, action: PayloadAction<{username: string, userChronicles: Record<string, UserChronicle>, primarySortBy: string, secondarySortBy: string} | string>) => {
+          if (typeof action.payload != "string") {
             state.loggedIn = true;
             state.username = action.payload.username;
             state.userChronicles = action.payload.userChronicles;
-            state.primarySortBy = action.payload.primarySortBy;
-            state.secondarySortBy = action.payload.secondarySortBy;
+            state.primarySortBy = action.payload.primarySortBy ?? "status";
+            state.secondarySortBy = action.payload.secondarySortBy ?? "none";
+          }  
         }
       )
   }
@@ -93,7 +95,7 @@ export const initializeUserChronicles = createAsyncThunk(
           'Accept': 'application/json'
       }
     });
-  
+    
     return response.json();
   }
 );

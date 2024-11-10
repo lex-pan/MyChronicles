@@ -28,14 +28,17 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         rating: ["5", "4", "3", "2", "1", "-"],
         last_read: ["Today", "Yesterday", "This week", "This month", "This year", "A long time ago", "-"]
     };
+    // first number is the index, second number is position in list 40: 2
+    // ex: 40: 2. At index 40, rating will be 3 if primarySortBy is rating 
     const [categorizedChroniclesIndex, setCategorizedChroniclesIndex] = useState<Record<number, number>>({});
     let viewerUsername = useAppSelector((state) => state.UserChronicles.username); 
     const [editAllowed, setEditAllowed] = useState(false);
     const [categorizedChronicles, setCategorizedChronicles] = useState<Array<UserChronicle>>();
     let profileUC = useRef<Record<string, UserChronicle>>();
+    let chroniclesIndex = useRef<Record<number, number>>({});
     const bindListRef = useRef<List | null>(null);
     const [UCdropdownStatus, setUCdropdownStatus] = useState<Array<boolean>>([]);
-
+    const primarySortBy = useAppSelector((state) => state.UserChronicles.primarySortBy);
     profileViewSetup();
     // page interactivity
     const [deleteChronicleName, setDeleteChronicleName] = useState<UserChronicle | null>(null);
@@ -51,8 +54,6 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         if (!item) return null; // Or return a loading state or placeholder
 
         if (categorizedChroniclesIndex[index] != undefined) {
-            let primarySortBy = viewerUCredux.getState().UserChronicles.primarySortBy;
-
             return (
                 <div style={{...style, top: style.top ? (typeof style.top == "string" ? parseInt(style.top) + 15 : style.top + 15) : 15}} key={index} className='category'>
                     <h1 className='user-section-title'>{sortCategories[primarySortBy][categorizedChroniclesIndex[index]]}</h1>
@@ -169,7 +170,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         // Add the event listener
         window.addEventListener('keydown', handleKey);
         window.addEventListener('keyup', handleKey);
-    
+        
         // Cleanup the event listener on component unmount
         return () => {
             window.removeEventListener('keydown', handleKey);
@@ -196,21 +197,20 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         }   
     }
     
-    function sortUC(filteredChronicles: Record<string, UserChronicle>) : Array<UserChronicle> {
+    function sortUC(filteredChronicles: Record<string, UserChronicle>, primarySort?: string) : Array<UserChronicle> {
         // divide into categories (the different sections of status, or last read, or rating) 
         let newArray : Array<Array<UserChronicle>> = [];
         let category : {[key: string]: number} = {};
-        let primarySortBy = viewerUCredux.getState().UserChronicles.primarySortBy;
 
-        for (let i = 0; i < sortCategories[primarySortBy].length; i++) {
+        for (let i = 0; i < sortCategories[primarySort ?? primarySortBy].length; i++) {
             newArray.push([]);
-            category[sortCategories[primarySortBy][i]] = i;
+            category[sortCategories[primarySort ?? primarySortBy][i]] = i;
         }
 
         if (filteredChronicles != undefined && Object.keys(filteredChronicles).length > 0) {
             Object.values(filteredChronicles).forEach(chronicle => {                
                 let index = 0;
-                switch (primarySortBy) {
+                switch (primarySort ?? primarySortBy) {
                     case 'status': 
                         const status = chronicle.status;
                         index = category[status];
@@ -274,7 +274,9 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
             oneBigArray = [...oneBigArray, ...newArray[i]];
         }
 
+        console.log(indexes);
         setCategorizedChroniclesIndex(indexes);
+        chroniclesIndex.current = indexes;
         setUCdropdownStatus(Array(oneBigArray.length).fill(false)); // Initialize with all dropdowns closed);
 
         return oneBigArray;
@@ -322,7 +324,11 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         dispatch(updateSort({sortType: sortType, sortValue: e}));
 
         if (profileUC.current) {
-            setCategorizedChronicles(sortUC(profileUC.current));
+            if (sortType == "primary") {
+                setCategorizedChronicles(sortUC(profileUC.current, e));
+            } else {
+                setCategorizedChronicles(sortUC(profileUC.current));
+            }
         }
 
         bindListRef.current?.recomputeRowHeights();
@@ -361,6 +367,47 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         }
     }
 
+    function displaySpecificCategory(index: number) {
+        if (index == -1) {
+            if (profileUC.current == undefined) {
+                setCategorizedChronicles([]);
+            } else {
+                setCategorizedChronicles(sortUC(profileUC.current));
+            }
+        } else {
+            if (profileUC.current != undefined) {
+                let displayChronicles = sortUC(profileUC.current);
+                let start = -1;
+                let end = 0;
+                let closestEndValue = Infinity;
+                let startIndex = 0;
+                for (const [key, value] of Object.entries(chroniclesIndex.current)) {
+                    console.log(value);
+                    if (value == index){
+                        start = Number(key);
+                        startIndex = value;
+                    }
+
+                    if (start != -1 && value > startIndex && value < closestEndValue) {
+                        console.log(value);
+                        closestEndValue = value;
+                        end = Number(key); 
+                    }
+                }
+                
+                console.log([start, end]);
+                if (start !== -1 && profileUC.current != undefined) {
+                    setCategorizedChronicles(displayChronicles.slice(start, end));
+                    setCategorizedChroniclesIndex({0: startIndex});
+                } else {
+                    setCategorizedChronicles([]);
+                }
+                
+                // if start is -1, that means there are no entries with this option
+            } 
+        }
+    }
+
   // when users edit, save changes to session storage
   // when the user closes the browser/reloads the browser update the database 
   return (
@@ -373,6 +420,8 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
                 <input className='user-chronicle-filters-search' placeholder='search bar' onChange={searchChronicleTitles}></input>
                 <div className='filter-category filter-sort-options'>
                     <p className='filter-category-name'>Sort By</p>
+                    {viewerUsername == profileUsername && profileUC.current != undefined && 
+                    <>
                     <select className="status-options" defaultValue={viewerUCredux.getState().UserChronicles.primarySortBy} onChange={(e) => changeSort(e.target.value, "primary")}>
                         <option value="status">Status</option>
                         <option value="rating">Rating</option>
@@ -385,13 +434,41 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
                         <option value="episodes">Episodes</option>
                         <option value="last read">Last Read</option>
                     </select>
+                    </>
+                    }
+                    {viewerUsername != profileUsername && 
+                    <>
+                    <select className="status-options" defaultValue={viewerUCredux.getState().UserChronicles.primarySortBy} onChange={(e) => changeSort(e.target.value, "primary")}>
+                        <option value="status">Status</option>
+                        <option value="rating">Rating</option>
+                        <option value="last_read">Last Read</option>
+                    </select>
+                    {/* title A-Z, last updated, start date, start date, avg score, popularity*/}
+                    <select className="status-options" defaultValue={viewerUCredux.getState().UserChronicles.secondarySortBy} onChange={(e) => changeSort(e.target.value, "secondary")}>
+                        <option value="none">None</option>
+                        <option value="rating">Rating</option>
+                        <option value="episodes">Episodes</option>
+                        <option value="last read">Last Read</option>
+                    </select>
+                    </>
+                    }
                 </div>
                 {editAllowed &&
                     <>
                     <div className='filter-category'>
                         <button className='user-chronicle-filters-button' onClick={toggleSearch}>Add Chronicle</button>                
                     </div>
-                    <button className='user-chronicle-filters-button' onClick={toggleImportChronicles}>Import</button>                
+                    <button className='user-chronicle-filters-button' onClick={toggleImportChronicles}>Import</button>   
+                    <div className='grid-two-three'>
+                        <p className='filter-category-name'>Display</p>
+                        <select className="status-options" onChange={(e) => displaySpecificCategory(Number(e.target.value))}>
+                            <option value="-1">All</option>
+                            {sortCategories[primarySortBy].map((sortCategory, index) => (
+                                <option key={index} value={index}>
+                                    {sortCategory}
+                                </option>))}
+                        </select>
+                    </div>
                     </>        
                 }
                 {/*Add the other filters back here when implemented*/}

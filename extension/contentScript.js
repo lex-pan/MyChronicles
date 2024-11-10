@@ -1,93 +1,10 @@
 console.log("script is here");
-
-const tabDecipherMethod = {
-    "wuxiaworld.site" : {
-        "decipher_method": ["title", "title", "title"],
-        "title_start_end": [
-            ["", 1, 0, " -", 1, 0]
-        ],
-        "chapter_start_end": [  
-            ["Chapter", 1, 8, " -", 1, 0]
-        ],
-        "entertainment_category": [
-            ["Novel", -2, -2, "Novel", -2, -2]
-        ]
-    },
-
-    "asianc.sh" : {
-        "decipher_method": ["title", "title", "title"],
-        "title_start_end": [
-            ["", 1, 6, " (", 1, 0],
-            ["", 1, 6, " Episode", 1, 0]
-        ],
-        "chapter_start_end": [  
-            ["Episode", 1, 8, " Online", 1, 0]
-        ],
-        "entertainment_category": [
-            ["Show", -2, -2, "Show", -2, -2]
-        ]
-    },
-
-    "asuracomic.net" :  {
-        "decipher_method": ["url", "url", "url"],
-        "title_start_end": [  
-            ["-", 1, 1, "-chapter", 1, 0]
-        ],
-        "chapter_start_end": [  
-            ["chapter-", 1, 8, "", -1, -1],
-            ["", 1, 0, "-", 1, 0]
-        ],
-        "entertainment_category": [
-            ["Graphic Novel", -2, -2, "Graphic Novel", -2, -2]
-        ]
-    },
-
-    "www.lightnovelcave.com" :  {
-        "domain": "www.lightnovelcave.com",
-        "decipher_method": ["title", "title", "title"],
-        "title_start_end": [  
-            ["", 1, 0, " - Chapter", 1, 0],
-            ["", 1, 0, " (", 1, 0]
-        ],
-        "chapter_start_end": [  
-            ["Chapter ", 1, 8, " |", 1, 0],
-            ["", 1, 0, ":",1 , 0]
-        ],
-        "entertainment_category": [
-            ["Novel", -2, -2, "Novel", -2, -2]
-        ]
-    },
-
-    "chapmanganato.to" :  {
-        "decipher_method": ["title", "title", "title"],
-        "title_start_end": [  
-            ["", 1, 0, " Chapter", 1, 0],
-            ["", 1, 0, " Vol", 1, 0]
-        ],
-        "chapter_start_end": [  
-            ["Chapter ", 1, 8, " -", 1, 0],
-            ["", 1, 0, ":",1 , 0]
-        ],
-        "entertainment_category": [
-            ["Graphic Novel", -2, -2, "Graphic Novel", -2, -2]
-        ]
-    },
-    
-    "mangadex.org" : {
-        "decipher_method": ["title", "title", "title"],
-        "title_start_end": [
-            ["-", 1, 2, "-", 1, -1]
-        ],
-        "chapter_start_end": [
-            ["Chapter", 1, 8, "-", 1, -1]
-        ],
-        "entertainment_category": [
-            ["Graphic Novel", -2, -2, "Graphic Novel", -2, -2]
-        ]
-    }
-};
+const apiLink = 'https://my-chronicles.net/api';
 
 let slow_domains = new Set(["mangadex.org"]);
+
+// on page load, check if we already have the decipher method for this domain
+// if not retrieve it from db and store it in session storage for 24 hours
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     console.log(message);
@@ -110,8 +27,11 @@ async function decipherTab() {
     let tabURL = window.location.href;
     // turns url into domain of site ex: https://www.google.com/search/some-parameter into www.google.com 
     let domain = getOrigin(tabURL);
-    // retrieves the method using dictionary for O(1) fast access
-    let decipher_method = tabDecipherMethod[domain];
+    
+    // retrieve decipher method from session storage
+    let decipher_method = await fetch(`${apiLink}/urls/${domain}`, {
+        method: 'GET',
+    }); // http://localhost:5172/urls/chapmanganato.to
 
     if (decipher_method == undefined) {
         return "decipher method not found"
