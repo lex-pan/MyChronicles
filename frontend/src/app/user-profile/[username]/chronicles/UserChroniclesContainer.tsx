@@ -1,10 +1,7 @@
 /*
-Future ToDo's for this section
-    - implement react window for smooth user exp in the case we are overwhelmed
-    - data caching and modification when user decides to change it 
-    - implement db actions for chronicles request, delete, update
-    - QOL filter actions on chronicles
-    - different ways to categorize chronicles 
+To-Do's:
+    - Set display's value to usestate since it doesn't update after primary sort value is changed 
+    - move sort options to seperate component to keep this place neater 
 */
 
 "use client";
@@ -35,10 +32,10 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
     const [editAllowed, setEditAllowed] = useState(false);
     const [categorizedChronicles, setCategorizedChronicles] = useState<Array<UserChronicle>>();
     let profileUC = useRef<Record<string, UserChronicle>>();
-    let chroniclesIndex = useRef<Record<number, number>>({});
     const bindListRef = useRef<List | null>(null);
     const [UCdropdownStatus, setUCdropdownStatus] = useState<Array<boolean>>([]);
     const primarySortBy = useAppSelector((state) => state.UserChronicles.primarySortBy);
+    const [displayCategoryOption, setDisplayCategoryOption] = useState<number>(-1);
     profileViewSetup();
     // page interactivity
     const [deleteChronicleName, setDeleteChronicleName] = useState<UserChronicle | null>(null);
@@ -197,20 +194,21 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         }   
     }
     
-    function sortUC(filteredChronicles: Record<string, UserChronicle>, primarySort?: string) : Array<UserChronicle> {
+    function sortUC(filteredChronicles: Record<string, UserChronicle>, primarySort?: string, index?: number) : Array<UserChronicle> {
+        const sortKey = primarySort ?? primarySortBy;
         // divide into categories (the different sections of status, or last read, or rating) 
         let newArray : Array<Array<UserChronicle>> = [];
         let category : {[key: string]: number} = {};
 
-        for (let i = 0; i < sortCategories[primarySort ?? primarySortBy].length; i++) {
+        for (let i = 0; i < sortCategories[sortKey].length; i++) {
             newArray.push([]);
-            category[sortCategories[primarySort ?? primarySortBy][i]] = i;
+            category[sortCategories[sortKey][i]] = i;
         }
 
         if (filteredChronicles != undefined && Object.keys(filteredChronicles).length > 0) {
             Object.values(filteredChronicles).forEach(chronicle => {                
                 let index = 0;
-                switch (primarySort ?? primarySortBy) {
+                switch (sortKey) {
                     case 'status': 
                         const status = chronicle.status;
                         index = category[status];
@@ -221,6 +219,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
                             rating = Math.floor(rating);
                             index = category[rating];
                         } else {
+                            // for UC with no rating
                             index = 5;
                         }
                         break;
@@ -246,7 +245,8 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
                                 index = 3;
                             } else if (daysDifference < 366) {
                                 index = 4
-                            } else if (daysDifference != 739177){
+                            } else if (daysDifference < 739206){
+                                // UC with no read set to 0001-01-01
                                 index = 5;
                             } else {
                                 index = 6;
@@ -271,15 +271,17 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
             const categoryIndex = prevIndex + newArray[i].length;
             indexes[categoryIndex] = i+1;
             prevIndex = categoryIndex;
-            oneBigArray = [...oneBigArray, ...newArray[i]];
+            oneBigArray = oneBigArray.concat(newArray[i]);
         }
 
-        console.log(indexes);
-        setCategorizedChroniclesIndex(indexes);
-        chroniclesIndex.current = indexes;
-        setUCdropdownStatus(Array(oneBigArray.length).fill(false)); // Initialize with all dropdowns closed);
+        if (index || index == 0) {
+            setDisplayCategoryOption(index);
+        }
 
-        return oneBigArray;
+        const displayResults = displaySpecificCategory(oneBigArray, indexes, index ?? displayCategoryOption);
+        setCategorizedChroniclesIndex(displayResults[1]);
+        setUCdropdownStatus(Array(oneBigArray.length).fill(false)); // Initialize with all dropdowns closed);
+        return displayResults[0];
     }
 
     // current algo time complexity for searching items is shit
@@ -325,7 +327,8 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
 
         if (profileUC.current) {
             if (sortType == "primary") {
-                setCategorizedChronicles(sortUC(profileUC.current, e));
+                setDisplayCategoryOption(-1);
+                setCategorizedChronicles(sortUC(profileUC.current, e, -1));
             } else {
                 setCategorizedChronicles(sortUC(profileUC.current));
             }
@@ -367,47 +370,32 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         }
     }
 
-    function displaySpecificCategory(index: number) {
+    function displaySpecificCategory(oneBigArray: Array<UserChronicle>, indexes: Record<number, number>, index: number) : [Array<UserChronicle>, Record<number, number>] {
         if (index == -1) {
-            if (profileUC.current == undefined) {
-                setCategorizedChronicles([]);
-            } else {
-                setCategorizedChronicles(sortUC(profileUC.current));
-            }
+            return [oneBigArray, indexes];
         } else {
-            if (profileUC.current != undefined) {
-                let displayChronicles = sortUC(profileUC.current);
-                let start = -1;
-                let end = 0;
-                let closestEndValue = Infinity;
-                let startIndex = 0;
-                for (const [key, value] of Object.entries(chroniclesIndex.current)) {
-                    console.log(value);
-                    if (value == index){
-                        start = Number(key);
-                        startIndex = value;
-                    }
+            let start = -1;
+            let end = 0;
+            let closestEndValue = Infinity;
+            let startIndex = 0;
+            for (const [key, value] of Object.entries(indexes)) {
+                if (value == index){
+                    start = Number(key);
+                    startIndex = value;
+                }
 
-                    if (start != -1 && value > startIndex && value < closestEndValue) {
-                        console.log(value);
-                        closestEndValue = value;
-                        end = Number(key); 
-                    }
+                if (start != -1 && value > startIndex && value < closestEndValue) {
+                    closestEndValue = value;
+                    end = Number(key); 
                 }
-                
-                console.log([start, end]);
-                if (start !== -1 && profileUC.current != undefined) {
-                    setCategorizedChronicles(displayChronicles.slice(start, end));
-                    setCategorizedChroniclesIndex({0: startIndex});
-                } else {
-                    setCategorizedChronicles([]);
-                }
-                
-                // if start is -1, that means there are no entries with this option
-            } 
+            }
+
+            const newBigArray = oneBigArray.slice(start, end);
+            return [newBigArray, {0: startIndex}];
         }
     }
 
+    console.log(displayCategoryOption == -1 ? "All" : sortCategories[primarySortBy][displayCategoryOption]);
   // when users edit, save changes to session storage
   // when the user closes the browser/reloads the browser update the database 
   return (
@@ -461,7 +449,7 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
                     <button className='user-chronicle-filters-button' onClick={toggleImportChronicles}>Import</button>   
                     <div className='grid-two-three'>
                         <p className='filter-category-name'>Display</p>
-                        <select className="status-options" onChange={(e) => displaySpecificCategory(Number(e.target.value))}>
+                        <select className="status-options" onChange={(e) => setCategorizedChronicles(sortUC(profileUC.current ?? {}, undefined, Number(e.target.value)))} value={displayCategoryOption}>
                             <option value="-1">All</option>
                             {sortCategories[primarySortBy].map((sortCategory, index) => (
                                 <option key={index} value={index}>
