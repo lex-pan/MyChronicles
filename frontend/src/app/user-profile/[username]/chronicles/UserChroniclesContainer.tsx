@@ -1,6 +1,5 @@
 /*
 To-Do's:
-    - Set display's value to usestate since it doesn't update after primary sort value is changed 
     - move sort options to seperate component to keep this place neater 
 */
 
@@ -395,7 +394,6 @@ export default function UserChroniclesLayout({ssProfileUC, profileUsername, prof
         }
     }
 
-    console.log(displayCategoryOption == -1 ? "All" : sortCategories[primarySortBy][displayCategoryOption]);
   // when users edit, save changes to session storage
   // when the user closes the browser/reloads the browser update the database 
   return (

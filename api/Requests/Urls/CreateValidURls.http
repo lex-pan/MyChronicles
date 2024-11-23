@@ -1,0 +1,14 @@
+POST http://localhost:5172/urls/valid
+Content-Type: application/json
+
+{
+    "regex_urls": [
+        "https://*.lightnovelcave.com/novel/*/chapter-*",
+        "https://chapmanganato.to/*/*",
+        "https://asuracomic.net/*/",
+        "https://asianc.sh/*episode*",
+        "https://wuxiaworld.site/novel/*/chapter*",
+        "https://mangadex.org/chapter*"
+    ]
+}
+

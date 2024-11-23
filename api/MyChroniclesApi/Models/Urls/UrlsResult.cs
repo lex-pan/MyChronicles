@@ -10,7 +10,7 @@ public class UrlsResult {
         decipher_method = decipher_categories;  
         instructions = Instructions;
     }
-    public ErrorOr<UrlsResult> Create(Urls url, List<DecipherUrlSteps> instructions) {
+    public ErrorOr<UrlsResult> Create(DomainDecipher url, List<DecipherUrlSteps> instructions) {
         if (url == null) {
             return null;
         }

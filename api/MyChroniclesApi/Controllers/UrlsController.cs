@@ -22,7 +22,7 @@ public class UrlsController : ControllerBase {
         _MyChroniclesDb = database;
     }
 
-    [HttpPost()]
+    [HttpPost("decipher")]
     public async Task<IActionResult> CreateUrlDecipher(CreateUrlDecipher request) {
         ErrorOr<List<DecipherUrlSteps>> instructions = ErrorOr<List<DecipherUrlSteps>>.Success(new List<DecipherUrlSteps>());
 
@@ -39,7 +39,7 @@ public class UrlsController : ControllerBase {
             return BadRequest(instructions.error);
         }
 
-        var urlDecipher = Urls.Create(
+        var urlDecipher = DomainDecipher.Create(
             request.domain,
             request.decipher_method
         );
@@ -53,7 +53,7 @@ public class UrlsController : ControllerBase {
         return Ok(request);
     }
     
-    [HttpGet("{domain}")]
+    [HttpGet("decipher/{domain}")]
     public async Task<IActionResult> GetUrlDecipher(string domain) {
         ErrorOr<UrlsResult> response = await _MyChroniclesDb.GetUrlDecipher(domain);
 
@@ -77,7 +77,7 @@ public class UrlsController : ControllerBase {
         return Ok(understandableFormat);
     }
 
-    [HttpPut("")]
+    [HttpPut("decipher")]
     public async Task<IActionResult> UpdateUrlDecipher(CreateUrlDecipher request) {
         ErrorOr<List<DecipherUrlSteps>> instructions = ErrorOr<List<DecipherUrlSteps>>.Success(new List<DecipherUrlSteps>());        
 
@@ -94,7 +94,7 @@ public class UrlsController : ControllerBase {
             return BadRequest(instructions.error);
         }
 
-        var urlDecipher = Urls.Create (
+        var urlDecipher = DomainDecipher.Create (
             request.domain,
             request.decipher_method
         );
@@ -108,10 +108,33 @@ public class UrlsController : ControllerBase {
         return Ok(request);
     }
 
-    [HttpDelete("{domain}")]
+    [HttpDelete("decipher/{domain}")]
     public async Task<IActionResult> DeleteUrlDecipher(string domain) {
         await _MyChroniclesDb.DeleteUrlDecipher(domain);
         return Ok(domain);
+    }
+
+    [HttpPost("valid")]
+    public async Task<IActionResult> CreateValidURL(ValidUrl input) {
+        List<ValidUrls> validRegexUrls = new List<ValidUrls>();
+
+        for (int i = 0; i < input.regex_urls.Count; i++) {
+            ValidUrls convertedUrl = new ValidUrls(
+                input.regex_urls[i]
+            );
+
+            validRegexUrls.Add(convertedUrl);
+        }   
+
+        await _MyChroniclesDb.CreateValidUrl(validRegexUrls);
+        return Ok(input.regex_urls);
+    }
+
+    [HttpGet("valid")]
+    public async Task<IActionResult> RetrieveValidUrls() {
+        List<string> allValidRegexUrls = await _MyChroniclesDb.RetrieveValidUrls();
+
+        return Ok(allValidRegexUrls);
     }
     
     private ErrorOr<List<DecipherUrlSteps>> instructionDbConversion(ErrorOr<List<DecipherUrlSteps>> instructionsList, string domain, string category, List<List<object>> instructions) {

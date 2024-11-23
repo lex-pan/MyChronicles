@@ -17,7 +17,7 @@ public class DecipherUrlSteps {
     public string word_end { get; set; }
     public int word_end_index { get; set; }
     public int word_end_adjustment { get; set; }
-    public Urls urls {get; set;} 
+    public DomainDecipher domain_deciphers {get; set;} 
     public DecipherUrlSteps() {}
     private DecipherUrlSteps(
         string Domain, 

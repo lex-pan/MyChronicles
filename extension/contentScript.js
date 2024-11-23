@@ -1,19 +1,29 @@
+/*
+Keep all API calls in background.js because if it's called from contentScript the origin will come from the site and not the extension
+However our Api only accepts calls from the extension 
+*/
 console.log("script is here");
-const apiLink = 'https://my-chronicles.net/api';
-
+const apiLink = 'http://localhost:5172';
 let slow_domains = new Set(["mangadex.org"]);
 
-// on page load, check if we already have the decipher method for this domain
-// if not retrieve it from db and store it in session storage for 24 hours
+// since content script applies to all urls
+// check if valid url, if it is then decipher.
+(async () => {
+    let tabURL = window.location.href;
 
+    chrome.runtime.sendMessage({type: "validateUrl", tabURL: tabURL}, (validUrl) => {
+        if (validUrl) {
+            decipherTab();
+        }
+    })
+})();
+
+// some sites are SPA's so content script would not be able to detect new chapter/episode
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
-    console.log(message);
     if (message.action === 'decipherTab') {
         const title = document.title;
-        console.log('Document title:', title);
-        console.log("script is being run");
         console.log(window.location.href);
-
+        
         window.addEventListener('load',
             decipherTab()
         );
@@ -21,40 +31,36 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
 });
 
 // runs the script everytime the user goes to a valid site
-// valid sites are listed in manifest.json
 async function decipherTab() {
     // this gets the url of the site we're on
     let tabURL = window.location.href;
     // turns url into domain of site ex: https://www.google.com/search/some-parameter into www.google.com 
     let domain = getOrigin(tabURL);
-    
+
     // retrieve decipher method from session storage
-    let decipher_method = await fetch(`${apiLink}/urls/${domain}`, {
-        method: 'GET',
-    }); // http://localhost:5172/urls/chapmanganato.to
-
-    if (decipher_method == undefined) {
-        return "decipher method not found"
-    }
-
+    // if not in session storage call db to retrieve
+    let decipher_method = undefined;
     let isSlow = await isSlowDomain(domain);
     console.log(isSlow);
-    // returns the tabUrl, title, chapter, entertainment category
-    const result = pageInfo(decipher_method, tabURL);
-    console.log(result);
+    chrome.runtime.sendMessage({ type: "retrieveDecipherMethod", domain: domain }, (response) => {
+        decipher_method = response.method;      
+        
+        console.log(decipher_method);
+        // returns the tabUrl, title, chapter, entertainment category
+        const result = pageInfo(decipher_method, tabURL);
+        console.log(result);
 
-    let UCretrieved = false;
+        let UCretrieved = false;
 
-    // save to session storage, check if userChronicles currently exists in sessionStorage, if it is we can access the popup.js immediately with no downtime
-    // if it's not we retrieve the UC when we update what the user is reading
-    chrome.runtime.sendMessage({ type: "saveDecipheredTabInfo", decipheredTabInfo: result}, (response) => {
-        UCretrieved = response;        
-    });  
-
-    // send results to db, so users can keep track of what they've read, when and where
-    // if a UC is returned save to session storage       
-    chrome.runtime.sendMessage(
-        {
+        // save to session storage, check if userChronicles currently exists in sessionStorage, if it is we can access the popup.js immediately with no downtime
+        // if it's not we retrieve the UC when we update what the user is reading
+        chrome.runtime.sendMessage({ type: "saveDecipheredTabInfo", decipheredTabInfo: result}, (response) => {
+            UCretrieved = response;        
+        });  
+        
+        // send results to db, so users can keep track of what they've read, when and where
+        // if a UC is returned save to session storage       
+        chrome.runtime.sendMessage({
             type: "sendToDb", 
             tabURL: result[0], 
             title: result[1], 
@@ -62,6 +68,7 @@ async function decipherTab() {
             entertainment_category: result[3], 
             UCretrieved: UCretrieved
         });
+    })  
 };
 
 async function isSlowDomain(domain) {

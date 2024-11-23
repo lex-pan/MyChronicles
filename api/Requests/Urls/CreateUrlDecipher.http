@@ -1,4 +1,4 @@
-POST http://localhost:5172/urls 
+POST http://localhost:5172/urls/decipher
 Content-Type: application/json
 
 {

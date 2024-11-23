@@ -11,14 +11,14 @@ public class UrlsService : MyChroniclesDbContext, IUrlsService {
     }
 
     // Method to handle the POST command
-    public async Task<ErrorOr<string>> AddUrlDecipher(Urls urlModel, List<DecipherUrlSteps> instructions) {
+    public async Task<ErrorOr<string>> AddUrlDecipher(DomainDecipher urlModel, List<DecipherUrlSteps> instructions) {
 
         try {
         // For code within the transaction scope, it ensures that all code will be committed or no code will be committed. Atomicity 
         // TransactionScopeAsyncFlowOption.Enabled 
             using (var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled)) {
                 // Add the Urls object to the DbSet
-                await this.Set<Urls>().AddAsync(urlModel);
+                await this.Set<DomainDecipher>().AddAsync(urlModel);
 
                 // Add the list of DecipherUrlSteps to the DbSet
                 await this.Set<DecipherUrlSteps>().AddRangeAsync(instructions);
@@ -47,19 +47,19 @@ public class UrlsService : MyChroniclesDbContext, IUrlsService {
             .Where(s => s.domain == domain)
             .OrderBy(s => s.step_number)
             .ToListAsync();
-        var domain_query = await this.Set<Urls>().FindAsync(domain);
+        var domain_query = await this.Set<DomainDecipher>().FindAsync(domain);
         UrlsResult urlsResult = new UrlsResult();
         ErrorOr<UrlsResult> query_result = urlsResult.Create(domain_query, steps);
         return query_result;
     }
 
     public async Task<ErrorOr<string>> DeleteUrlDecipher(string domain) {
-        var entityToDelete = await Set<Urls>().FirstOrDefaultAsync(u => u.domain == domain);
+        var entityToDelete = await Set<DomainDecipher>().FirstOrDefaultAsync(u => u.domain == domain);
 
         if (entityToDelete != null)
         {
             // Remove the entity from the context
-            Set<Urls>().Remove(entityToDelete);
+            Set<DomainDecipher>().Remove(entityToDelete);
             // Save the changes to the database
             await SaveChangesAsync();
         }
@@ -68,8 +68,23 @@ public class UrlsService : MyChroniclesDbContext, IUrlsService {
         return ErrorOr<string>.Success("successfully deleted");
     }
     
-    public async Task<ErrorOr<string>> UpdateUrlDecipher(Urls urlModel, List<DecipherUrlSteps> instructions) {
+    public async Task<ErrorOr<string>> UpdateUrlDecipher(DomainDecipher urlModel, List<DecipherUrlSteps> instructions) {
         await DeleteUrlDecipher(urlModel.domain);
         return await AddUrlDecipher(urlModel, instructions);
     }       
+
+    public async Task<ErrorOr<string>> CreateValidUrl(List<ValidUrls> regex_urls) {
+        await this.Set<ValidUrls>().AddRangeAsync(regex_urls);
+        await SaveChangesAsync();
+
+        return ErrorOr<string>.Success("successfully added");
+    }     
+
+    public async Task<List<string>> RetrieveValidUrls() {
+        List<string> regexUrls = await this.Set<ValidUrls>()
+            .Select(url => url.regex_url)
+            .ToListAsync();
+        return regexUrls;
+    }
+
 }

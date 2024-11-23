@@ -13,9 +13,9 @@ public class MyChroniclesDbContext : IdentityDbContext<User>
     }
 
     // DbSets from UrlsService
-    public DbSet<Urls> Urls { get; set; }
+    public DbSet<DomainDecipher> DomainDeciphers { get; set; }
     public DbSet<DecipherUrlSteps> DecipherUrlSteps { get; set; }
-    // Add other DbSet properties from UrlsService as needed
+    public DbSet<ValidUrls> ValidUrls { get; set; }
 
     // DbSets from UsersService
     public DbSet<User> Users { get; set; }
@@ -39,7 +39,7 @@ public class MyChroniclesDbContext : IdentityDbContext<User>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<DecipherUrlSteps>()
-            .HasOne(u => u.urls)  // specifies that DecipherUrlSteps has a navigation property (Urls) that points to a single instance of Urls.
+            .HasOne(u => u.domain_deciphers)  // specifies that DecipherUrlSteps has a navigation property (Urls) that points to a single instance of Urls.
             .WithMany()  // WithMany() specifies that Urls can have many instances of DecipherUrlSteps associated with it.
             .HasForeignKey(u => u.domain); // Assuming you have a foreign key property domain in DecipherUrlSteps`that allows you to identify the url in decipher steps
         
