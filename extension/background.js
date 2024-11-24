@@ -12,6 +12,7 @@ chrome.tabs.onRemoved.addListener(function(tabId, removeInfo) {
     });
 });
 
+// DO NOT ADD ASYNC TO THIS LISTENER 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     switch (message.type) {
         case "saveDecipheredTabInfo":
@@ -123,10 +124,10 @@ function retrieveDecipherMethod(message, sender, sendResponse) {
             .then(decipherMethodResult => {
                 console.log(decipherMethodResult);
                 chrome.storage.session.set({[message.domain]: decipherMethodResult})
-                sendResponse({method: decipherMethodResult});
+                sendResponse(decipherMethodResult);
             })
         } else {
-            sendResponse({method: decipherMethod});
+            sendResponse(decipherMethod[message.domain]);
         }
     })
 }
@@ -154,8 +155,8 @@ function validateTabUrl(message, sender, sendResponse) {
     })
 }
 
+// Function to check if the URL matches any pattern
 function matchesUrlRegex(tabURL, listOfValidURLS) {
-    console.log(listOfValidURLS);
     return listOfValidURLS.some(pattern => {
         // Replace wildcard '*' with regex equivalents
         const regexPattern = new RegExp(pattern.replace(/\*/g, '.*'));
@@ -167,15 +168,6 @@ function matchesUrlRegex(tabURL, listOfValidURLS) {
 const urlPatterns = [
     "https://mangadex.org/chapter*"
 ];
-  
-// Function to check if the URL matches any pattern
-function matchesPattern(url) {
-    return urlPatterns.some(pattern => {
-        // Replace wildcard '*' with regex equivalents
-        const regexPattern = new RegExp(pattern.replace(/\*/g, '.*'));
-        return regexPattern.test(url);
-    });
-}
 
 let matchStatus = {};
 
@@ -183,7 +175,7 @@ let matchStatus = {};
 // this code is used to detect url changes that match the deciphering we want
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
     // checks if the page is valid 
-    if (changeInfo.url && matchesPattern(changeInfo.url)) {
+    if (changeInfo.url && matchesUrlRegex(changeInfo.url, urlPatterns)) {
         matchStatus[tabId] = true;  // Store match for this specific tabId
     } 
     

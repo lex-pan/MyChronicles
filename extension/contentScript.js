@@ -12,6 +12,7 @@ let slow_domains = new Set(["mangadex.org"]);
     let tabURL = window.location.href;
 
     chrome.runtime.sendMessage({type: "validateUrl", tabURL: tabURL}, (validUrl) => {
+        console.log(validUrl);
         if (validUrl) {
             decipherTab();
         }
@@ -41,9 +42,8 @@ async function decipherTab() {
     // if not in session storage call db to retrieve
     let decipher_method = undefined;
     let isSlow = await isSlowDomain(domain);
-    console.log(isSlow);
     chrome.runtime.sendMessage({ type: "retrieveDecipherMethod", domain: domain }, (response) => {
-        decipher_method = response.method;      
+        decipher_method = response;      
         
         console.log(decipher_method);
         // returns the tabUrl, title, chapter, entertainment category
@@ -57,7 +57,7 @@ async function decipherTab() {
         chrome.runtime.sendMessage({ type: "saveDecipheredTabInfo", decipheredTabInfo: result}, (response) => {
             UCretrieved = response;        
         });  
-        
+
         // send results to db, so users can keep track of what they've read, when and where
         // if a UC is returned save to session storage       
         chrome.runtime.sendMessage({

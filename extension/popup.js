@@ -3,15 +3,7 @@
 const apiLink = 'http://localhost:5172';
 
 // Define the list of URL patterns
-const urlPatterns = [
-  "http://example.com/",
-  "https://*.lightnovelcave.com/novel/*/chapter-*",
-  "https://chapmanganato.to/*/*",
-  "https://asuracomic.net/*/",
-  "https://asianc.sh/*episode*",
-  "https://wuxiaworld.site/novel/*/chapter*",
-  "https://mangadex.org/chapter*"
-];
+let urlPatterns = [];
 
 async function getActiveTabURL() {
   const tabs = await chrome.tabs.query({
@@ -302,35 +294,7 @@ async function retrieveDataSetUpExtension() {
     } else {
         // Check if the key exists in the retrieved data
         if (data[activeTabId] === undefined) {
-          let extensionHtml = document.getElementById("extension-popup");
-
-          extensionHtml.innerHTML = `
-            <h3 class="grid-website">MyChronicles</h3>
-            <div class="grid-info">
-              <div class="invalid-page-container">
-                <h4 class="margin-bottom">Invalid page or refresh</h4>
-                <p>Look for your domain here:</p>
-                <p>(If it appears, the site is supported)</p>
-                <input type="text" class="search-urls margin-bottom">
-                <p>Your URL should match the following regex:</p>
-                <ul class="valid-urls"></ul>
-                <p>Valid URL's not checked since it'd</p>
-                <p>be displayed instead of this page</p>
-              </div>
-            </div>
-            <div class="invalid-options">
-              <button class="extension-button">Log Out</button>
-              <a href="https://my-chronicles.net/" target="_blank" class="extension-button button-link">To Site</a>
-            </div>
-            <div id="notification"></div>
-          `;
-          document.getElementsByClassName("extension-button")[0].addEventListener('click', logout);
-          document.getElementsByClassName("search-urls")[0].addEventListener('input', patternMatchUrls);
-          
-          let displayUrls = document.getElementsByClassName("valid-urls")[0];
-          displayUrls.innerHTML = urlPatterns.map((url) => {
-            return `<li>${url}</li>`;
-          }).join('');
+          setupInvalidPage();
         } else {
           setUpExtension(data[activeTabId]);
         }
@@ -338,11 +302,97 @@ async function retrieveDataSetUpExtension() {
   });
 }
 
+function setupInvalidPage() {
+  let extensionHtml = document.getElementById("extension-popup");
+
+  extensionHtml.innerHTML = `
+    <h3 class="grid-website">MyChronicles</h3>
+    <div class="grid-info">
+      <div class="invalid-page-container">
+        <h4 class="margin-bottom">Invalid page or refresh</h4>
+        <p>Look for your domain here:</p>
+        <p>(If it appears, the site is supported)</p>
+        <input type="text" class="search-urls margin-bottom">
+        <p>Your URL should match the following regex:</p>
+        <ul class="valid-urls"></ul>
+        <p>Valid URL's not checked since it'd</p>
+        <p>be displayed instead of this page</p>
+      </div>
+    </div>
+    <div class="invalid-options">
+      <button class="extension-button">Log Out</button>
+      <a href="https://my-chronicles.net/" target="_blank" class="extension-button button-link">To Site</a>
+    </div>
+    <div id="notification"></div>
+  `;
+  document.getElementsByClassName("extension-button")[0].addEventListener('click', logout);
+  document.getElementsByClassName("search-urls")[0].addEventListener('input', patternMatchUrls);
+  
+  let displayUrls = document.getElementsByClassName("valid-urls")[0];
+  displayUrls.innerHTML = urlPatterns.map((url) => {
+    return `<li>${url}</li>`;
+  }).join('');
+}
+
+function setupErrorPage() {
+  let extensionHtml = document.getElementById("extension-popup");
+  extensionHtml.innerHTML = `
+    <h3 class="grid-website">MyChronicles</h3>
+    <div class="grid-info">
+      <div class="error-div"><p class="error-text">Seems like the API is down :(</p></div>
+    </div>
+  `;
+}
+
+// have to put this function here since chrome.runtime.sendMessage wouldn't fricking work
+async function retrieveValidUrls() {
+  return new Promise((resolve, reject) => {
+      chrome.storage.session.get("validUrls", async (listOfValidURLS) => {
+          console.log(listOfValidURLS["validUrls"]);
+          if (listOfValidURLS["validUrls"] == undefined) {
+              let response = await fetch(`${apiLink}/urls/valid`, {
+                  method: 'GET'
+              });
+              
+              let urls = await response.json();
+              console.log(urls);
+              chrome.storage.session.set({"validUrls": urls})
+              resolve(urls);
+          } else {
+              resolve(listOfValidURLS["validUrls"]);
+          }
+      })
+  })
+}
+
+// for handling race conditions, where user presses popup before data loads 
+chrome.runtime.onMessage.addListener(async (message, sender, sendResponse) => {
+  if (message.type == "saveDecipheredTabInfo") {
+    let senderID = sender.tab.id;
+    let currentTabID = await getActiveTabURL();
+    console.log("try to update");
+    console.log(senderID);
+    console.log(currentTabID);
+    if (senderID == currentTabID) {
+      retrieveDataSetUpExtension();
+    }
+  }
+});
+
 // this basically loads the popup.html when the user clicks on the extension icon
 // it checks if user is logged in, if not the application will present login page
 // otherwise, it queries for a valid tabId (check if it's a valid page), if it's present, then the data will load
 document.addEventListener("DOMContentLoaded", async () => {
-  let loginStatus = await isLoggedIn();
+  let loginStatus = "false";
+  try {
+    loginStatus = await isLoggedIn();
+  } catch {
+    setupErrorPage();
+    return 
+  }
+
+  urlPatterns = await retrieveValidUrls();
+  console.log(urlPatterns);
 
   if (loginStatus == "false") {
     setupLoginPage();

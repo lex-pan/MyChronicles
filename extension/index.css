@@ -256,3 +256,13 @@
     padding: 0.8em;
     text-align: center;
 }
+
+.error-text {
+    font-size: 18px;
+}
+
+.error-div {
+    margin: auto;
+    width: 80%;
+    text-align: center;
+}
