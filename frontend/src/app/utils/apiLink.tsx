@@ -1,3 +1,3 @@
-const apiLink = "http://localhost:5172";
+const apiLink = "http://my-chronicles.net/api";
 
 export default apiLink;

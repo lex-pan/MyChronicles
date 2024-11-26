@@ -9,6 +9,7 @@ import RootNavBar from "./RootNavBar";
 import Footer from "./Footer";
 import { Toaster } from 'react-hot-toast';
 const inter = Inter({ subsets: ["latin"] });
+import { GoogleAnalytics } from '@next/third-parties/google';
 
 export const metadata: Metadata = {
   title: "MyChronicles",
@@ -31,6 +32,7 @@ export default function RootLayout({
           <Toaster position="bottom-right"/>
         </StoreProvider>
       </body>
+      <GoogleAnalytics gaId="G-YSK23M82J2" />
     </html>
   );
 }
